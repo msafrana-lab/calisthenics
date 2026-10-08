@@ -65,6 +65,8 @@ export type Plan = {
   type: SessionType
   week: number
   deload: boolean
+  /** Estimated duration in minutes. */
+  minutes: number
   /** Why the session differs from the plain rotation, if it does. */
   reasons: string[]
   warnings: string[]
@@ -240,7 +242,8 @@ export function plan(input: EngineInput, override?: SessionType): Plan {
 
   const template = TEMPLATES[type]
   const items: PlanItem[] = []
-  const aCount = history.filter((t) => t === 'A').length
+  // How many sessions of this type are done: rotates multi-ladder slots.
+  const typeCount = history.filter((t) => t === type).length
 
   const item = (phase: Phase, exerciseId: string, sets: number, ladderId?: string, notes: string[] = []): PlanItem | null => {
     const info = input.catalogue(exerciseId)
@@ -271,8 +274,8 @@ export function plan(input: EngineInput, override?: SessionType): Plan {
       if (it) items.push(it)
       continue
     }
-    // A sessions alternate the plank and dead bug ladders.
-    const ladder = LADDERS[slot.ladder === 'plank' && aCount % 2 === 1 ? 'deadbug' : slot.ladder]
+    const ids = Array.isArray(slot.ladder) ? slot.ladder : [slot.ladder]
+    const ladder = LADDERS[ids[typeCount % ids.length]]
     const notes: string[] = []
     const regions = ladderRegions(input, ladder)
     const recent = sessionsWithLadder(input, ladder)
@@ -303,11 +306,35 @@ export function plan(input: EngineInput, override?: SessionType): Plan {
   if (firstMain && type !== 'D') firstMain.notes.unshift('Warm-up set first: one easy set at 4+ reps in reserve (not logged).')
 
   for (const id of template.cooldown) {
-    const it = item('cooldown', id, 2)
+    const it = item('cooldown', id, 1, undefined, ['Optional: skip it if you are short of time.'])
     if (it) items.push(it)
   }
 
-  return { type, week, deload, reasons, warnings, items }
+  const plan = { type, week, deload, reasons, warnings, items, minutes: 0 }
+  plan.minutes = Math.round(estimateSeconds(plan, input.catalogue) / 60)
+  return plan
+}
+
+// ---------------------------------------------------------------- duration
+
+/** Seconds per rep used for time estimates (controlled tempo). */
+const SECONDS_PER_REP = 3
+const TRANSITION = 15
+
+/** Rough session length: work, rest between sets, side switches and transitions. */
+export function estimateSeconds(plan: Pick<Plan, 'items' | 'type'>, catalogue: (id: string) => ExerciseInfo | undefined): number {
+  let total = 0
+  for (const it of plan.items) {
+    const info = catalogue(it.exerciseId)
+    const sides = info?.perSide ? 2 : 1
+    const amount = it.phase === 'main' ? it.suggested : it.target[0]
+    const work = (it.measure === 'reps' ? amount * SECONDS_PER_REP : amount) * sides + (sides - 1) * 5
+    total += it.sets * work + Math.max(0, it.sets - 1) * it.restSeconds + TRANSITION
+  }
+  // The easy warm-up set of the first exercise (not part of the plan items).
+  const first = plan.items.find((i) => i.phase === 'main' && i.rir !== null)
+  if (first && plan.type !== 'D') total += 40
+  return total
 }
 
 // ---------------------------------------------------------------- progression
