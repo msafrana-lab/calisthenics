@@ -26,10 +26,20 @@ Personal training app: daily bodyweight sessions on a mat, cycling (mostly indoo
 ## Roadmap
 
 1. **Foundation** (done): app shell, offline caching, local database, sign-in, backup sync, animation engine, 4 sample exercises, deployment workflow.
-2. **Exercise library**: about 40 exercises from the ladders in `EVIDENCE.md` (P, S, E, C, K, H, A, F) plus the mobility pool (M), each with an animation.
-3. **Programme engine**: daily rotation `A, B, C, D, A, B, C`, calibration sessions, double progression, pain and regression rules, deloads (rules R1–R10 in `EVIDENCE.md`). Session player with timer and rest periods. Each ride, indoor or outdoor, is classed as easy or hard by the same rule (R1: intervals, threshold work or more than 60 min = hard); outdoor rides tend to be longer, so they will more often count as hard and move the legs session.
+2. **Exercise library** (done): 63 exercises from the ladders in `EVIDENCE.md` (P, S, E, C, K, H, A, F) plus the mobility pool (M), each with an animation.
+3. **Programme engine** (done): daily rotation `A, B, C, D, A, B, C`, calibration sessions, double progression, pain and regression rules, deloads (rules R1–R10 in `EVIDENCE.md`). Session player with timer and rest periods. Each ride, indoor or outdoor, is classed as easy or hard by the same rule (R1: intervals, threshold work or more than 60 min = hard); outdoor rides tend to be longer, so they will more often count as hard and move the legs session.
 4. **Progress**: per-exercise history and ladder steps, weekly volume per muscle group, weight trend (7-day average), cycling minutes against the 150–300 min/week target.
 5. **Apple Health bridge**: an iOS Shortcut, run daily by a personal automation, reads weight and cycling workouts (indoor and outdoor) from Apple Health and sends them to a Supabase Edge Function protected by a personal token. The exact Shortcut actions available must be checked on the iPhone when this is built (verify).
+
+## Known limitations of the animations
+
+The figure is a flat 2D drawing, so movements towards or away from the camera cannot be shown directly. These read less clearly and rely on their written cues: side-lying external rotation (S0), clamshell (A1), side planks (C7, C8, A4, A5), thoracic open book (M6), floor pec stretch (M8), and the shoulder-blade "plus" of P2/P6. Hip flexion in the figure-4 stretch (M3) is shown as the simpler ankle-cross set-up.
+
+## Not yet implemented from the rules
+
+- Reactive deloads (R8: performance drops on 3+ exercises, repeated joint flare-ups, poor sleep); only the planned week-6 deload is applied.
+- Placing the mobility day on the hardest cycling day (R1); the legs session is moved away from hard rides, but D is not moved.
+- Monthly RIR calibration set (R5).
 
 ## Open points to check
 

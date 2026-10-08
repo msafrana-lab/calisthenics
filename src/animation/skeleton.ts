@@ -39,12 +39,24 @@ export type Pose = {
   /** Foot angles; default is perpendicular to the shin, toes forward. */
   footNear?: number
   footFar?: number
+  /**
+   * Spine curve: how far the middle of the back bulges away from the straight
+   * hip–shoulder line. Positive rounds the back (flexion, "cat"), negative
+   * arches it (extension, "cow"). Hip and shoulder positions are unchanged.
+   */
+  spine?: number
+  /** Top view only: how far each part is lifted off the floor (0–1), shown as a shadow. */
+  lift?: Lift
 }
+
+export type Lift = { arms?: number; legs?: number; chest?: number }
 
 export type LimbPoints = { base: Vec; mid: Vec; end: Vec }
 export type Figure = {
   hip: Vec
   shoulder: Vec
+  /** Control point of the quadratic curve drawn from hip to shoulder. */
+  spineControl: Vec
   headCenter: Vec
   armNear: LimbPoints
   armFar: LimbPoints
@@ -91,9 +103,15 @@ export function solve(p: Pose): Figure {
   const legFar = solveLimb(p.hip, p.legFar, BODY.thigh, BODY.shin)
   const toe = (leg: LimbPoints, angle: number | undefined): Vec =>
     add(leg.end, dir(angle ?? angleTo(leg.mid, leg.end) + 90), BODY.foot)
+  // Normal pointing towards the figure's back (left of an upright figure facing right).
+  const d = dir(p.torso)
+  const back: Vec = [d[1], -d[0]]
+  const middle: Vec = [(p.hip[0] + shoulder[0]) / 2, (p.hip[1] + shoulder[1]) / 2]
   return {
     hip: p.hip,
     shoulder,
+    // A quadratic curve peaks at half its control offset.
+    spineControl: add(middle, back, 2 * (p.spine ?? 0)),
     headCenter,
     armNear: solveLimb(shoulder, p.armNear, BODY.upperArm, BODY.forearm),
     armFar: solveLimb(shoulder, p.armFar, BODY.upperArm, BODY.forearm),
@@ -139,8 +157,16 @@ function lerpOptAngle(a: number | undefined, b: number | undefined, t: number) {
   return lerpAngle(a, b, t)
 }
 
+function lerpLift(a: Lift | undefined, b: Lift | undefined, t: number): Lift | undefined {
+  if (!a && !b) return undefined
+  const part = (k: keyof Lift) => lerp(a?.[k] ?? 0, b?.[k] ?? 0, t)
+  return { arms: part('arms'), legs: part('legs'), chest: part('chest') }
+}
+
 export function interpolate(a: Pose, b: Pose, t: number): Pose {
   return {
+    spine: lerp(a.spine ?? 0, b.spine ?? 0, t),
+    lift: lerpLift(a.lift, b.lift, t),
     hip: lerpVec(a.hip, b.hip, t),
     torso: lerpAngle(a.torso, b.torso, t),
     head: lerpAngle(a.head, b.head, t),
@@ -161,7 +187,13 @@ export type Keyframe = { pose: Pose; move: number; hold?: number; label?: string
 export type Animation = {
   /** Keyframes loop: after the last one the figure moves back to the first. */
   frames: Keyframe[]
-  /** Scenery drawn behind the figure. */
+  /**
+   * 'side' (default): camera at floor level, floor line at GROUND_Y.
+   * 'top': camera above the mat looking down; the whole frame is the mat,
+   * both sides of the body are drawn alike, lifted parts cast a shadow.
+   */
+  view?: 'side' | 'top'
+  /** Scenery drawn behind the figure (side view). */
   wall?: { x: number }
   viewBox?: readonly [number, number, number, number]
 }

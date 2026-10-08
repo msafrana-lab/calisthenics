@@ -1,6 +1,7 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../lib/db'
 import { exerciseById } from '../exercises/library'
+import { LADDERS } from '../programme/ladders'
 
 export function ProgressScreen() {
   const sessions = useLiveQuery(async () => {
@@ -12,6 +13,8 @@ export function ProgressScreen() {
     const w = await db.health.where('[kind+recorded_at]').between(['weight', ''], ['weight', '￿']).last()
     return w
   }, [])
+
+  const steps = useLiveQuery(async () => Object.fromEntries((await db.ladders.toArray()).map((l) => [l.ladder_id, l.step])), [])
 
   const weekAgo = new Date(Date.now() - 7 * 864e5).toISOString()
   const thisWeek = sessions?.filter((s) => s.started_at >= weekAgo).length ?? 0
@@ -31,6 +34,24 @@ export function ProgressScreen() {
           <div className="text-xs text-[var(--muted)]">{latestWeight ? `kg · ${new Date(latestWeight.recorded_at).toLocaleDateString('en-GB')}` : 'Apple Health link comes later'}</div>
         </div>
       </div>
+
+      <h2 className="pt-2 font-semibold">Current steps</h2>
+      <ul className="card divide-y divide-[var(--border)] text-sm">
+        {Object.values(LADDERS).map((l) => {
+          const step = Math.min(steps?.[l.id] ?? l.start, l.steps.length - 1)
+          return (
+            <li key={l.id} className="flex items-center justify-between gap-3 px-3 py-2">
+              <span className="text-[var(--muted)]">{l.name}</span>
+              <span className="text-right">
+                {exerciseById(l.steps[step].id)?.name ?? l.steps[step].id}{' '}
+                <span className="text-[var(--muted)]">
+                  ({step + 1}/{l.steps.length})
+                </span>
+              </span>
+            </li>
+          )
+        })}
+      </ul>
 
       <h2 className="pt-2 font-semibold">Recent sessions</h2>
       {!sessions?.length && <p className="text-sm text-[var(--muted)]">No finished sessions yet.</p>}

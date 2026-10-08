@@ -41,6 +41,12 @@ export type HealthSample = {
   source: string | null
 }
 
+export type DayLogRow = Synced & {
+  day: string
+  cycling: 'none' | 'easy' | 'hard' | null
+  morning: Partial<Record<'knee' | 'shoulder' | 'wrist', 'same' | 'worse'>> | null
+}
+
 export type Meta = { key: string; value: string }
 
 export class AppDB extends Dexie {
@@ -48,6 +54,7 @@ export class AppDB extends Dexie {
   sets!: EntityTable<SetLog, 'id'>
   ladders!: EntityTable<LadderProgress, 'ladder_id'>
   health!: EntityTable<HealthSample, 'id'>
+  days!: EntityTable<DayLogRow, 'day'>
   meta!: EntityTable<Meta, 'key'>
 
   constructor(name = 'calisthenics') {
@@ -59,6 +66,7 @@ export class AppDB extends Dexie {
       health: 'id, [kind+recorded_at]',
       meta: 'key',
     })
+    this.version(2).stores({ days: 'day, dirty' })
   }
 }
 

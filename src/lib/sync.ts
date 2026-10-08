@@ -10,13 +10,14 @@ export interface Remote {
   changedSince(table: string, since: string | null, limit: number): Promise<Row[]>
 }
 
-type Spec = { local: 'sessions' | 'sets' | 'ladders' | 'health'; remote: string; key: string; conflict: string; push: boolean }
+type Spec = { local: 'sessions' | 'sets' | 'ladders' | 'days' | 'health'; remote: string; key: string; conflict: string; push: boolean }
 
 // Order matters: sessions before the sets that reference them.
 const TABLES: Spec[] = [
   { local: 'sessions', remote: 'workout_sessions', key: 'id', conflict: 'id', push: true },
   { local: 'sets', remote: 'set_logs', key: 'id', conflict: 'id', push: true },
   { local: 'ladders', remote: 'ladder_progress', key: 'ladder_id', conflict: 'user_id,ladder_id', push: true },
+  { local: 'days', remote: 'day_logs', key: 'day', conflict: 'user_id,day', push: true },
   { local: 'health', remote: 'health_samples', key: 'id', conflict: 'id', push: false },
 ]
 

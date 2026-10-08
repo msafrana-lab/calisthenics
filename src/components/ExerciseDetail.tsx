@@ -14,13 +14,15 @@ export function ExerciseHeader({ exercise, onBack }: { exercise: Exercise; onBac
   )
 }
 
-export function ExerciseInfo({ exercise }: { exercise: Exercise }) {
+export function ExerciseInfo({ exercise, hideAnimation = false }: { exercise: Exercise; hideAnimation?: boolean }) {
   const unit = exercise.measure === 'reps' ? 'reps' : 'seconds'
   return (
     <div className="space-y-3">
-      <div className="card overflow-hidden">
-        <FigureView animation={exercise.animation} />
-      </div>
+      {!hideAnimation && (
+        <div className="card overflow-hidden">
+          <FigureView animation={exercise.animation} />
+        </div>
+      )}
       <div className="flex flex-wrap gap-2 text-xs">
         <span className="rounded-full bg-[var(--accent-soft)] px-3 py-1">
           Target {exercise.target[0]}–{exercise.target[1]} {unit}

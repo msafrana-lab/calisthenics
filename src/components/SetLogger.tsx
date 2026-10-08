@@ -3,8 +3,9 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../lib/db'
 import { deleteSet, logSet } from '../lib/sessions'
 import type { Exercise } from '../exercises/types'
+import { Stopwatch } from './Timer'
 
-function Chips({ values, value, onChange, label }: { values: number[]; value: number; onChange: (v: number) => void; label: string }) {
+export function Chips({ values, value, onChange, label }: { values: number[]; value: number; onChange: (v: number) => void; label: string }) {
   return (
     <div role="radiogroup" aria-label={label} className="flex flex-wrap gap-1.5">
       {values.map((v) => (
@@ -22,10 +23,22 @@ function Chips({ values, value, onChange, label }: { values: number[]; value: nu
   )
 }
 
-export function SetLogger({ exercise, sessionId }: { exercise: Exercise; sessionId: string }) {
+export function SetLogger({
+  exercise,
+  sessionId,
+  suggested,
+  rirTarget,
+  onSaved,
+}: {
+  exercise: Exercise
+  sessionId: string
+  suggested?: number
+  rirTarget?: number | null
+  onSaved?: () => void
+}) {
   const isReps = exercise.measure === 'reps'
-  const [amount, setAmount] = useState(exercise.target[0])
-  const [rir, setRir] = useState(3)
+  const [amount, setAmount] = useState(suggested ?? exercise.target[0])
+  const [rir, setRir] = useState(rirTarget ?? 3)
   const [pain, setPain] = useState(0)
 
   const sets = useLiveQuery(
@@ -33,8 +46,8 @@ export function SetLogger({ exercise, sessionId }: { exercise: Exercise; session
     [sessionId, exercise.id],
   )
 
-  const save = () =>
-    logSet({
+  const save = async () => {
+    await logSet({
       session_id: sessionId,
       exercise_id: exercise.id,
       reps: isReps ? amount : null,
@@ -42,10 +55,13 @@ export function SetLogger({ exercise, sessionId }: { exercise: Exercise; session
       rir,
       pain,
     })
+    onSaved?.()
+  }
 
   return (
     <div className="card space-y-4 p-4">
-      <h2 className="font-semibold">Log a set</h2>
+      <h2 className="font-semibold">Log a set{exercise.perSide ? ' (per side)' : ''}</h2>
+      {!isReps && <Stopwatch onStop={setAmount} />}
 
       <div className="flex items-center justify-between">
         <span className="text-sm text-[var(--muted)]">{isReps ? 'Reps' : 'Seconds'}</span>
@@ -61,7 +77,10 @@ export function SetLogger({ exercise, sessionId }: { exercise: Exercise; session
       </div>
 
       <div className="space-y-2">
-        <div className="text-sm text-[var(--muted)]">Reps in reserve — how many more could you have done with good form?</div>
+        <div className="text-sm text-[var(--muted)]">
+          {isReps ? 'Reps in reserve: how many more could you have done with good form?' : 'Seconds in reserve, in units of 5 s: how much longer could you have held?'}
+          {rirTarget != null && <b> Aim for {rirTarget}.</b>}
+        </div>
         <Chips label="Reps in reserve" values={[0, 1, 2, 3, 4, 5]} value={rir} onChange={setRir} />
       </div>
 
