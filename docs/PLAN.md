@@ -29,7 +29,7 @@ Personal training app: daily bodyweight sessions on a mat, cycling (mostly indoo
 1. **Foundation** (done): app shell, offline caching, local database, sign-in, backup sync, animation engine, 4 sample exercises, deployment workflow.
 2. **Exercise library** (done): 63 exercises from the ladders in `EVIDENCE.md` (P, S, E, C, K, H, A, F) plus the mobility pool (M), each with an animation.
 3. **Programme engine** (done): daily rotation `A, B, C, D, A, B, C`, calibration sessions, double progression, pain and regression rules, deloads (rules R1–R10 in `EVIDENCE.md`). Session player with timer and rest periods. Each ride, indoor or outdoor, is classed as easy or hard by the same rule (R1: intervals, threshold work or more than 60 min = hard); outdoor rides tend to be longer, so they will more often count as hard and move the legs session.
-4. **Progress**: per-exercise history and ladder steps, weekly volume per muscle group, weight trend (7-day average), cycling minutes against the 150–300 min/week target.
+4. **Progress** (done): weight 7-day average with daily weigh-ins, weekly cycling minutes against the 150–300 min WHO range, working sets per muscle group this week against the 6–10 target, best-set history per progression with step changes marked; date range 4 weeks / 12 weeks / 1 year; table view for every chart.
 5. **Strava and Withings link** (done): Edge Function `integrations` with OAuth, imports every 3 hours and on app open; imported rides set the day's easy/hard flag unless set by hand; weekly cycling minutes on Progress. Apple Health was dropped as the route because the data originates in Strava and Withings.
 
 ## Known limitations of the animations

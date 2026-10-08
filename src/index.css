@@ -17,6 +17,9 @@
   --mat: #6fae98;
   --mat-top: #d6ebe2;
   --shadow: rgba(23, 32, 28, 0.26);
+  --chart-1: #1f8a6a;
+  --chart-context: #a3aeaa;
+  --chart-band: rgba(31, 138, 106, 0.1);
   color-scheme: light;
 }
 
@@ -38,6 +41,9 @@
     --mat: #3f8f75;
     --mat-top: #1f3a31;
     --shadow: rgba(0, 0, 0, 0.55);
+    --chart-1: #30a07c;
+    --chart-context: #5c6f68;
+    --chart-band: rgba(48, 160, 124, 0.12);
     color-scheme: dark;
   }
 }
