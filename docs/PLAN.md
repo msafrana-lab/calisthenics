@@ -14,6 +14,7 @@ Personal training app: daily bodyweight sessions on a mat, cycling (mostly indoo
 | Pulling exercises | Floor-only substitutes (prone Y/T/W, reverse snow angels, Superman variations) | User's choice. Known limitation: they do not load the lats or biceps like rows or pull-ups. Table rows can be added later. |
 | Nutrition | Weight trend only, no food logging | User's choice. The app states that weight change is driven mainly by diet. |
 | Language | English | User's choice. |
+| Weight and ride data | Direct server-side link to Withings (weigh-ins) and Strava (all rides, indoor and outdoor), instead of Apple Health | Data originates there; no iPhone Shortcut to maintain; richer ride data (indoor flag, heart rate, power, workout tag) to class rides as easy or hard automatically. Setup: `docs/INTEGRATIONS.md`. |
 
 ## User profile used for programming
 
@@ -29,7 +30,7 @@ Personal training app: daily bodyweight sessions on a mat, cycling (mostly indoo
 2. **Exercise library** (done): 63 exercises from the ladders in `EVIDENCE.md` (P, S, E, C, K, H, A, F) plus the mobility pool (M), each with an animation.
 3. **Programme engine** (done): daily rotation `A, B, C, D, A, B, C`, calibration sessions, double progression, pain and regression rules, deloads (rules R1–R10 in `EVIDENCE.md`). Session player with timer and rest periods. Each ride, indoor or outdoor, is classed as easy or hard by the same rule (R1: intervals, threshold work or more than 60 min = hard); outdoor rides tend to be longer, so they will more often count as hard and move the legs session.
 4. **Progress**: per-exercise history and ladder steps, weekly volume per muscle group, weight trend (7-day average), cycling minutes against the 150–300 min/week target.
-5. **Apple Health bridge**: an iOS Shortcut, run daily by a personal automation, reads weight and cycling workouts (indoor and outdoor) from Apple Health and sends them to a Supabase Edge Function protected by a personal token. The exact Shortcut actions available must be checked on the iPhone when this is built (verify).
+5. **Strava and Withings link** (done): Edge Function `integrations` with OAuth, imports every 3 hours and on app open; imported rides set the day's easy/hard flag unless set by hand; weekly cycling minutes on Progress. Apple Health was dropped as the route because the data originates in Strava and Withings.
 
 ## Known limitations of the animations
 
@@ -43,6 +44,7 @@ The figure is a flat 2D drawing, so movements towards or away from the camera ca
 
 ## Open points to check
 
-- Whether the bike computer / Strava writes both indoor and outdoor rides into Apple Health. If not, the Strava API is an alternative source for cycling data.
-- Supabase free projects pause after a period of inactivity (verify the current rule on supabase.com). The daily Apple Health import should keep the project active.
+- First real Strava and Withings connections: the OAuth and data formats follow the providers' documentation but could not be tested from the build environment.
+- Supabase security advisor: `pg_net` is installed in the `public` schema (moving it needs a drop and re-create), and leaked-password protection is off (an Auth setting in the dashboard; may require a paid plan, verify).
+- Supabase free projects pause after a period of inactivity (verify the current rule on supabase.com). Whether the scheduled import counts as activity is not confirmed.
 - After creating your account, turn off new sign-ups in Supabase (Authentication settings) so no one else can register.

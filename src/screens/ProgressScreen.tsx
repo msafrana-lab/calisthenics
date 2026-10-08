@@ -14,6 +14,11 @@ export function ProgressScreen() {
     return w
   }, [])
 
+  const rideMinutes = useLiveQuery(async () => {
+    const since = new Date(Date.now() - 7 * 864e5).toISOString()
+    const rides = await db.health.where('[kind+recorded_at]').between(['cycling', since], ['cycling', '\uffff']).toArray()
+    return rides.reduce((sum, r) => sum + r.value, 0)
+  }, [])
   const steps = useLiveQuery(async () => Object.fromEntries((await db.ladders.toArray()).map((l) => [l.ladder_id, l.step])), [])
 
   const weekAgo = new Date(Date.now() - 7 * 864e5).toISOString()
@@ -31,7 +36,18 @@ export function ProgressScreen() {
         <div className="card p-4">
           <div className="text-xs text-[var(--muted)]">Latest weight</div>
           <div className="text-3xl font-bold tabular-nums">{latestWeight ? `${latestWeight.value.toFixed(1)}` : '—'}</div>
-          <div className="text-xs text-[var(--muted)]">{latestWeight ? `kg · ${new Date(latestWeight.recorded_at).toLocaleDateString('en-GB')}` : 'Apple Health link comes later'}</div>
+          <div className="text-xs text-[var(--muted)]">{latestWeight ? `kg · ${new Date(latestWeight.recorded_at).toLocaleDateString('en-GB')}` : 'Connect Withings in Settings'}</div>
+        </div>
+      </div>
+
+      <div className="card p-4">
+        <div className="text-xs text-[var(--muted)]">Cycling, last 7 days</div>
+        <div className="flex items-baseline gap-2">
+          <span className="text-3xl font-bold tabular-nums">{rideMinutes ?? 0}</span>
+          <span className="text-sm text-[var(--muted)]">min · WHO target 150–300 min of moderate activity per week</span>
+        </div>
+        <div className="mt-2 h-2 overflow-hidden rounded-full bg-[var(--accent-soft)]">
+          <div className="h-full bg-[var(--accent)]" style={{ width: `${Math.min(100, ((rideMinutes ?? 0) / 300) * 100)}%` }} />
         </div>
       </div>
 

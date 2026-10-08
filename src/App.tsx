@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useAccount } from './lib/useAccount'
+import { takeRedirectResult } from './lib/integrations'
 import { TodayScreen } from './screens/TodayScreen'
 import { LibraryScreen } from './screens/LibraryScreen'
 import { ProgressScreen } from './screens/ProgressScreen'
@@ -14,8 +15,11 @@ const TABS = [
 
 type Tab = (typeof TABS)[number]['id']
 
+// Result of a Strava/Withings connection, read once when the app opens after the redirect.
+const redirectResult = takeRedirectResult()
+
 export function App() {
-  const [tab, setTab] = useState<Tab>('today')
+  const [tab, setTab] = useState<Tab>(redirectResult ? 'settings' : 'today')
   const account = useAccount()
 
   return (
@@ -25,7 +29,7 @@ export function App() {
           {tab === 'today' && <TodayScreen account={account} />}
           {tab === 'library' && <LibraryScreen />}
           {tab === 'progress' && <ProgressScreen />}
-          {tab === 'settings' && <SettingsScreen account={account} />}
+          {tab === 'settings' && <SettingsScreen account={account} redirectResult={redirectResult} />}
         </div>
       </main>
       <nav className="border-t border-[var(--border)] bg-[var(--surface)] pb-[env(safe-area-inset-bottom)]">

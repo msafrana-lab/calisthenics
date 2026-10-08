@@ -7,6 +7,7 @@ import { SessionPlayer } from '../components/SessionPlayer'
 import { LADDERS, SESSION_NAMES, type SessionType } from '../programme/ladders'
 import { localDay, morningCheckDue, plan as makePlan, type Cycling, type LadderUpdate, type Morning, type PlanItem } from '../programme/engine'
 import { activeSession, startSession } from '../lib/sessions'
+import { db } from '../lib/db'
 import { saveMorning, setCycling, today, useEngineInput } from '../lib/programme'
 import type { Region } from '../exercises/types'
 import type { Account } from '../lib/useAccount'
@@ -65,6 +66,13 @@ function CyclingToday({ value }: { value: Cycling | null }) {
     ['easy', 'Easy ride'],
     ['hard', 'Hard ride'],
   ]
+  const day = today()
+  const manual = useLiveQuery(async () => (await db.days.get(day))?.cycling ?? null, [day])
+  const rides = useLiveQuery(
+    async () =>
+      (await db.health.where('[kind+recorded_at]').between(['cycling', ''], ['cycling', '\uffff']).toArray()).filter((r) => localDay(r.recorded_at) === day),
+    [day],
+  )
   return (
     <div className="card space-y-2 p-4">
       <h2 className="font-semibold">Cycling today</h2>
@@ -72,14 +80,25 @@ function CyclingToday({ value }: { value: Cycling | null }) {
         {options.map(([v, label]) => (
           <button
             key={v}
-            onClick={() => setCycling(today(), v)}
+            onClick={() => setCycling(day, manual === v ? null : v)}
             className={`h-10 flex-1 rounded-xl text-sm font-semibold ${value === v ? 'bg-[var(--accent)] text-[var(--accent-text)]' : 'bg-[var(--accent-soft)]'}`}
           >
             {label}
           </button>
         ))}
       </div>
-      <p className="text-xs text-[var(--muted)]">Hard = intervals, threshold work or longer than 60 min, indoors or outdoors.</p>
+      {!!rides?.length && (
+        <p className="text-sm">
+          From Strava:{' '}
+          {rides
+            .map((r) => `${r.value} min ${r.details?.indoor ? 'indoor' : 'outdoor'} ride (${r.details?.intensity ?? 'easy'})`)
+            .join(', ')}
+          {manual ? ' · your own setting above is used instead.' : '.'}
+        </p>
+      )}
+      <p className="text-xs text-[var(--muted)]">
+        Hard = intervals, threshold work or longer than 60 min, indoors or outdoors. Tap a selected option again to clear it.
+      </p>
     </div>
   )
 }

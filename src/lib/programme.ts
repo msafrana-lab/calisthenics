@@ -1,19 +1,29 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { exerciseById } from '../exercises/library'
 import { evaluate, localDay, morningUpdates, type EngineInput, type LadderUpdate, type Morning } from '../programme/engine'
+import { withImportedRides } from '../programme/rides'
 import { db, now, type DayLogRow } from './db'
 import { finishSession } from './sessions'
 
 export const today = () => localDay(new Date())
 
 export async function loadEngineInput(day = today()): Promise<EngineInput> {
-  const [sessions, sets, ladders, days] = await Promise.all([db.sessions.toArray(), db.sets.toArray(), db.ladders.toArray(), db.days.toArray()])
+  const [sessions, sets, ladders, days, rides] = await Promise.all([
+    db.sessions.toArray(),
+    db.sets.toArray(),
+    db.ladders.toArray(),
+    db.days.toArray(),
+    db.health.where('[kind+recorded_at]').between(['cycling', ''], ['cycling', '\uffff']).toArray(),
+  ])
   return {
     today: day,
     sessions,
     sets,
     steps: Object.fromEntries(ladders.map((l) => [l.ladder_id, l.step])),
-    days: days.map((d) => ({ day: d.day, cycling: d.cycling, morning: d.morning })),
+    days: withImportedRides(
+      days.map((d) => ({ day: d.day, cycling: d.cycling, morning: d.morning })),
+      rides,
+    ),
     catalogue: exerciseById,
   }
 }
