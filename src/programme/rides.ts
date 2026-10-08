@@ -2,7 +2,7 @@ import { localDay, type Cycling, type DayLog } from './engine'
 
 export type Ride = { recorded_at: string; duration_s: number | null; details?: { intensity?: 'easy' | 'hard' } | null }
 
-/** Hardest imported ride per local day ('hard' beats 'easy'). */
+/** Hardest imported ride or leg-loading activity per local day ('hard' beats 'easy'). */
 export function rideIntensityByDay(rides: Ride[]): Map<string, Cycling> {
   const out = new Map<string, Cycling>()
   for (const r of rides) {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { authorizeUrl, classifyRide, parseTokenResponse, signState, stravaRide, tokenRequest, verifyState, withingsWeights } from './providers'
+import { authorizeUrl, classifyActivity, classifyRide, parseTokenResponse, signState, stravaActivity, tokenRequest, verifyState, withingsWeights } from './providers'
 
 describe('OAuth', () => {
   it('builds authorisation URLs with the callback and state', () => {
@@ -50,11 +50,25 @@ describe('OAuth', () => {
 describe('rides', () => {
   const base = { id: 99, start_date: '2026-10-07T17:30:00Z', moving_time: 2700, trainer: true, sport_type: 'VirtualRide', kilojoules: 540, average_heartrate: 141 }
 
-  it('converts a Strava ride and ignores other sports', () => {
-    const s = stravaRide(base)!
+  it('converts a Strava ride', () => {
+    const s = stravaActivity(base)!
     expect(s).toMatchObject({ kind: 'cycling', value: 45, unit: 'min', duration_s: 2700, energy_kcal: 540, external_id: '99', source: 'Strava' })
-    expect(s.details).toMatchObject({ indoor: true, average_heartrate: 141, intensity: 'easy' })
-    expect(stravaRide({ ...base, sport_type: 'Run' })).toBeNull()
+    expect(s.details).toMatchObject({ indoor: true, average_heartrate: 141, intensity: 'easy', leg_load: true })
+  })
+
+  it('skips accidental recordings and strength sessions', () => {
+    expect(stravaActivity({ ...base, sport_type: 'Ride', moving_time: 0 })).toBeNull() // 22-second "Night Ride"
+    expect(stravaActivity({ ...base, sport_type: 'Ride', moving_time: 299 })).toBeNull()
+    expect(stravaActivity({ ...base, sport_type: 'WeightTraining' })).toBeNull()
+  })
+
+  it('imports other sports as activities, flagging leg-loading ones', () => {
+    const hike = stravaActivity({ id: 1, sport_type: 'Hike', start_date: '2026-08-02T07:33:17Z', moving_time: 15457, calories: 1951 })!
+    expect(hike).toMatchObject({ kind: 'activity', value: 258, energy_kcal: 1951 })
+    expect(hike.details).toMatchObject({ leg_load: true, intensity: 'hard' })
+    const workout = stravaActivity({ id: 2, sport_type: 'Workout', start_date: '2026-09-03T15:51:48Z', moving_time: 3010 })!
+    expect(workout.details).toMatchObject({ leg_load: false, intensity: 'easy' })
+    expect(stravaActivity({ id: 3, sport_type: 'Surfing', start_date: '2026-08-13T12:53:55Z', moving_time: 4001 })!.details).toMatchObject({ leg_load: false, intensity: 'easy' })
   })
 
   it('classes rides over an hour, races and workouts as hard (R1)', () => {
@@ -62,7 +76,10 @@ describe('rides', () => {
     expect(classifyRide(1800, 12)).toBe('hard')
     expect(classifyRide(1800, 11)).toBe('hard')
     expect(classifyRide(3600, 10)).toBe('easy')
-    expect(stravaRide({ ...base, sport_type: 'Ride', trainer: false, moving_time: 5400 })!.details).toMatchObject({ indoor: false, intensity: 'hard' })
+    expect(stravaActivity({ ...base, sport_type: 'Ride', trainer: false, moving_time: 5400 })!.details).toMatchObject({ indoor: false, intensity: 'hard' })
+    expect(classifyActivity('Run', 1800, 3)).toEqual({ legLoad: true, intensity: 'hard' })
+    expect(classifyActivity('Run', 1800, 0)).toEqual({ legLoad: true, intensity: 'easy' })
+    expect(classifyActivity('Swim', 5000, null)).toEqual({ legLoad: false, intensity: 'easy' })
   })
 })
 

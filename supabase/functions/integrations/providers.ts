@@ -8,7 +8,7 @@ export const PROVIDERS: Provider[] = ['strava', 'withings']
 export type Tokens = { access_token: string; refresh_token: string; expires_at: string; external_user_id: string | null }
 
 export type Sample = {
-  kind: 'weight' | 'cycling'
+  kind: 'weight' | 'cycling' | 'activity'
   recorded_at: string
   value: number
   unit: string
@@ -96,12 +96,24 @@ export function parseTokenResponse(provider: Provider, json: Json, now: Date): T
   }
 }
 
-// ---------------------------------------------------------------- rides
+// ---------------------------------------------------------------- rides and other activities
 
 const RIDE_TYPES = new Set(['Ride', 'VirtualRide', 'EBikeRide', 'GravelRide', 'MountainBikeRide', 'EMountainBikeRide'])
 
-/** Strava workout_type for rides: 11 = race, 12 = workout (intervals, structured training). */
-const HARD_WORKOUT_TYPES = new Set([11, 12])
+/** Sports that load the legs enough to matter for scheduling the legs session. */
+const LEG_LOADING_TYPES = new Set([
+  'Run', 'TrailRun', 'VirtualRun', 'Hike', 'InlineSkate', 'RollerSki', 'NordicSki', 'AlpineSki', 'BackcountrySki', 'Snowshoe', 'IceSkate', 'StairStepper',
+])
+
+/** Strength and flexibility sessions: not aerobic activity, not imported. */
+const NOT_CARDIO = new Set(['WeightTraining', 'Yoga', 'Pilates'])
+
+/** Recordings shorter than this are treated as accidental and skipped. */
+export const MIN_ACTIVITY_SECONDS = 300
+
+/** Strava workout_type: rides 11 = race, 12 = workout; runs 1 = race, 2 = long run, 3 = workout. */
+const HARD_RIDE_TYPES = new Set([11, 12])
+const HARD_RUN_TYPES = new Set([1, 2, 3])
 
 /**
  * Programme rule R1: a ride counts as hard if it is longer than 60 minutes or
@@ -109,39 +121,70 @@ const HARD_WORKOUT_TYPES = new Set([11, 12])
  * hour read as easy; the day's setting in the app can override this.
  */
 export function classifyRide(movingSeconds: number, workoutType: number | null | undefined): 'easy' | 'hard' {
-  return movingSeconds > 3600 || (workoutType != null && HARD_WORKOUT_TYPES.has(workoutType)) ? 'hard' : 'easy'
+  return movingSeconds > 3600 || (workoutType != null && HARD_RIDE_TYPES.has(workoutType)) ? 'hard' : 'easy'
 }
 
-/** A Strava activity summary as a cycling sample, or null for other sports. */
-export function stravaRide(a: Json): Sample | null {
+/**
+ * Leg-loading sports follow the same rule as rides (over 60 minutes, or tagged
+ * race/long run/workout). Other sports never move the legs session.
+ */
+export function classifyActivity(sport: string, movingSeconds: number, workoutType: number | null | undefined): { legLoad: boolean; intensity: 'easy' | 'hard' } {
+  const legLoad = LEG_LOADING_TYPES.has(sport)
+  const tagged = workoutType != null && (HARD_RUN_TYPES.has(workoutType) || HARD_RIDE_TYPES.has(workoutType))
+  return { legLoad, intensity: legLoad && (movingSeconds > 3600 || tagged) ? 'hard' : 'easy' }
+}
+
+/**
+ * A Strava activity summary as a sample: rides as 'cycling', other aerobic
+ * sports as 'activity'. Returns null for strength/flexibility sessions and for
+ * recordings under 5 minutes.
+ */
+export function stravaActivity(a: Json): Sample | null {
   const sport = String(a.sport_type ?? a.type ?? '')
-  if (!RIDE_TYPES.has(sport)) return null
   const moving = Number(a.moving_time ?? 0)
+  if (moving < MIN_ACTIVITY_SECONDS || NOT_CARDIO.has(sport)) return null
   const workoutType = a.workout_type == null ? null : Number(a.workout_type)
   const num = (v: unknown) => (typeof v === 'number' ? v : null)
-  return {
-    kind: 'cycling',
+  const isRide = RIDE_TYPES.has(sport)
+  const common = {
     recorded_at: new Date(String(a.start_date)).toISOString(),
     value: Math.round(moving / 60),
     unit: 'min',
     duration_s: moving,
-    // For cycling, kilojoules of work are commonly used as an estimate of kcal burnt (verify).
-    energy_kcal: num(a.kilojoules),
     source: 'Strava',
     external_id: String(a.id),
-    details: {
-      name: a.name ?? null,
-      sport_type: sport,
-      indoor: a.trainer === true || sport === 'VirtualRide',
-      distance_m: num(a.distance),
-      average_heartrate: num(a.average_heartrate),
-      max_heartrate: num(a.max_heartrate),
-      average_watts: num(a.average_watts),
-      weighted_average_watts: num(a.weighted_average_watts),
-      suffer_score: num(a.suffer_score),
-      workout_type: workoutType,
-      intensity: classifyRide(moving, workoutType),
-    },
+  }
+  const metrics = {
+    name: a.name ?? null,
+    sport_type: sport,
+    distance_m: num(a.distance),
+    average_heartrate: num(a.average_heartrate),
+    max_heartrate: num(a.max_heartrate),
+    suffer_score: num(a.suffer_score),
+    workout_type: workoutType,
+  }
+  if (isRide) {
+    return {
+      ...common,
+      kind: 'cycling',
+      // For cycling, kilojoules of work are commonly used as an estimate of kcal burnt (verify).
+      energy_kcal: num(a.kilojoules),
+      details: {
+        ...metrics,
+        indoor: a.trainer === true || sport === 'VirtualRide',
+        average_watts: num(a.average_watts),
+        weighted_average_watts: num(a.weighted_average_watts),
+        leg_load: true,
+        intensity: classifyRide(moving, workoutType),
+      },
+    }
+  }
+  const { legLoad, intensity } = classifyActivity(sport, moving, workoutType)
+  return {
+    ...common,
+    kind: 'activity',
+    energy_kcal: num(a.calories),
+    details: { ...metrics, indoor: a.trainer === true, leg_load: legLoad, intensity },
   }
 }
 

@@ -1,6 +1,6 @@
 # Strava and Withings Setup
 
-The app imports rides from Strava and weigh-ins from Withings through the Supabase Edge Function `integrations` (`supabase/functions/integrations/`). The import runs every 3 hours, and again whenever the app opens (at most every 30 minutes).
+The app imports rides and other sports from Strava and weigh-ins from Withings through the Supabase Edge Function `integrations` (`supabase/functions/integrations/`). The import runs every 3 hours, and again whenever the app opens (at most every 30 minutes).
 
 Each service needs a free "developer application" that identifies this app. You create it once; the app then asks you to approve access, like any "Connect with Strava" button.
 
@@ -49,13 +49,17 @@ The secrets stay on the server. They are never sent to the app or stored in this
    - The first import covers the last 90 days of rides and the last 12 months of weigh-ins.
    - If you started from the home-screen app, the return may open in Safari. That is fine: the connection is stored on the server. Reopen the home-screen app and the status shows there.
 
-## How rides are classed
+## What is imported from Strava
 
-Rule R1 in `EVIDENCE.md` counts a ride as **hard** if it lasts longer than 60 minutes or is tagged in Strava as a race or a workout. Any other ride counts as **easy**.
+| Strava type | Stored as | Counts towards weekly cardio minutes | Can move the legs session |
+|---|---|---|---|
+| Rides (road, indoor/virtual, gravel, mountain, e-bike) | cycling | yes | yes |
+| Leg-heavy sports (run, trail run, hike, inline skate, skiing, snowshoe, ice skate, stair stepper) | activity | yes | yes |
+| Other sports (workout, swim, surf, walk, rowing...) | activity | yes | no |
+| Weight training, yoga, pilates | not imported | no | no |
+| Anything shorter than 5 minutes (accidental recordings) | not imported | no | no |
 
-- Intervals under an hour that are not tagged as a workout count as easy. Tag them as a workout in Strava, or tap "Hard ride" in the app.
-- A setting you choose in the app always wins over the imported value.
-- Indoor rides (Zwift or a trainer) and outdoor rides are treated the same way.
+**Easy or hard.** Rule R1 in `EVIDENCE.md` counts a ride or leg-heavy sport as **hard** when it lasts more than 60 minutes, or when it is tagged in Strava as a race or workout (for runs, also as a long run). Anything else counts as **easy**. Intervals under an hour that are not tagged as a workout therefore count as easy: tag them in Strava, or tap "Hard ride" in the app. A setting you choose in the app always wins over the imported value.
 
 ## Troubleshooting
 

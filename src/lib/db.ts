@@ -32,7 +32,7 @@ export type LadderProgress = Synced & { ladder_id: string; step: number }
 
 export type HealthSample = {
   id: string
-  kind: 'weight' | 'cycling'
+  kind: 'weight' | 'cycling' | 'activity'
   recorded_at: string
   value: number
   unit: string
@@ -40,8 +40,8 @@ export type HealthSample = {
   energy_kcal: number | null
   source: string | null
   external_id?: string | null
-  /** Rides: indoor flag, heart rate, power, Strava workout type and the derived intensity. */
-  details?: { intensity?: 'easy' | 'hard'; indoor?: boolean; name?: string | null; [k: string]: unknown } | null
+  /** Strava details: sport type, indoor flag, heart rate, power, whether it loads the legs, derived intensity. */
+  details?: { intensity?: 'easy' | 'hard'; indoor?: boolean; leg_load?: boolean; sport_type?: string; name?: string | null; [k: string]: unknown } | null
 }
 
 export type DayLogRow = Synced & {

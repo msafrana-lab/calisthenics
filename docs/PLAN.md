@@ -14,7 +14,7 @@ Personal training app: daily bodyweight sessions on a mat, cycling (mostly indoo
 | Pulling exercises | Floor-only substitutes (prone Y/T/W, reverse snow angels, Superman variations) | User's choice. Known limitation: they do not load the lats or biceps like rows or pull-ups. Table rows can be added later. |
 | Nutrition | Weight trend only, no food logging | User's choice. The app states that weight change is driven mainly by diet. |
 | Language | English | User's choice. |
-| Weight and ride data | Direct server-side link to Withings (weigh-ins) and Strava (all rides, indoor and outdoor), instead of Apple Health | Data originates there; no iPhone Shortcut to maintain; richer ride data (indoor flag, heart rate, power, workout tag) to class rides as easy or hard automatically. Setup: `docs/INTEGRATIONS.md`. |
+| Weight and activity data | Direct server-side link to Withings (weigh-ins) and Strava (rides and other sports; leg-heavy sports also move the legs session), instead of Apple Health | Data originates there; no iPhone Shortcut to maintain; richer ride data (indoor flag, heart rate, power, workout tag) to class rides as easy or hard automatically. Setup: `docs/INTEGRATIONS.md`. |
 
 ## User profile used for programming
 
