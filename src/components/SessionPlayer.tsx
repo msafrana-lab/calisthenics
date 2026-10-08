@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
+import { ChevronDown, ChevronLeft, ChevronRight, ChevronsDown, ChevronsUp, Info, SkipForward, X } from 'lucide-react'
 import { FigureView } from '../animation/FigureView'
 import { exerciseById } from '../exercises/library'
 import { LADDERS, SESSION_NAMES, type SessionType } from '../programme/ladders'
@@ -7,19 +8,12 @@ import type { LadderUpdate, Plan, PlanItem } from '../programme/engine'
 import { db, type WorkoutSession } from '../lib/db'
 import { discardSession } from '../lib/sessions'
 import { finishProgrammeSession, setLadderStep } from '../lib/programme'
-import { ExerciseInfo } from './ExerciseDetail'
-import { Chips, SetLogger } from './SetLogger'
+import { Card, Eyebrow, Segmented, Tag } from '../ui'
+import { ExerciseInfo, targetText } from './ExerciseDetail'
+import { LoggedSets, SetLogger } from './SetLogger'
 import { HoldTimer, RestTimer } from './Timer'
 
-const PHASE_LABEL = { warmup: 'Warm-up', main: 'Main', cooldown: 'Cool-down' } as const
-
-function describe(item: PlanItem): string {
-  const ex = exerciseById(item.exerciseId)
-  const unit = item.measure === 'reps' ? 'reps' : 's'
-  const side = ex?.perSide ? ' each side' : ''
-  if (item.phase !== 'main') return `${item.sets > 1 ? `${item.sets} × ` : ''}${item.target[0]}${item.target[1] !== item.target[0] ? `–${item.target[1]}` : ''} ${unit}${side}`
-  return `${item.sets} sets × ${item.target[0]}–${item.target[1]} ${unit}${side}`
-}
+const PHASE_LABEL = { warmup: 'Warm-up', main: 'Workout', cooldown: 'Cool-down · optional' } as const
 
 /** Index of the item to resume at, remembered per session on this device. */
 function useStoredIndex(sessionId: string) {
@@ -47,18 +41,31 @@ function VariationSwitch({ item }: { item: PlanItem }) {
   const step = ladder.steps.findIndex((s) => s.id === item.exerciseId)
   const easier = step > 0 ? exerciseById(ladder.steps[step - 1].id) : undefined
   const harder = step < ladder.steps.length - 1 ? exerciseById(ladder.steps[step + 1].id) : undefined
+  if (!easier && !harder) return null
   return (
-    <div className="flex flex-wrap gap-2 text-sm">
-      {easier && (
-        <button className="btn btn-secondary min-h-9 text-sm" onClick={() => setLadderStep(ladder.id, step - 1)}>
-          Easier: {easier.name}
-        </button>
-      )}
-      {harder && (
-        <button className="btn btn-secondary min-h-9 text-sm" onClick={() => setLadderStep(ladder.id, step + 1)}>
-          Harder: {harder.name}
-        </button>
-      )}
+    <div className="grid grid-cols-2 gap-2">
+      <button
+        disabled={!easier}
+        className="flex items-center gap-2 rounded-2xl bg-[var(--surface)] px-3 py-2.5 text-left text-[13px] ring-1 ring-[var(--border)] disabled:opacity-40"
+        onClick={() => setLadderStep(ladder.id, step - 1)}
+      >
+        <ChevronsDown size={17} className="shrink-0 text-[var(--accent)]" />
+        <span className="min-w-0">
+          <span className="block text-[11px] text-[var(--muted)]">Easier</span>
+          <span className="block truncate font-medium">{easier?.name ?? '—'}</span>
+        </span>
+      </button>
+      <button
+        disabled={!harder}
+        className="flex items-center gap-2 rounded-2xl bg-[var(--surface)] px-3 py-2.5 text-left text-[13px] ring-1 ring-[var(--border)] disabled:opacity-40"
+        onClick={() => setLadderStep(ladder.id, step + 1)}
+      >
+        <ChevronsUp size={17} className="shrink-0 text-[var(--accent)]" />
+        <span className="min-w-0">
+          <span className="block text-[11px] text-[var(--muted)]">Harder</span>
+          <span className="block truncate font-medium">{harder?.name ?? '—'}</span>
+        </span>
+      </button>
     </div>
   )
 }
@@ -67,10 +74,24 @@ function Finish({ session, onDone }: { session: WorkoutSession; onDone: (updates
   const [effort, setEffort] = useState<number | null>(null)
   const [busy, setBusy] = useState(false)
   return (
-    <div className="card space-y-3 p-4">
-      <h2 className="font-semibold">Finish the session</h2>
-      <p className="text-sm text-[var(--muted)]">Overall, how hard was it? (1 = very easy, 10 = maximal effort) Optional.</p>
-      <Chips label="Session effort" values={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]} value={effort ?? -1} onChange={setEffort} />
+    <Card className="space-y-5 p-5">
+      <div>
+        <h2 className="text-[22px] font-semibold">Nice work</h2>
+        <p className="mt-1 text-sm text-[var(--muted)]">How hard was the session overall? Optional.</p>
+      </div>
+      <div className="space-y-1.5">
+        <Segmented
+          size="sm"
+          label="Session effort"
+          value={effort}
+          onChange={setEffort}
+          options={[2, 4, 6, 8, 10].map((v) => ({ value: v, label: String(v) }))}
+        />
+        <div className="flex justify-between px-1 text-[11px] text-[var(--muted)]">
+          <span>Very easy</span>
+          <span>Maximal</span>
+        </div>
+      </div>
       <button
         className="btn btn-primary w-full"
         disabled={busy}
@@ -81,7 +102,7 @@ function Finish({ session, onDone }: { session: WorkoutSession; onDone: (updates
       >
         Save and finish
       </button>
-    </div>
+    </Card>
   )
 }
 
@@ -93,6 +114,7 @@ export function SessionPlayer({ session, plan, onFinished }: { session: WorkoutS
   const atEnd = index >= items.length
   const item = items[Math.min(index, items.length - 1)]
   const exercise = item && exerciseById(item.exerciseId)
+  const next = items[index + 1] && exerciseById(items[index + 1].exerciseId)
 
   const counts = useLiveQuery(async () => {
     const sets = await db.sets.where('session_id').equals(session.id).filter((s) => !s.deleted).toArray()
@@ -103,7 +125,7 @@ export function SessionPlayer({ session, plan, onFinished }: { session: WorkoutS
     setResting(false)
     setShowInfo(false)
     setIndex(Math.max(0, Math.min(items.length, i)))
-    window.scrollTo({ top: 0 })
+    document.getElementById('player-scroll')?.scrollTo({ top: 0 })
   }
   const endRest = useCallback(() => setResting(false), [])
 
@@ -111,91 +133,133 @@ export function SessionPlayer({ session, plan, onFinished }: { session: WorkoutS
   const setsComplete = item?.phase === 'main' && done >= item.sets
 
   return (
-    <div className="space-y-4">
-      <header className="flex items-start justify-between gap-2">
-        <div>
-          <p className="text-sm text-[var(--muted)]">
-            {SESSION_NAMES[session.day_type as SessionType] ?? 'Session'} · {Math.min(index + 1, items.length)} of {items.length}
-          </p>
-          <h1 className="text-xl font-bold">{atEnd ? 'All done' : exercise?.name}</h1>
-        </div>
-        <button className="btn btn-secondary min-h-9 text-sm" onClick={() => confirm('Discard this session and everything logged in it?') && discardSession(session.id)}>
-          Discard
-        </button>
-      </header>
-
-      <div className="h-1.5 overflow-hidden rounded-full bg-[var(--accent-soft)]">
-        <div className="h-full bg-[var(--accent)] transition-all" style={{ width: `${(Math.min(index, items.length) / items.length) * 100}%` }} />
-      </div>
-
-      {atEnd || !item || !exercise ? (
-        <Finish session={session} onDone={onFinished} />
-      ) : (
-        <>
-          <div className="card overflow-hidden">
-            <FigureView animation={exercise.animation} />
-          </div>
-
-          <div className="space-y-1">
-            <div className="text-xs font-semibold tracking-wide text-[var(--accent)] uppercase">{PHASE_LABEL[item.phase]}</div>
-            <div className="font-semibold">
-              {describe(item)}
-              {item.rir !== null && <span className="font-normal text-[var(--muted)]"> · stop with {item.rir} in reserve</span>}
-            </div>
-            {item.notes.map((n) => (
-              <p key={n} className="text-sm text-[var(--muted)]">
-                {n}
-              </p>
-            ))}
-          </div>
-
-          <button className="text-sm font-medium text-[var(--accent)] underline" onClick={() => setShowInfo((s) => !s)}>
-            {showInfo ? 'Hide instructions' : 'How to do it'}
+    <div id="player-scroll" className="fixed inset-0 z-40 overflow-y-auto bg-[var(--bg)]">
+      <div className="mx-auto max-w-xl px-4 pt-[max(0.75rem,env(safe-area-inset-top))] pb-[max(1.5rem,env(safe-area-inset-bottom))]">
+        <header className="flex items-center justify-between gap-2 py-2">
+          <button
+            aria-label="Discard session"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--surface)] ring-1 ring-[var(--border)]"
+            onClick={() => confirm('Discard this session and everything logged in it?') && discardSession(session.id)}
+          >
+            <X size={20} />
           </button>
-          {showInfo && <ExerciseInfo exercise={exercise} hideAnimation />}
+          <div className="text-center">
+            <div className="text-[13px] font-semibold">{SESSION_NAMES[session.day_type as SessionType] ?? 'Session'}</div>
+            <div className="text-[11px] text-[var(--muted)]">
+              {Math.min(index + 1, items.length)} of {items.length}
+            </div>
+          </div>
+          <button className="h-10 rounded-full px-3 text-[13px] font-semibold text-[var(--accent)]" onClick={() => go(items.length)}>
+            Finish
+          </button>
+        </header>
 
-          {item.phase === 'main' ? (
-            <>
-              <VariationSwitch item={item} />
-              <p className="text-sm">
-                Sets done: <b>{done}</b> of {item.sets}
-              </p>
-              {resting && !setsComplete ? (
-                <RestTimer seconds={item.restSeconds} onDone={endRest} />
-              ) : setsComplete ? (
-                <button className="btn btn-primary w-full" onClick={() => go(index + 1)}>
-                  Next exercise
-                </button>
-              ) : (
-                <SetLogger
-                  key={`${item.exerciseId}-${done}`}
-                  exercise={exercise}
-                  sessionId={session.id}
-                  suggested={item.suggested}
-                  rirTarget={item.rir}
-                  onSaved={() => item.restSeconds > 0 && setResting(true)}
-                />
+        <div className="mt-1 flex gap-1" aria-hidden>
+          {items.map((it, i) => (
+            <div
+              key={`${it.phase}-${it.exerciseId}`}
+              className={`h-1 flex-1 rounded-full ${i < index ? 'bg-[var(--accent)]' : i === index ? 'bg-[var(--accent)]/45' : 'bg-[var(--border)]'}`}
+            />
+          ))}
+        </div>
+
+        {atEnd || !item || !exercise ? (
+          <div className="pt-6">
+            <Finish session={session} onDone={onFinished} />
+          </div>
+        ) : (
+          <div className="space-y-5 pt-4">
+            <div className="overflow-hidden rounded-[26px] bg-[var(--stage)] ring-1 ring-[var(--border)]">
+              <FigureView animation={exercise.animation} />
+            </div>
+
+            <div>
+              <Eyebrow className="text-[var(--accent)]">{PHASE_LABEL[item.phase]}</Eyebrow>
+              <h1 className="mt-1 text-[26px] leading-tight font-semibold">{exercise.name}</h1>
+              <div className="mt-2 flex flex-wrap gap-1.5">
+                {item.phase === 'main' ? (
+                  <>
+                    <Tag tone="accent">
+                      Set {Math.min(done + 1, item.sets)} of {item.sets}
+                    </Tag>
+                    <Tag>{targetText(exercise)}</Tag>
+                    {item.rir !== null && <Tag>Stop {item.rir} short of failure</Tag>}
+                  </>
+                ) : (
+                  <Tag>
+                    {item.sets > 1 ? `${item.sets} × ` : ''}
+                    {targetText(exercise)}
+                  </Tag>
+                )}
+              </div>
+              {item.notes.length > 0 && (
+                <div className="mt-3 space-y-1.5">
+                  {item.notes.map((n) => (
+                    <div key={n} className="flex gap-2 text-[13px] text-[var(--muted)]">
+                      <Info size={15} className="mt-0.5 shrink-0" /> {n}
+                    </div>
+                  ))}
+                </div>
               )}
-            </>
-          ) : (
-            <div className="card space-y-3 p-4">
-              {item.measure === 'seconds' && <HoldTimer key={item.exerciseId} seconds={item.target[0]} />}
-              <button className="btn btn-primary w-full" onClick={() => go(index + 1)}>
-                Done, next
+            </div>
+
+            <button className="flex w-full items-center justify-between rounded-2xl bg-[var(--surface)] px-4 py-3 text-[15px] font-medium ring-1 ring-[var(--border)]" onClick={() => setShowInfo((s) => !s)}>
+              How to do it
+              <ChevronDown size={18} className={`text-[var(--muted)] transition-transform ${showInfo ? 'rotate-180' : ''}`} />
+            </button>
+            {showInfo && <ExerciseInfo exercise={exercise} />}
+
+            {item.phase === 'main' ? (
+              <>
+                <VariationSwitch item={item} />
+                <LoggedSets exercise={exercise} sessionId={session.id} />
+                <Card className="p-5">
+                  {resting && !setsComplete ? (
+                    <RestTimer seconds={item.restSeconds} onDone={endRest} />
+                  ) : setsComplete ? (
+                    <div className="space-y-3 text-center">
+                      <p className="text-[15px] font-medium">All {item.sets} sets done</p>
+                      <button className="btn btn-primary w-full" onClick={() => go(index + 1)}>
+                        {next ? `Next: ${next.name}` : 'Finish'} <ChevronRight size={18} />
+                      </button>
+                    </div>
+                  ) : (
+                    <SetLogger
+                      key={`${item.exerciseId}-${done}`}
+                      exercise={exercise}
+                      sessionId={session.id}
+                      suggested={item.suggested}
+                      rirTarget={item.rir}
+                      onSaved={() => item.restSeconds > 0 && setResting(true)}
+                    />
+                  )}
+                </Card>
+              </>
+            ) : (
+              <Card className="space-y-4 p-5">
+                {item.measure === 'seconds' && <HoldTimer key={item.exerciseId} seconds={item.target[0]} />}
+                <button className="btn btn-primary w-full" onClick={() => go(index + 1)}>
+                  Done <ChevronRight size={18} />
+                </button>
+                {item.phase === 'cooldown' && (
+                  <button className="btn btn-ghost w-full" onClick={() => go(index + 1)}>
+                    <SkipForward size={17} /> Skip stretch
+                  </button>
+                )}
+              </Card>
+            )}
+
+            <div className="flex justify-between text-[13px] font-medium">
+              <button className="inline-flex items-center gap-0.5 text-[var(--muted)] disabled:opacity-30" disabled={index === 0} onClick={() => go(index - 1)}>
+                <ChevronLeft size={16} /> Previous
+              </button>
+              <button className="inline-flex items-center gap-0.5 text-[var(--muted)]" onClick={() => go(index + 1)}>
+                Skip exercise <ChevronRight size={16} />
               </button>
             </div>
-          )}
-
-          <div className="flex justify-between pt-2 text-sm">
-            <button className="text-[var(--muted)] underline disabled:opacity-40" disabled={index === 0} onClick={() => go(index - 1)}>
-              ‹ Previous
-            </button>
-            <button className="text-[var(--muted)] underline" onClick={() => go(index + 1)}>
-              Skip ›
-            </button>
           </div>
-        </>
-      )}
+        )}
+      </div>
     </div>
   )
 }

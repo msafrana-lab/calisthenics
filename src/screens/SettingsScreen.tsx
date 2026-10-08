@@ -1,9 +1,11 @@
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
+import { Bike, BookOpen, CloudUpload, LogOut, Scale, Smartphone, type LucideIcon } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { db } from '../lib/db'
 import type { Account } from '../lib/useAccount'
 import { connect, disconnect, PROVIDER_INFO, useIntegrations, type Provider } from '../lib/integrations'
+import { Callout, Card, ScreenHeader, SectionTitle } from '../ui'
 
 const REDIRECT_MESSAGES: Record<string, string> = {
   connected: 'Connected. Your recent data is being imported.',
@@ -11,6 +13,25 @@ const REDIRECT_MESSAGES: Record<string, string> = {
   expired: 'The connection link expired. Please try again.',
   failed: 'The connection failed. Please try again; if it keeps failing, check the client ID and secret in Supabase.',
 }
+
+const PROVIDER_ICON: Record<Provider, LucideIcon> = { strava: Bike, withings: Scale }
+
+function Row({ icon: Icon, title, detail, action }: { icon: LucideIcon; title: ReactNode; detail?: ReactNode; action?: ReactNode }) {
+  return (
+    <div className="flex items-center gap-3 px-4 py-3.5">
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--accent-soft)] text-[var(--accent-ink)]">
+        <Icon size={18} />
+      </span>
+      <div className="min-w-0 flex-1">
+        <div className="text-[15px] font-medium">{title}</div>
+        {detail && <div className="text-[13px] text-[var(--muted)]">{detail}</div>}
+      </div>
+      {action}
+    </div>
+  )
+}
+
+const smallBtn = 'h-9 shrink-0 rounded-full px-4 text-[13px] font-semibold disabled:opacity-40'
 
 function ConnectedServices({ account, redirectResult }: { account: Account; redirectResult: { outcome: string; provider: string | null } | null }) {
   const { list, refresh } = useIntegrations(!!account.session)
@@ -33,50 +54,64 @@ function ConnectedServices({ account, redirectResult }: { account: Account; redi
 
   if (!account.session) return null
   return (
-    <div className="card space-y-3 p-4">
-      <h2 className="font-semibold">Connected services</h2>
-      <p className="text-sm text-[var(--muted)]">
-        New rides and weigh-ins are fetched every 3 hours and when you open the app. A hard ride moves the legs session to another day.
-      </p>
+    <>
+      <SectionTitle>Connected services</SectionTitle>
       {banner && (
-        <p className="rounded-xl bg-[var(--accent-soft)] px-3 py-2 text-sm">
+        <Callout>
           {redirectResult?.provider ? `${PROVIDER_INFO[redirectResult.provider as Provider]?.name ?? redirectResult.provider}: ` : ''}
           {banner}
-        </p>
+        </Callout>
       )}
-      {(Object.keys(PROVIDER_INFO) as Provider[]).map((p) => {
-        const status = list?.find((s) => s.provider === p)
-        return (
-          <div key={p} className="flex items-start justify-between gap-3 border-t border-[var(--border)] pt-3">
-            <div className="min-w-0 text-sm">
-              <div className="font-semibold">{PROVIDER_INFO[p].name}</div>
-              <div className="text-[var(--muted)]">{PROVIDER_INFO[p].brings}</div>
-              {status && (
-                <div className="text-xs text-[var(--muted)]">
-                  {status.last_synced_at ? `Last import ${new Date(status.last_synced_at).toLocaleString('en-GB')}` : 'Waiting for first import'}
-                </div>
-              )}
-              {status?.last_error && <div className="text-xs text-[var(--warn)]">Last import failed: {status.last_error}</div>}
-            </div>
-            {status ? (
-              <button className="btn btn-secondary min-h-9 shrink-0 text-sm" disabled={busy === p} onClick={() => confirm(`Disconnect ${PROVIDER_INFO[p].name}? Data already imported stays.`) && run(p, () => disconnect(p))}>
-                Disconnect
-              </button>
-            ) : (
-              <button className="btn btn-primary min-h-9 shrink-0 text-sm" disabled={busy === p || list === null} onClick={() => run(p, () => connect(p))}>
-                Connect
-              </button>
-            )}
+      <Card className="divide-y divide-[var(--border)] overflow-hidden">
+        {(Object.keys(PROVIDER_INFO) as Provider[]).map((p) => {
+          const status = list?.find((s) => s.provider === p)
+          return (
+            <Row
+              key={p}
+              icon={PROVIDER_ICON[p]}
+              title={PROVIDER_INFO[p].name}
+              detail={
+                status ? (
+                  status.last_error ? (
+                    <span className="text-[var(--warn)]">Last import failed: {status.last_error}</span>
+                  ) : status.last_synced_at ? (
+                    `Imported ${new Date(status.last_synced_at).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}`
+                  ) : (
+                    'Waiting for first import'
+                  )
+                ) : (
+                  PROVIDER_INFO[p].brings
+                )
+              }
+              action={
+                status ? (
+                  <button
+                    className={`${smallBtn} bg-[var(--surface-2)] text-[var(--muted)] ring-1 ring-[var(--border)]`}
+                    disabled={busy === p}
+                    onClick={() => confirm(`Disconnect ${PROVIDER_INFO[p].name}? Data already imported stays.`) && run(p, () => disconnect(p))}
+                  >
+                    Disconnect
+                  </button>
+                ) : (
+                  <button className={`${smallBtn} bg-[var(--accent)] text-[var(--accent-text)]`} disabled={busy === p || list === null} onClick={() => run(p, () => connect(p))}>
+                    Connect
+                  </button>
+                )
+              }
+            />
+          )
+        })}
+        {!!list?.length && (
+          <div className="px-4 py-3">
+            <button className="btn btn-secondary w-full" disabled={account.syncState.status === 'syncing'} onClick={() => account.syncNow({ forceImport: true }).then(refresh)}>
+              {account.syncState.status === 'syncing' ? 'Importing…' : 'Import now'}
+            </button>
           </div>
-        )
-      })}
-      {error && <p className="text-sm text-[var(--warn)]">{error}</p>}
-      {!!list?.length && (
-        <button className="btn btn-secondary w-full" disabled={account.syncState.status === 'syncing'} onClick={() => account.syncNow({ forceImport: true }).then(refresh)}>
-          {account.syncState.status === 'syncing' ? 'Importing…' : 'Import now'}
-        </button>
-      )}
-    </div>
+        )}
+      </Card>
+      {error && <p className="px-1 text-sm text-[var(--warn)]">{error}</p>}
+      <p className="px-1 text-[13px] text-[var(--muted)]">Fetched every 3 hours and when you open the app. A hard ride or long hike moves the legs session.</p>
+    </>
   )
 }
 
@@ -89,43 +124,39 @@ function SignIn() {
   const run = async (mode: 'in' | 'up') => {
     setBusy(true)
     setMessage(null)
-    const { data, error } =
-      mode === 'in'
-        ? await supabase.auth.signInWithPassword({ email, password })
-        : await supabase.auth.signUp({ email, password })
+    const { data, error } = mode === 'in' ? await supabase.auth.signInWithPassword({ email, password }) : await supabase.auth.signUp({ email, password })
     setBusy(false)
     if (error) setMessage(error.message)
     else if (mode === 'up' && !data.session) setMessage('Account created. Confirm the link sent by email, then come back here and sign in.')
   }
 
   return (
-    <form className="card space-y-3 p-4" onSubmit={(e) => (e.preventDefault(), run('in'))}>
-      <h2 className="font-semibold">Account</h2>
-      <p className="text-sm text-[var(--muted)]">
-        Optional. Signing in backs up your training to your private database and is needed for the Strava and Withings link. Everything also works
-        offline without an account.
-      </p>
-      <input className="field" type="email" autoComplete="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-      <input
-        className="field"
-        type="password"
-        autoComplete="current-password"
-        placeholder="Password (8+ characters)"
-        minLength={8}
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-      />
-      {message && <p className="text-sm">{message}</p>}
-      <div className="flex gap-2">
-        <button className="btn btn-primary flex-1" type="submit" disabled={busy}>
+    <Card className="p-5">
+      <form className="space-y-3" onSubmit={(e) => (e.preventDefault(), run('in'))}>
+        <h2 className="text-[17px] font-semibold">Sign in</h2>
+        <p className="text-[13px] text-[var(--muted)]">
+          Backs up your training and enables the Strava and Withings link. Everything also works offline without an account.
+        </p>
+        <input className="field" type="email" autoComplete="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+        <input
+          className="field"
+          type="password"
+          autoComplete="current-password"
+          placeholder="Password (8+ characters)"
+          minLength={8}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        {message && <p className="text-sm">{message}</p>}
+        <button className="btn btn-primary w-full" type="submit" disabled={busy}>
           Sign in
         </button>
-        <button className="btn btn-secondary flex-1" type="button" disabled={busy || !email || password.length < 8} onClick={() => run('up')}>
-          Create account
+        <button className="btn btn-ghost w-full" type="button" disabled={busy || !email || password.length < 8} onClick={() => run('up')}>
+          Create an account
         </button>
-      </div>
-    </form>
+      </form>
+    </Card>
   )
 }
 
@@ -136,50 +167,47 @@ export function SettingsScreen({ account, redirectResult = null }: { account: Ac
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-bold">Settings</h1>
+      <ScreenHeader title="Settings" />
 
       {!session ? (
         <SignIn />
       ) : (
-        <div className="card space-y-3 p-4">
-          <h2 className="font-semibold">Account</h2>
-          <p className="text-sm">
-            Signed in as <b>{session.user.email}</b>
-          </p>
-          <p className="text-sm text-[var(--muted)]">
-            Last backup: {lastSync ? new Date(lastSync.value).toLocaleString('en-GB') : 'never'} · {pending ?? 0} changes waiting
-          </p>
-          {syncState.message && (
-            <p className={`text-sm ${syncState.status === 'error' ? 'text-[var(--warn)]' : 'text-[var(--muted)]'}`}>{syncState.message}</p>
-          )}
-          <div className="flex gap-2">
-            <button className="btn btn-primary flex-1" onClick={() => syncNow()} disabled={syncState.status === 'syncing'}>
-              {syncState.status === 'syncing' ? 'Backing up…' : 'Back up now'}
-            </button>
-            <button className="btn btn-secondary" onClick={() => supabase.auth.signOut()}>
+        <>
+          <SectionTitle>Account</SectionTitle>
+          <Card className="divide-y divide-[var(--border)] overflow-hidden">
+            <Row
+              icon={CloudUpload}
+              title={session.user.email}
+              detail={
+                syncState.status === 'error' ? (
+                  <span className="text-[var(--warn)]">{syncState.message}</span>
+                ) : (
+                  `Backed up ${lastSync ? new Date(lastSync.value).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'never'}${pending ? ` · ${pending} waiting` : ''}`
+                )
+              }
+              action={
+                <button className={`${smallBtn} bg-[var(--accent-soft)] text-[var(--accent-ink)]`} onClick={() => syncNow()} disabled={syncState.status === 'syncing'}>
+                  {syncState.status === 'syncing' ? 'Syncing…' : 'Back up'}
+                </button>
+              }
+            />
+            <button className="flex w-full items-center gap-3 px-4 py-3.5 text-left text-[15px] font-medium text-[var(--danger)]" onClick={() => supabase.auth.signOut()}>
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--surface-2)]">
+                <LogOut size={18} />
+              </span>
               Sign out
             </button>
-          </div>
-        </div>
+          </Card>
+        </>
       )}
 
       <ConnectedServices account={account} redirectResult={redirectResult} />
 
-      <div className="card space-y-2 p-4 text-sm">
-        <h2 className="font-semibold">Install on iPhone</h2>
-        <p className="text-[var(--muted)]">
-          Open this page in Safari, tap the Share button, then “Add to Home Screen”. Open the app from the home screen icon from then on: it runs
-          full-screen and works without a connection.
-        </p>
-      </div>
-
-      <div className="card space-y-2 p-4 text-sm">
-        <h2 className="font-semibold">About the programme</h2>
-        <p className="text-[var(--muted)]">
-          Exercise choices and rules follow the evidence summary in the project repository (docs/EVIDENCE.md). This is not medical advice: a
-          physiotherapist assessment is recommended for the knee and shoulder/wrist issues.
-        </p>
-      </div>
+      <SectionTitle>About</SectionTitle>
+      <Card className="divide-y divide-[var(--border)] overflow-hidden">
+        <Row icon={Smartphone} title="Install on iPhone" detail="Safari → Share → Add to Home Screen. It then runs full-screen and offline." />
+        <Row icon={BookOpen} title="The programme" detail="Based on the evidence summary in the project (docs/EVIDENCE.md). Not medical advice: get the knee and shoulder/wrist assessed by a physiotherapist." />
+      </Card>
     </div>
   )
 }

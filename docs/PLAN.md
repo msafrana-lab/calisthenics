@@ -14,6 +14,8 @@ Personal training app: daily bodyweight sessions on a mat, cycling (mostly indoo
 | Pulling exercises | Floor-only substitutes (prone Y/T/W, reverse snow angels, Superman variations) | User's choice. Known limitation: they do not load the lats or biceps like rows or pull-ups. Table rows can be added later. |
 | Nutrition | Weight trend only, no food logging | User's choice. The app states that weight change is driven mainly by diet. |
 | Language | English | User's choice. |
+| Session length | About 15 min. A/B/C: 1 warm-up drill plus an easy first set of the first exercise, 3 strength exercises, 1 optional stretch; D (mobility) keeps its longer stretch list. The engine estimates the duration and tests keep each session at 10–16 min | User's choice: sessions had too many warm-ups and stretches. Trade-off: A/B/C now give 1 stretch instead of the 2–3 in R9, so the weekly stretching dose per region relies mostly on D and is below the R9 target. |
+| Visual design | Light, premium style: warm off-white background, white cards with soft shadows, one green accent, Inter typeface, filled and tapered figure on a soft stage, dark mode | User's choice, to look like a paid fitness app. |
 | Weight and activity data | Direct server-side link to Withings (weigh-ins) and Strava (rides and other sports; leg-heavy sports also move the legs session), instead of Apple Health | Data originates there; no iPhone Shortcut to maintain; richer ride data (indoor flag, heart rate, power, workout tag) to class rides as easy or hard automatically. Setup: `docs/INTEGRATIONS.md`. |
 
 ## User profile used for programming
@@ -31,6 +33,7 @@ Personal training app: daily bodyweight sessions on a mat, cycling (mostly indoo
 3. **Programme engine** (done): daily rotation `A, B, C, D, A, B, C`, calibration sessions, double progression, pain and regression rules, deloads (rules R1–R10 in `EVIDENCE.md`). Session player with timer and rest periods. Each ride, indoor or outdoor, is classed as easy or hard by the same rule (R1: intervals, threshold work or more than 60 min = hard); outdoor rides tend to be longer, so they will more often count as hard and move the legs session.
 4. **Progress** (done): weight 7-day average with daily weigh-ins, weekly cycling minutes against the 150–300 min WHO range, working sets per muscle group this week against the 6–10 target, best-set history per progression with step changes marked; date range 4 weeks / 12 weeks / 1 year; table view for every chart.
 5. **Strava and Withings link** (done): Edge Function `integrations` with OAuth, imports every 3 hours and on app open; imported rides set the day's easy/hard flag unless set by hand; weekly cycling minutes on Progress. Apple Health was dropped as the route because the data originates in Strava and Withings.
+6. **Shorter sessions and redesign** (done): sessions cut to about 15 min (see the decision table); multi-ladder slots alternate between sessions of the same type; new visual design across all screens.
 
 ## Known limitations of the animations
 
