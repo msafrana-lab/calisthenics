@@ -52,6 +52,8 @@ describe.each(EXERCISES.map((e) => [e.id, e] as const))('exercise %s', (_id, ex)
     const [x, y, w, h] = ex.animation.viewBox ?? [15, 22, 130, 92]
     const total = duration(ex.animation)
     const margin = 3 // half the thickest stroke
+    // In side view the floor strip may be cut at the bottom; in top view nothing may be.
+    const bottomMargin = ex.animation.view === 'top' ? margin : 0
     for (let t = 0; t < total; t += total / 60) {
       const f = solve(sample(ex.animation, t).pose)
       const points = [f.hip, f.shoulder, ...LIMBS.flatMap((k) => [f[k].mid, f[k].end]), f.legNear.toe, f.legFar.toe]
@@ -59,16 +61,17 @@ describe.each(EXERCISES.map((e) => [e.id, e] as const))('exercise %s', (_id, ex)
       expect(f.headCenter[0] - r).toBeGreaterThanOrEqual(x)
       expect(f.headCenter[0] + r).toBeLessThanOrEqual(x + w)
       expect(f.headCenter[1] - r).toBeGreaterThanOrEqual(y)
+      expect(f.headCenter[1] + r).toBeLessThanOrEqual(y + h)
       for (const p of points) {
         expect(p[0] - margin).toBeGreaterThanOrEqual(x)
         expect(p[0] + margin).toBeLessThanOrEqual(x + w)
         expect(p[1] - margin).toBeGreaterThanOrEqual(y)
-        expect(p[1]).toBeLessThanOrEqual(y + h)
+        expect(p[1] + bottomMargin).toBeLessThanOrEqual(y + h)
       }
     }
   })
 
-  it('never puts a joint below the floor', () => {
+  it.skipIf(ex.animation.view === 'top')('never puts a joint below the floor', () => {
     const total = duration(ex.animation)
     for (let t = 0; t < total; t += total / 60) {
       const f = solve(sample(ex.animation, t).pose)
