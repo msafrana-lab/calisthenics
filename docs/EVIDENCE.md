@@ -11,7 +11,7 @@ Figures marked **(verify)** are ones the author could not fully confirm against 
 ## Scope and constraints
 
 - **Person:** adult returning to training (has trained before; can do roughly 5–15 full push-ups). Has knee issues and shoulder/wrist issues, with no diagnosis. Goals: strength, flexibility/mobility, weight loss.
-- **Format:** short calisthenics sessions every day (about 15–20 min), plus indoor cycling on a home trainer for cardio.
+- **Format:** short calisthenics sessions every day (about 15–20 min), plus cycling for cardio, mostly indoors on a home trainer and sometimes outdoors.
 - **Equipment:** exercise mat only. No weights, bands, bar, rings, or table/door rows. A wall is assumed to be available (wall push-ups, wall sits, balance support).
 - **Back training:** the person chose floor-only substitutes for pulling (prone Y/T/W raises, reverse snow angels, Superman/prone holds, prone swimmers and similar).
 
@@ -25,7 +25,7 @@ Figures marked **(verify)** are ones the author could not fully confirm against 
 - **Aerobic (adults 18–64):** 150–300 min/week of moderate-intensity aerobic activity, or 75–150 min/week of vigorous-intensity activity, or an equivalent combination. Going beyond 300 min/week of moderate activity gives additional health benefits.
 - **Muscle strengthening:** moderate or greater intensity, working all major muscle groups, on 2 or more days per week.
 - **Sedentary behaviour:** reduce sitting and replace it with activity of any intensity. The evidence was not strong enough to set a numeric threshold.
-- **Implication:** the indoor cycling can cover the aerobic target. Daily calisthenics sessions need to cover each major muscle group at least twice per week.
+- **Implication:** the cycling (indoor and outdoor) can cover the aerobic target. Daily calisthenics sessions need to cover each major muscle group at least twice per week.
 
 ### 1.2 ACSM position stands on resistance training
 
