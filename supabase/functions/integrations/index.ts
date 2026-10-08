@@ -1,5 +1,5 @@
-// Supabase Edge Function: connects Strava and Withings and imports rides and
-// weigh-ins into health_samples.
+// Supabase Edge Function: connects Strava and Withings and imports rides, other
+// aerobic activities and weigh-ins into health_samples.
 //
 //   POST /integrations/start     {provider}  (signed-in user)  → {url} to open
 //   GET  /integrations/callback  ?code&state (provider redirect) → back to the app
@@ -13,7 +13,7 @@ import {
   parseTokenResponse,
   PROVIDERS,
   signState,
-  stravaRide,
+  stravaActivity,
   tokenRequest,
   verifyState,
   withingsWeights,
@@ -76,7 +76,7 @@ async function fetchStrava(token: string, since: number): Promise<Sample[]> {
     if (!res.ok) throw new Error(`Strava activities: HTTP ${res.status}`)
     const list = (await res.json()) as Record<string, unknown>[]
     for (const a of list) {
-      const s = stravaRide(a)
+      const s = stravaActivity(a)
       if (s) out.push(s)
     }
     if (list.length < 100) break

@@ -8,6 +8,7 @@ import { LADDERS, SESSION_NAMES, type SessionType } from '../programme/ladders'
 import { localDay, morningCheckDue, plan as makePlan, type Cycling, type LadderUpdate, type Morning, type PlanItem } from '../programme/engine'
 import { activeSession, startSession } from '../lib/sessions'
 import { db } from '../lib/db'
+import { importedActivities, loadsLegs, sportName } from '../lib/activities'
 import { saveMorning, setCycling, today, useEngineInput } from '../lib/programme'
 import type { Region } from '../exercises/types'
 import type { Account } from '../lib/useAccount'
@@ -68,14 +69,10 @@ function CyclingToday({ value }: { value: Cycling | null }) {
   ]
   const day = today()
   const manual = useLiveQuery(async () => (await db.days.get(day))?.cycling ?? null, [day])
-  const rides = useLiveQuery(
-    async () =>
-      (await db.health.where('[kind+recorded_at]').between(['cycling', ''], ['cycling', '\uffff']).toArray()).filter((r) => localDay(r.recorded_at) === day),
-    [day],
-  )
+  const rides = useLiveQuery(async () => (await importedActivities()).filter((r) => localDay(r.recorded_at) === day), [day])
   return (
     <div className="card space-y-2 p-4">
-      <h2 className="font-semibold">Cycling today</h2>
+      <h2 className="font-semibold">Cycling and sport today</h2>
       <div className="flex gap-1.5">
         {options.map(([v, label]) => (
           <button
@@ -91,13 +88,14 @@ function CyclingToday({ value }: { value: Cycling | null }) {
         <p className="text-sm">
           From Strava:{' '}
           {rides
-            .map((r) => `${r.value} min ${r.details?.indoor ? 'indoor' : 'outdoor'} ride (${r.details?.intensity ?? 'easy'})`)
+            .map((r) => `${r.value} min ${sportName(r)}${loadsLegs(r) ? ` (${r.details?.intensity ?? 'easy'} for the legs)` : ''}`)
             .join(', ')}
           {manual ? ' · your own setting above is used instead.' : '.'}
         </p>
       )}
       <p className="text-xs text-[var(--muted)]">
-        Hard = intervals, threshold work or longer than 60 min, indoors or outdoors. Tap a selected option again to clear it.
+        Hard = intervals, threshold work or longer than 60 min, for rides and leg-heavy sports such as hikes, runs or skating. Tap a selected
+        option again to clear it.
       </p>
     </div>
   )

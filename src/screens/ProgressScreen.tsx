@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../lib/db'
+import { importedActivities } from '../lib/activities'
 import { today } from '../lib/programme'
 import { exerciseById } from '../exercises/library'
 import { LADDERS } from '../programme/ladders'
@@ -38,7 +39,7 @@ function useProgressData() {
       db.sets.toArray(),
       db.ladders.toArray(),
       db.health.where('[kind+recorded_at]').between(['weight', ''], ['weight', '￿']).toArray(),
-      db.health.where('[kind+recorded_at]').between(['cycling', ''], ['cycling', '￿']).toArray(),
+      importedActivities(),
     ])
     return { sessions, sets, steps: Object.fromEntries(ladders.map((l) => [l.ladder_id, l.step])), weighIns, rides }
   }, [])
@@ -60,6 +61,7 @@ export function ProgressScreen() {
   const thisWeek = weekStart(day)
   const sessionsThisWeek = finished.filter((s) => localDay(s.started_at) >= thisWeek).length
   const minutes = weeklyMinutes(data.rides, day, range.weeks)
+  const rideMinutes = weeklyMinutes(data.rides.filter((r) => r.kind === 'cycling'), day, range.weeks)
   const rideThisWeek = minutes[minutes.length - 1]?.value ?? 0
 
   // This week's training volume (not scoped by the range filter)
@@ -83,7 +85,7 @@ export function ProgressScreen() {
           detail={change ? (change.change !== null ? `${signed(change.change)} kg in 4 weeks` : 'Change shown after 4 weeks') : 'Connect Withings'}
         />
         <StatTile label="Sessions this week" value={String(sessionsThisWeek)} detail="Since Monday" />
-        <StatTile label="Cycling this week" value={String(rideThisWeek)} unit="min" detail="Target 150–300 / week" />
+        <StatTile label="Cardio this week" value={String(rideThisWeek)} unit="min" detail="Target 150–300 / week" />
       </div>
 
       <h2 className="pt-1 font-semibold">This week</h2>
@@ -118,9 +120,14 @@ export function ProgressScreen() {
       </ChartCard>
 
       <ChartCard
-        title="Cycling minutes per week"
-        subtitle="Indoor and outdoor rides from Strava. Shaded band: the WHO range of 150–300 min of moderate activity per week."
-        table={{ head: ['Week of', 'Minutes'], rows: minutes.slice().reverse().map((w) => [shortDate(w.week), w.value]) }}
+        title="Cardio minutes per week"
+        subtitle="Rides and other sports from Strava (strength sessions not counted). Shaded band: the WHO range of 150–300 min of moderate activity per week."
+        table={{
+          head: ['Week of', 'Total', 'Cycling', 'Other'],
+          rows: minutes
+            .map((w, i) => [shortDate(w.week), w.value, rideMinutes[i].value, w.value - rideMinutes[i].value])
+            .reverse(),
+        }}
       >
         <ColumnChart
           columns={minutes.map((w) => ({ key: w.week, label: shortDate(w.week), value: w.value, detail: `Week of ${shortDate(w.week)}` }))}
