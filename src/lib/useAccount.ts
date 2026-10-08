@@ -3,6 +3,7 @@ import type { Session } from '@supabase/supabase-js'
 import { supabase } from './supabase'
 import { sync } from './sync'
 import { supabaseRemote } from './supabaseRemote'
+import { requestImport } from './integrations'
 
 export type SyncState = { status: 'idle' | 'syncing' | 'error'; message?: string }
 
@@ -17,10 +18,12 @@ export function useAccount() {
     return () => data.subscription.unsubscribe()
   }, [])
 
-  const syncNow = useCallback(async () => {
+  const syncNow = useCallback(async (opts?: { forceImport?: boolean }) => {
     if (!session || !navigator.onLine) return
     setSyncState({ status: 'syncing' })
     try {
+      // New rides and weigh-ins first, so the download below includes them.
+      await requestImport(opts?.forceImport).catch(() => undefined)
       const r = await sync(supabaseRemote)
       setSyncState({ status: 'idle', message: `Uploaded ${r.pushed}, downloaded ${r.pulled}` })
     } catch (e) {
@@ -33,10 +36,11 @@ export function useAccount() {
     if (!session) return
     syncNow()
     const onVisible = () => document.visibilityState === 'visible' && syncNow()
-    window.addEventListener('online', syncNow)
+    const onOnline = () => syncNow()
+    window.addEventListener('online', onOnline)
     document.addEventListener('visibilitychange', onVisible)
     return () => {
-      window.removeEventListener('online', syncNow)
+      window.removeEventListener('online', onOnline)
       document.removeEventListener('visibilitychange', onVisible)
     }
   }, [session, syncNow])

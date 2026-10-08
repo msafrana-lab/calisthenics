@@ -26,5 +26,6 @@ Code layout:
 - `src/lib/` — local database (Dexie), Supabase client, sync engine.
 - `src/screens/` and `src/components/` — Today (plan, session player, morning check, cycling), Exercises, Progress, Settings.
 - `supabase/migrations/` — database schema, as applied to the Supabase project.
+- `supabase/functions/integrations/` — Edge Function importing rides (Strava) and weigh-ins (Withings); setup in [docs/INTEGRATIONS.md](docs/INTEGRATIONS.md).
 
 Pushing to `main` runs the tests and deploys to GitHub Pages (`.github/workflows/deploy.yml`).

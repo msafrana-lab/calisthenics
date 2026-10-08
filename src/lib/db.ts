@@ -39,6 +39,9 @@ export type HealthSample = {
   duration_s: number | null
   energy_kcal: number | null
   source: string | null
+  external_id?: string | null
+  /** Rides: indoor flag, heart rate, power, Strava workout type and the derived intensity. */
+  details?: { intensity?: 'easy' | 'hard'; indoor?: boolean; name?: string | null; [k: string]: unknown } | null
 }
 
 export type DayLogRow = Synced & {

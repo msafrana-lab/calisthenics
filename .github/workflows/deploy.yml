@@ -9,6 +9,11 @@ on:
 permissions:
   contents: read
 
+# Queue deployments instead of failing when two pushes land close together.
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   build:
     runs-on: ubuntu-latest
