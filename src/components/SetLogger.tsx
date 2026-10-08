@@ -1,23 +1,31 @@
 import { useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
+import { Minus, Plus, TriangleAlert, X } from 'lucide-react'
 import { db } from '../lib/db'
 import { deleteSet, logSet } from '../lib/sessions'
 import type { Exercise } from '../exercises/types'
+import { Segmented } from '../ui'
 import { Stopwatch } from './Timer'
 
-export function Chips({ values, value, onChange, label }: { values: number[]; value: number; onChange: (v: number) => void; label: string }) {
+/** Logged sets of this exercise in the session, as removable chips. */
+export function LoggedSets({ exercise, sessionId }: { exercise: Exercise; sessionId: string }) {
+  const sets = useLiveQuery(
+    () => db.sets.where('session_id').equals(sessionId).filter((s) => s.exercise_id === exercise.id && !s.deleted).sortBy('set_index'),
+    [sessionId, exercise.id],
+  )
+  if (!sets?.length) return null
+  const unit = exercise.measure === 'reps' ? '' : ' s'
   return (
-    <div role="radiogroup" aria-label={label} className="flex flex-wrap gap-1.5">
-      {values.map((v) => (
-        <button
-          key={v}
-          role="radio"
-          aria-checked={v === value}
-          onClick={() => onChange(v)}
-          className={`h-10 min-w-10 rounded-xl px-2 text-sm font-semibold ${v === value ? 'bg-[var(--accent)] text-[var(--accent-text)]' : 'bg-[var(--accent-soft)]'}`}
-        >
-          {v}
-        </button>
+    <div className="flex flex-wrap gap-1.5">
+      {sets.map((s, i) => (
+        <span key={s.id} className="inline-flex items-center gap-1.5 rounded-full bg-[var(--accent-soft)] py-1 pr-1 pl-3 text-[13px] text-[var(--accent-ink)]">
+          <b>Set {i + 1}</b> {s.reps ?? s.seconds}
+          {unit} · RIR {s.rir}
+          {s.pain ? ` · pain ${s.pain}` : ''}
+          <button aria-label={`Remove set ${i + 1}`} className="rounded-full p-1 hover:bg-[var(--surface)]" onClick={() => deleteSet(s.id)}>
+            <X size={13} />
+          </button>
+        </span>
       ))}
     </div>
   )
@@ -40,11 +48,7 @@ export function SetLogger({
   const [amount, setAmount] = useState(suggested ?? exercise.target[0])
   const [rir, setRir] = useState(rirTarget ?? 3)
   const [pain, setPain] = useState(0)
-
-  const sets = useLiveQuery(
-    () => db.sets.where('session_id').equals(sessionId).filter((s) => s.exercise_id === exercise.id && !s.deleted).sortBy('set_index'),
-    [sessionId, exercise.id],
-  )
+  const step = isReps ? 1 : 5
 
   const save = async () => {
     await logSet({
@@ -59,61 +63,65 @@ export function SetLogger({
   }
 
   return (
-    <div className="card space-y-4 p-4">
-      <h2 className="font-semibold">Log a set{exercise.perSide ? ' (per side)' : ''}</h2>
+    <div className="space-y-5">
       {!isReps && <Stopwatch onStop={setAmount} />}
 
       <div className="flex items-center justify-between">
-        <span className="text-sm text-[var(--muted)]">{isReps ? 'Reps' : 'Seconds'}</span>
-        <div className="flex items-center gap-3">
-          <button className="btn btn-secondary w-11 px-0" onClick={() => setAmount((a) => Math.max(0, a - (isReps ? 1 : 5)))} aria-label="Less">
-            −
-          </button>
-          <span className="w-10 text-center text-2xl font-bold tabular-nums">{amount}</span>
-          <button className="btn btn-secondary w-11 px-0" onClick={() => setAmount((a) => a + (isReps ? 1 : 5))} aria-label="More">
-            +
-          </button>
+        <button className="flex h-14 w-14 items-center justify-center rounded-full bg-[var(--accent-soft)] text-[var(--accent-ink)] active:scale-95" onClick={() => setAmount((a) => Math.max(0, a - step))} aria-label="Less">
+          <Minus size={24} />
+        </button>
+        <div className="text-center">
+          <div className="text-[56px] leading-none font-semibold tabular-nums">{amount}</div>
+          <div className="mt-1 text-[13px] text-[var(--muted)]">
+            {isReps ? 'reps' : 'seconds'}
+            {exercise.perSide ? ' per side' : ''}
+          </div>
         </div>
+        <button className="flex h-14 w-14 items-center justify-center rounded-full bg-[var(--accent-soft)] text-[var(--accent-ink)] active:scale-95" onClick={() => setAmount((a) => a + step)} aria-label="More">
+          <Plus size={24} />
+        </button>
       </div>
 
       <div className="space-y-2">
-        <div className="text-sm text-[var(--muted)]">
-          {isReps ? 'Reps in reserve: how many more could you have done with good form?' : 'Seconds in reserve, in units of 5 s: how much longer could you have held?'}
-          {rirTarget != null && <b> Aim for {rirTarget}.</b>}
+        <div className="flex items-baseline justify-between gap-2 text-[13px]">
+          <span className="font-medium">{isReps ? 'Reps left in the tank' : 'Could have held longer by (× 5 s)'}</span>
+          {rirTarget != null && <span className="text-[var(--muted)]">aim for {rirTarget}</span>}
         </div>
-        <Chips label="Reps in reserve" values={[0, 1, 2, 3, 4, 5]} value={rir} onChange={setRir} />
+        <Segmented
+          size="sm"
+          label="Reps in reserve"
+          value={rir}
+          onChange={setRir}
+          options={[0, 1, 2, 3, 4, 5].map((v) => ({ value: v, label: v === 5 ? '5+' : String(v) }))}
+        />
       </div>
 
       <div className="space-y-2">
-        <div className="text-sm text-[var(--muted)]">Highest joint pain during the set (0 = none, 10 = worst)</div>
-        <Chips label="Pain" values={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]} value={pain} onChange={setPain} />
+        <div className="flex items-baseline justify-between text-[13px]">
+          <span className="font-medium">Highest joint pain</span>
+          <span className={`font-semibold tabular-nums ${pain >= 4 ? 'text-[var(--warn)]' : 'text-[var(--muted)]'}`}>{pain === 0 ? 'None' : `${pain} / 10`}</span>
+        </div>
+        <input
+          type="range"
+          min={0}
+          max={10}
+          step={1}
+          value={pain}
+          onChange={(e) => setPain(Number(e.target.value))}
+          aria-label="Highest joint pain, 0 to 10"
+          className="w-full accent-[var(--accent)]"
+        />
         {pain >= 4 && (
-          <p className="rounded-xl bg-[var(--warn-soft)] px-3 py-2 text-sm">
-            {pain > 5
-              ? 'Stop this exercise for today and switch to an easier, pain-free option.'
-              : 'Stop this set and switch to an easier variation. No progression next time.'}
-          </p>
+          <div className="flex gap-2 rounded-2xl bg-[var(--warn-soft)] px-3 py-2.5 text-[13px]">
+            <TriangleAlert size={16} className="mt-0.5 shrink-0 text-[var(--warn)]" />
+            {pain > 5 ? 'Stop this exercise for today and switch to an easier, pain-free option.' : 'Stop this set and switch to an easier variation. No progression next time.'}
+          </div>
         )}
       </div>
 
-      <button className="btn btn-primary w-full" onClick={save}>
-        Save set
+      <button className="btn btn-primary w-full text-[17px]" onClick={save}>
+        Log set
       </button>
-
-      {!!sets?.length && (
-        <ul className="divide-y divide-[var(--border)] text-sm">
-          {sets.map((s, i) => (
-            <li key={s.id} className="flex items-center justify-between py-2">
-              <span>
-                Set {i + 1}: <b>{s.reps ?? s.seconds}</b> {isReps ? 'reps' : 's'} · RIR {s.rir} · pain {s.pain}
-              </span>
-              <button className="text-[var(--muted)] underline" onClick={() => deleteSet(s.id)}>
-                Remove
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
     </div>
   )
 }

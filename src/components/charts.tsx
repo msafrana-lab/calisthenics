@@ -59,10 +59,10 @@ export function ChartCard({
 }) {
   const [showTable, setShowTable] = useState(false)
   return (
-    <section className="card space-y-2 p-4">
+    <section className="card space-y-3 p-5">
       <div className="flex items-start justify-between gap-2">
         <div>
-          <h3 className="font-semibold">{title}</h3>
+          <h3 className="text-[15px] font-semibold">{title}</h3>
           {subtitle && <p className="text-xs text-[var(--muted)]">{subtitle}</p>}
         </div>
         <button className="shrink-0 text-xs font-medium text-[var(--accent)] underline" onClick={() => setShowTable((s) => !s)}>

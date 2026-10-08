@@ -47,56 +47,63 @@ export const LADDERS: Record<string, Ladder> = {
   cuff: { id: 'cuff', name: 'Rotator cuff', steps: [s('S0')], start: 0 },
 }
 
-/** A slot in a session: a ladder (progressing exercise) or a fixed exercise. */
-export type Slot = { ladder: string; sets: number } | { exercise: string; sets: number }
+/**
+ * A slot in a session: a ladder (progressing exercise) or a fixed exercise.
+ * With several ladders, the slot rotates through them on successive sessions
+ * of the same type (e.g. plank one push day, dead bug the next).
+ */
+export type Slot = { ladder: string | string[]; sets: number } | { exercise: string; sets: number }
 
 export type Template = { warmup: string[]; main: Slot[]; cooldown: string[] }
 
-// R2: 3–4 min warm-up, 3–4 exercises × 2–3 sets (6–9 working sets), 2–3 stretches.
-// R3: weekly prone/scapular sets at least equal to horizontal push sets.
+// Sessions are sized for about 15 minutes (user's choice, October 2026):
+// - Warm-up: one drill matched to the day, then one easy set of the first
+//   exercise (R2's "potentiate" step). Shorter than R2's 3–4 min by choice.
+// - Main: 3 exercises, about 7 working sets (R2: 6–9). Secondary exercises
+//   alternate between the two sessions of each type in a week, which keeps
+//   weekly sets per group within R3's 6–10 (12 at most).
+// - Cool-down: one optional stretch, 1 × 30 s per side. Most of the stretching
+//   dose (R9) moves to the mobility day; full-range strength work also
+//   improves flexibility (Afonso 2021).
 // Knee caution: no child's pose (M9) or side-lying quad stretch (M5) by default.
 export const TEMPLATES: Record<SessionType, Template> = {
   A: {
-    warmup: ['W1', 'W2', 'M7'],
+    warmup: ['W2'],
     main: [
       { ladder: 'push', sets: 3 },
       { ladder: 'serratus', sets: 2 },
-      { ladder: 'plank', sets: 2 }, // alternates with the dead bug ladder (see engine)
+      { ladder: ['plank', 'deadbug'], sets: 2 },
     ],
-    cooldown: ['M8', 'M1'],
+    cooldown: ['M8'],
   },
   B: {
-    warmup: ['W1', 'H7', 'M7'],
+    warmup: ['H7'],
     main: [
       { ladder: 'knee', sets: 3 },
       { ladder: 'bridge', sets: 2 },
-      { ladder: 'abduction', sets: 2 },
-      { ladder: 'calf', sets: 2 },
+      { ladder: ['abduction', 'calf'], sets: 2 },
     ],
-    cooldown: ['M2', 'M4', 'M1'],
+    cooldown: ['M2'],
   },
   C: {
-    warmup: ['W1', 'W2', 'M7'],
+    warmup: ['M7'],
     main: [
       { ladder: 'prone', sets: 3 },
-      { ladder: 'sweep', sets: 2 },
       { ladder: 'extension', sets: 2 },
-      { ladder: 'sideplank', sets: 2 },
+      { ladder: ['sweep', 'sideplank'], sets: 2 },
     ],
-    cooldown: ['M3', 'M8'],
+    cooldown: ['M3'],
   },
   D: {
     warmup: ['W1'],
     main: [
       { exercise: 'M1', sets: 2 },
       { exercise: 'M2', sets: 2 },
-      { exercise: 'M3', sets: 2 },
-      { exercise: 'M4', sets: 2 },
-      { exercise: 'M6', sets: 2 },
-      { exercise: 'M8', sets: 2 },
-      { exercise: 'M12', sets: 2 },
+      { exercise: 'M4', sets: 1 },
+      { exercise: 'M8', sets: 1 },
+      { exercise: 'M3', sets: 1 },
+      { exercise: 'M6', sets: 1 },
       { ladder: 'cuff', sets: 2 },
-      { exercise: 'C1', sets: 2 },
     ],
     cooldown: [],
   },

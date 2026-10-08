@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
+import { Bike, Check, ChevronRight, Clock, Dumbbell, Info, Play, Shuffle, Sparkles, TriangleAlert } from 'lucide-react'
 import { FigureView } from '../animation/FigureView'
 import { exerciseById } from '../exercises/library'
-import { ExerciseHeader, ExerciseInfo } from '../components/ExerciseDetail'
+import { ExerciseDetailView } from '../components/ExerciseDetail'
 import { SessionPlayer } from '../components/SessionPlayer'
 import { LADDERS, SESSION_NAMES, type SessionType } from '../programme/ladders'
 import { localDay, morningCheckDue, plan as makePlan, type Cycling, type LadderUpdate, type Morning, type PlanItem } from '../programme/engine'
@@ -10,117 +11,157 @@ import { activeSession, startSession } from '../lib/sessions'
 import { db } from '../lib/db'
 import { importedActivities, loadsLegs, sportName } from '../lib/activities'
 import { saveMorning, setCycling, today, useEngineInput } from '../lib/programme'
+import { addDays, weekStart } from '../progress/metrics'
+import { Callout, Card, Eyebrow, ScreenHeader, Segmented, SectionTitle, Tag, Thumb } from '../ui'
 import type { Region } from '../exercises/types'
 import type { Account } from '../lib/useAccount'
 
 const REGION_LABEL: Record<Region, string> = { knee: 'Knees', shoulder: 'Shoulders', wrist: 'Wrists' }
 const PHASES = [
   ['warmup', 'Warm-up'],
-  ['main', 'Main'],
+  ['main', 'Workout'],
   ['cooldown', 'Cool-down'],
 ] as const
+
+function greeting() {
+  const h = new Date().getHours()
+  return h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening'
+}
+
+function WeekStrip({ doneDays, todayDay }: { doneDays: Set<string>; todayDay: string }) {
+  const monday = weekStart(todayDay)
+  const days = Array.from({ length: 7 }, (_, i) => addDays(monday, i))
+  return (
+    <div className="flex justify-between px-1">
+      {days.map((d) => {
+        const done = doneDays.has(d)
+        const isToday = d === todayDay
+        const label = new Date(`${d}T12:00:00`).toLocaleDateString('en-GB', { weekday: 'narrow' })
+        return (
+          <div key={d} className="flex flex-col items-center gap-1.5">
+            <span className={`text-[11px] font-medium ${isToday ? 'text-[var(--text)]' : 'text-[var(--muted)]'}`}>{label}</span>
+            <span
+              className={`flex h-9 w-9 items-center justify-center rounded-full text-[13px] font-semibold ${
+                done
+                  ? 'bg-[var(--accent)] text-[var(--accent-text)]'
+                  : isToday
+                    ? 'bg-[var(--surface)] text-[var(--text)] ring-2 ring-[var(--accent)]'
+                    : 'bg-[var(--surface)] text-[var(--muted)] ring-1 ring-[var(--border)]'
+              }`}
+            >
+              {done ? <Check size={16} strokeWidth={3} /> : Number(d.slice(8))}
+            </span>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
 
 function MorningCheck({ sessionId, regions }: { sessionId: string; regions: Region[] }) {
   const [answers, setAnswers] = useState<Morning>({})
   const [result, setResult] = useState<LadderUpdate[] | null>(null)
   if (result) {
     return (
-      <div className="card p-4 text-sm">
-        {result.length ? 'Thanks. The exercises that loaded those joints move one step easier, with fewer sets next time.' : 'Thanks, noted.'}
-      </div>
+      <Callout icon={<Check size={18} />}>
+        {result.length ? 'Thanks. Exercises that loaded those joints move one step easier, with fewer sets next time.' : 'Thanks, noted.'}
+      </Callout>
     )
   }
   const complete = regions.every((r) => answers[r])
   return (
-    <div className="card space-y-3 p-4">
-      <h2 className="font-semibold">Morning check</h2>
-      <p className="text-sm text-[var(--muted)]">Compared with your usual, how do these feel after the last session?</p>
+    <Card className="space-y-4 p-5">
+      <div>
+        <Eyebrow>Morning check</Eyebrow>
+        <p className="mt-1 text-[15px] font-medium">How do these feel compared with usual, after your last session?</p>
+      </div>
       {regions.map((r) => (
-        <div key={r} className="flex items-center justify-between gap-2">
-          <span className="text-sm font-medium">{REGION_LABEL[r]}</span>
-          <div className="flex gap-1.5">
-            {(['same', 'worse'] as const).map((v) => (
-              <button
-                key={v}
-                onClick={() => setAnswers((a) => ({ ...a, [r]: v }))}
-                className={`h-10 rounded-xl px-3 text-sm font-semibold ${answers[r] === v ? 'bg-[var(--accent)] text-[var(--accent-text)]' : 'bg-[var(--accent-soft)]'}`}
-              >
-                {v === 'same' ? 'Usual or better' : 'Worse'}
-              </button>
-            ))}
-          </div>
+        <div key={r} className="space-y-1.5">
+          <div className="text-sm font-medium">{REGION_LABEL[r]}</div>
+          <Segmented
+            label={REGION_LABEL[r]}
+            value={answers[r] ?? null}
+            onChange={(v) => setAnswers((a) => ({ ...a, [r]: v }))}
+            options={[
+              { value: 'same', label: 'Usual or better' },
+              { value: 'worse', label: 'Worse' },
+            ]}
+          />
         </div>
       ))}
       <button className="btn btn-primary w-full" disabled={!complete} onClick={async () => setResult(await saveMorning(today(), sessionId, answers))}>
         Save
       </button>
-      <p className="text-xs text-[var(--muted)]">
+      <p className="text-xs leading-relaxed text-[var(--muted)]">
         Swelling, locking, giving way, sharp or night pain, numbness, or pain lasting over 48 hours: stop training that area and get it assessed.
       </p>
-    </div>
+    </Card>
   )
 }
 
-function CyclingToday({ value }: { value: Cycling | null }) {
-  const options: [Cycling, string][] = [
-    ['none', 'No ride'],
-    ['easy', 'Easy ride'],
-    ['hard', 'Hard ride'],
-  ]
+function CardioToday({ value }: { value: Cycling | null }) {
   const day = today()
   const manual = useLiveQuery(async () => (await db.days.get(day))?.cycling ?? null, [day])
-  const rides = useLiveQuery(async () => (await importedActivities()).filter((r) => localDay(r.recorded_at) === day), [day])
+  const activities = useLiveQuery(async () => (await importedActivities()).filter((r) => localDay(r.recorded_at) === day), [day])
   return (
-    <div className="card space-y-2 p-4">
-      <h2 className="font-semibold">Cycling and sport today</h2>
-      <div className="flex gap-1.5">
-        {options.map(([v, label]) => (
-          <button
-            key={v}
-            onClick={() => setCycling(day, manual === v ? null : v)}
-            className={`h-10 flex-1 rounded-xl text-sm font-semibold ${value === v ? 'bg-[var(--accent)] text-[var(--accent-text)]' : 'bg-[var(--accent-soft)]'}`}
-          >
-            {label}
-          </button>
-        ))}
+    <Card className="space-y-3 p-5">
+      <div className="flex items-center gap-2">
+        <Bike size={18} className="text-[var(--accent)]" />
+        <h2 className="text-[15px] font-semibold">Cycling and sport today</h2>
       </div>
-      {!!rides?.length && (
-        <p className="text-sm">
-          From Strava:{' '}
-          {rides
-            .map((r) => `${r.value} min ${sportName(r)}${loadsLegs(r) ? ` (${r.details?.intensity ?? 'easy'} for the legs)` : ''}`)
-            .join(', ')}
-          {manual ? ' · your own setting above is used instead.' : '.'}
-        </p>
+      <Segmented
+        label="Cycling today"
+        value={value}
+        onChange={(v) => setCycling(day, manual === v ? null : v)}
+        options={[
+          { value: 'none', label: 'None' },
+          { value: 'easy', label: 'Easy' },
+          { value: 'hard', label: 'Hard' },
+        ]}
+      />
+      {!!activities?.length && (
+        <div className="flex flex-wrap gap-1.5">
+          {activities.map((r) => (
+            <Tag key={r.id} tone={loadsLegs(r) && r.details?.intensity === 'hard' ? 'accent' : 'neutral'}>
+              {r.value} min {sportName(r)}
+              {loadsLegs(r) ? ` · ${r.details?.intensity ?? 'easy'}` : ''}
+            </Tag>
+          ))}
+          <span className="text-xs text-[var(--muted)]">from Strava{manual ? ', overridden by your choice' : ''}</span>
+        </div>
       )}
-      <p className="text-xs text-[var(--muted)]">
-        Hard = intervals, threshold work or longer than 60 min, for rides and leg-heavy sports such as hikes, runs or skating. Tap a selected
-        option again to clear it.
+      <p className="text-xs leading-relaxed text-[var(--muted)]">
+        Hard: intervals, threshold work or over 60 min, for rides and leg-heavy sports. It moves the legs session to another day.
       </p>
-    </div>
+    </Card>
   )
+}
+
+function itemMeta(item: PlanItem) {
+  const ex = exerciseById(item.exerciseId)
+  const unit = item.measure === 'reps' ? 'reps' : 's'
+  const range = `${item.target[0]}${item.target[1] !== item.target[0] ? `–${item.target[1]}` : ''} ${unit}`
+  return `${item.sets > 1 ? `${item.sets} × ` : ''}${range}${ex?.perSide ? ' each side' : ''}`
 }
 
 function ItemRow({ item, onOpen }: { item: PlanItem; onOpen: () => void }) {
   const ex = exerciseById(item.exerciseId)
   if (!ex) return null
-  const unit = item.measure === 'reps' ? 'reps' : 's'
+  const ladder = item.ladderId ? LADDERS[item.ladderId] : undefined
   return (
     <li>
-      <button className="card flex w-full items-center gap-3 overflow-hidden p-2 text-left" onClick={onOpen}>
-        <div className="w-24 shrink-0 overflow-hidden rounded-xl">
+      <button className="flex w-full items-center gap-3 px-4 py-3 text-left active:bg-[var(--surface-2)]" onClick={onOpen}>
+        <Thumb size={60}>
           <FigureView animation={ex.animation} showLabel={false} time={ex.animation.frames[0].move} />
-        </div>
+        </Thumb>
         <div className="min-w-0 flex-1">
-          <div className="font-semibold">{ex.name}</div>
-          <div className="text-sm text-[var(--muted)]">
-            {item.sets > 1 ? `${item.sets} × ` : ''}
-            {item.target[0]}
-            {item.target[1] !== item.target[0] ? `–${item.target[1]}` : ''} {unit}
-            {ex.perSide ? ' each side' : ''}
-            {item.ladderId ? ` · ${LADDERS[item.ladderId].name} step ${LADDERS[item.ladderId].steps.findIndex((s) => s.id === item.exerciseId) + 1}` : ''}
+          <div className="truncate text-[15px] font-semibold">{ex.name}</div>
+          <div className="text-[13px] text-[var(--muted)]">
+            {itemMeta(item)}
+            {ladder ? ` · step ${ladder.steps.findIndex((s) => s.id === item.exerciseId) + 1} of ${ladder.steps.length}` : ''}
           </div>
         </div>
+        <ChevronRight size={18} className="shrink-0 text-[var(--muted)]" />
       </button>
     </li>
   )
@@ -128,21 +169,34 @@ function ItemRow({ item, onOpen }: { item: PlanItem; onOpen: () => void }) {
 
 function Summary({ updates, onClose }: { updates: LadderUpdate[]; onClose: () => void }) {
   return (
-    <div className="space-y-4">
-      <h1 className="text-2xl font-bold">Session saved</h1>
-      {updates.length ? (
-        <ul className="card divide-y divide-[var(--border)] text-sm">
-          {updates.map((u) => (
-            <li key={u.ladderId} className="p-3">
-              <b>{LADDERS[u.ladderId].name}:</b> {u.reason}
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p className="text-sm text-[var(--muted)]">No step changes: keep the same exercises and aim for one more rep or a few more seconds next time.</p>
-      )}
+    <div className="space-y-5 pt-6">
+      <div className="flex flex-col items-center gap-3 text-center">
+        <span className="flex h-16 w-16 items-center justify-center rounded-full bg-[var(--accent)] text-[var(--accent-text)]">
+          <Check size={30} strokeWidth={2.5} />
+        </span>
+        <h1 className="text-[28px] font-semibold">Session complete</h1>
+        <p className="max-w-xs text-sm text-[var(--muted)]">Saved on this phone and backed up when you are online.</p>
+      </div>
+      <Card className="p-5">
+        <Eyebrow>Next time</Eyebrow>
+        {updates.length ? (
+          <ul className="mt-3 space-y-3">
+            {updates.map((u) => (
+              <li key={u.ladderId} className="flex gap-3 text-sm">
+                <Sparkles size={18} className="mt-0.5 shrink-0 text-[var(--accent)]" />
+                <div>
+                  <div className="font-semibold">{LADDERS[u.ladderId].name}</div>
+                  <div className="text-[var(--muted)]">{u.reason}</div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="mt-2 text-sm text-[var(--muted)]">Same exercises: aim for one more rep or a few more seconds.</p>
+        )}
+      </Card>
       <button className="btn btn-primary w-full" onClick={onClose}>
-        Back to today
+        Done
       </button>
     </div>
   )
@@ -175,86 +229,106 @@ export function TodayScreen({ account }: { account: Account }) {
   }
 
   const open = openId ? exerciseById(openId) : undefined
-  if (open) {
-    return (
-      <div className="space-y-4">
-        <ExerciseHeader exercise={open} onBack={() => setOpenId(null)} />
-        <ExerciseInfo exercise={open} />
-      </div>
-    )
-  }
+  if (open) return <ExerciseDetailView exercise={open} onBack={() => setOpenId(null)} />
 
   const p = makePlan(input, override)
   const todayLog = input.days.find((d) => d.day === input.today)
   const check = morningCheckDue(input)
-  const doneToday = input.sessions.filter((s) => !s.deleted && s.ended_at && localDay(s.started_at) === input.today).length
+  const finished = input.sessions.filter((s) => !s.deleted && s.ended_at)
+  const doneDays = new Set(finished.map((s) => localDay(s.started_at)))
+  const doneToday = doneDays.has(input.today)
+  const lead = exerciseById(p.items.find((i) => i.phase === 'main')?.exerciseId ?? '')
+  const mainCount = p.items.filter((i) => i.phase === 'main').length
 
   return (
-    <div className="space-y-4">
-      <header>
-        <p className="text-sm text-[var(--muted)]">
-          {new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })} · Week {p.week}
-          {p.deload ? ' (lighter week)' : ''}
-        </p>
-        <h1 className="text-2xl font-bold">{SESSION_NAMES[p.type]}</h1>
-      </header>
+    <div className="space-y-5">
+      <ScreenHeader eyebrow={new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })} title={greeting()} />
+
+      <WeekStrip doneDays={doneDays} todayDay={input.today} />
 
       {check && <MorningCheck sessionId={check.session.id} regions={check.regions} />}
-      <CyclingToday value={todayLog?.cycling ?? null} />
 
-      {doneToday > 0 && <div className="rounded-2xl bg-[var(--accent-soft)] p-4 text-sm">Today's session is done. The next one is shown below if you want to look ahead.</div>}
-      {p.warnings.map((w) => (
-        <div key={w} className="rounded-2xl bg-[var(--warn-soft)] p-4 text-sm">
-          {w}
-        </div>
-      ))}
-      {p.reasons.length > 0 && (
-        <ul className="space-y-1 text-sm text-[var(--muted)]">
-          {p.reasons.map((r) => (
-            <li key={r}>{r}</li>
-          ))}
-        </ul>
-      )}
-
-      <div className="flex gap-2">
-        <button className="btn btn-primary flex-1" onClick={() => startSession(p.type)}>
-          Start session
-        </button>
-        <button className="btn btn-secondary" onClick={() => setChoosing((c) => !c)}>
-          Change
-        </button>
-      </div>
-      {choosing && (
-        <div className="card space-y-2 p-3">
-          <p className="text-sm text-[var(--muted)]">Choose another session for today. The rotation carries on from whatever you do.</p>
-          <div className="grid grid-cols-2 gap-2">
-            {(['A', 'B', 'C', 'D'] as const).map((t) => (
-              <button
-                key={t}
-                onClick={() => setOverride(t)}
-                className={`min-h-11 rounded-xl px-2 text-sm font-semibold ${p.type === t ? 'bg-[var(--accent)] text-[var(--accent-text)]' : 'bg-[var(--accent-soft)]'}`}
-              >
-                {SESSION_NAMES[t]}
-              </button>
-            ))}
+      <section
+        className="card overflow-hidden"
+        style={{ background: 'linear-gradient(160deg, var(--hero-from) 0%, var(--hero-to) 100%)' }}
+      >
+        <div className="flex items-start gap-3 p-5 pb-0">
+          <div className="min-w-0 flex-1">
+            <Eyebrow>
+              {doneToday ? 'Done today · up next' : 'Today'} · week {p.week}
+              {p.deload ? ' · lighter week' : ''}
+            </Eyebrow>
+            <h2 className="mt-1.5 text-[26px] leading-tight font-semibold">{SESSION_NAMES[p.type]}</h2>
+            <div className="mt-3 flex flex-wrap gap-3 text-[13px] text-[var(--muted)]">
+              <span className="inline-flex items-center gap-1">
+                <Clock size={15} /> About {Math.max(5, Math.round(p.minutes / 5) * 5)} min
+              </span>
+              <span className="inline-flex items-center gap-1">
+                <Dumbbell size={15} /> {mainCount} exercises
+              </span>
+            </div>
           </div>
+          {lead && (
+            <div className="w-28 shrink-0 overflow-hidden rounded-2xl bg-[var(--stage)]/70">
+              <FigureView animation={lead.animation} showLabel={false} />
+            </div>
+          )}
         </div>
-      )}
-
-      {PHASES.map(([phase, label]) => {
-        const items = p.items.filter((i) => i.phase === phase)
-        if (!items.length) return null
-        return (
-          <section key={phase} className="space-y-2">
-            <h2 className="text-sm font-semibold tracking-wide text-[var(--muted)] uppercase">{label}</h2>
-            <ul className="space-y-2">
-              {items.map((i) => (
-                <ItemRow key={`${phase}-${i.exerciseId}`} item={i} onOpen={() => setOpenId(i.exerciseId)} />
+        <div className="space-y-2 p-5">
+          {[...p.warnings, ...p.reasons].map((r) => (
+            <div key={r} className="flex gap-2 text-[13px] text-[var(--muted)]">
+              {p.warnings.includes(r) ? <TriangleAlert size={15} className="mt-0.5 shrink-0 text-[var(--warn)]" /> : <Info size={15} className="mt-0.5 shrink-0" />}
+              <span>{r}</span>
+            </div>
+          ))}
+          <div className="flex gap-2 pt-1">
+            <button className="btn btn-primary flex-1" onClick={() => startSession(p.type)}>
+              <Play size={18} fill="currentColor" /> Start
+            </button>
+            <button className="btn btn-secondary px-4" onClick={() => setChoosing((c) => !c)} aria-label="Change session">
+              <Shuffle size={18} />
+            </button>
+          </div>
+          {choosing && (
+            <div className="grid grid-cols-2 gap-2 pt-1">
+              {(['A', 'B', 'C', 'D'] as const).map((t) => (
+                <button
+                  key={t}
+                  onClick={() => {
+                    setOverride(t)
+                    setChoosing(false)
+                  }}
+                  className={`min-h-12 rounded-2xl px-3 text-left text-[13px] font-semibold ${
+                    p.type === t ? 'bg-[var(--accent)] text-[var(--accent-text)]' : 'bg-[var(--surface)] ring-1 ring-[var(--border)]'
+                  }`}
+                >
+                  {SESSION_NAMES[t]}
+                </button>
               ))}
-            </ul>
-          </section>
-        )
-      })}
+            </div>
+          )}
+        </div>
+      </section>
+
+      <CardioToday value={todayLog?.cycling ?? null} />
+
+      <SectionTitle>Plan</SectionTitle>
+      <Card className="overflow-hidden">
+        {PHASES.map(([phase, label]) => {
+          const items = p.items.filter((i) => i.phase === phase)
+          if (!items.length) return null
+          return (
+            <div key={phase} className="border-b border-[var(--border)] last:border-b-0">
+              <Eyebrow className="px-4 pt-4 pb-1">{label}</Eyebrow>
+              <ul className="divide-y divide-[var(--border)]">
+                {items.map((i) => (
+                  <ItemRow key={`${phase}-${i.exerciseId}`} item={i} onOpen={() => setOpenId(i.exerciseId)} />
+                ))}
+              </ul>
+            </div>
+          )
+        })}
+      </Card>
     </div>
   )
 }

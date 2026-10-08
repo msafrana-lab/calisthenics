@@ -7,6 +7,7 @@ import { exerciseById } from '../exercises/library'
 import { LADDERS } from '../programme/ladders'
 import { localDay } from '../programme/engine'
 import { BarChart, ChartCard, ColumnChart, LineChart } from '../components/charts'
+import { ScreenHeader, SectionTitle, Segmented } from '../ui'
 import { addDays, ladderHistory, setsByGroup, WEEKLY_SET_TARGET, weekStart, weeklyMinutes, weightChange, weightSeries } from '../progress/metrics'
 
 const RANGES = [
@@ -21,13 +22,13 @@ const signed = (v: number) => `${v > 0 ? '+' : v < 0 ? '−' : '±'}${Math.abs(v
 
 function StatTile({ label, value, unit, detail }: { label: string; value: string; unit?: string; detail?: string }) {
   return (
-    <div className="card p-3">
-      <div className="text-xs text-[var(--muted)]">{label}</div>
-      <div className="text-2xl font-semibold">
+    <div className="card p-3.5">
+      <div className="text-[12px] leading-tight font-medium text-[var(--muted)]">{label}</div>
+      <div className="mt-1.5 text-[24px] leading-none font-semibold">
         {value}
-        {unit && <span className="text-sm font-normal text-[var(--muted)]"> {unit}</span>}
+        {unit && <span className="text-[13px] font-medium text-[var(--muted)]"> {unit}</span>}
       </div>
-      {detail && <div className="text-xs text-[var(--muted)]">{detail}</div>}
+      {detail && <div className="mt-1.5 text-[11px] leading-tight text-[var(--muted)]">{detail}</div>}
     </div>
   )
 }
@@ -54,6 +55,7 @@ export function ProgressScreen() {
   const range = RANGES.find((r) => r.id === rangeId)!
   const from = addDays(day, -7 * range.weeks + 1)
   const finished = data.sessions.filter((s) => !s.deleted && s.ended_at !== null)
+  const firstDay = finished.map((s) => localDay(s.started_at)).sort()[0] ?? day
 
   // Headline figures
   const weights = weightSeries(data.weighIns)
@@ -75,7 +77,7 @@ export function ProgressScreen() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-bold">Progress</h1>
+      <ScreenHeader eyebrow={`Week ${Math.max(1, Math.floor((Date.parse(day) - Date.parse(firstDay)) / 6048e5) + 1)} of training`} title="Progress" />
 
       <div className="grid grid-cols-3 gap-2">
         <StatTile
@@ -88,7 +90,7 @@ export function ProgressScreen() {
         <StatTile label="Cardio this week" value={String(rideThisWeek)} unit="min" detail="Target 150–300 / week" />
       </div>
 
-      <h2 className="pt-1 font-semibold">This week</h2>
+      <SectionTitle>This week</SectionTitle>
       <ChartCard
         title="Working sets per muscle group"
         subtitle={`Since Monday. Shaded band: the ${WEEKLY_SET_TARGET[0]}–${WEEKLY_SET_TARGET[1]} sets per week the programme aims for. Upper back = shoulder blade and back-extension work.`}
@@ -97,18 +99,8 @@ export function ProgressScreen() {
         <BarChart rows={volume.map((v) => ({ key: v.group, label: v.label, value: v.sets }))} band={WEEKLY_SET_TARGET} bandLabel="Target" max={12} />
       </ChartCard>
 
-      <div className="flex items-center gap-2 pt-1" role="radiogroup" aria-label="Period">
-        {RANGES.map((r) => (
-          <button
-            key={r.id}
-            role="radio"
-            aria-checked={r.id === rangeId}
-            onClick={() => setRangeId(r.id)}
-            className={`h-9 rounded-full px-3 text-sm font-semibold ${r.id === rangeId ? 'bg-[var(--accent)] text-[var(--accent-text)]' : 'bg-[var(--accent-soft)]'}`}
-          >
-            {r.label}
-          </button>
-        ))}
+      <div className="pt-2">
+        <Segmented label="Period" value={rangeId} onChange={setRangeId} options={RANGES.map((r) => ({ value: r.id, label: r.label }))} />
       </div>
 
       <ChartCard
@@ -136,8 +128,8 @@ export function ProgressScreen() {
         />
       </ChartCard>
 
-      <h2 className="pt-1 font-semibold">Exercise history</h2>
-      <p className="-mt-2 text-xs text-[var(--muted)]">Best set per session. A labelled point marks a move to a new step; reps usually drop there because the exercise is harder.</p>
+      <SectionTitle>Exercise history</SectionTitle>
+      <p className="-mt-2 px-1 text-xs text-[var(--muted)]">Best set per session. A labelled point marks a move to a new step; reps usually drop there because the exercise is harder.</p>
       {!histories.length && <p className="text-sm text-[var(--muted)]">No finished sessions in this period yet.</p>}
       {histories.map(({ ladder, points }) => {
         const unit = points[0].measure === 'reps' ? 'reps' : 's'
@@ -161,7 +153,7 @@ export function ProgressScreen() {
         )
       })}
 
-      <h2 className="pt-1 font-semibold">Current steps</h2>
+      <SectionTitle>Current steps</SectionTitle>
       <ul className="card divide-y divide-[var(--border)] text-sm">
         {Object.values(LADDERS).map((l) => {
           const step = Math.min(data.steps[l.id] ?? l.start, l.steps.length - 1)

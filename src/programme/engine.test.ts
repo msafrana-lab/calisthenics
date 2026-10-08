@@ -123,6 +123,31 @@ describe('session content', () => {
     expect(push.rir).toBe(4)
   })
 
+  it('fits each session type into about 15 minutes at full volume', async () => {
+    const { exerciseById } = await import('../exercises/library')
+    const input = { ...base('2026-10-22'), catalogue: exerciseById } // week 3: full sets
+    addSession(input, '2026-10-01', 'D')
+    for (const t of ['A', 'B', 'C', 'D'] as const) {
+      for (const k of [0, 1]) {
+        // Both variants of the rotating slots.
+        const i = { ...input, sessions: [...input.sessions] }
+        for (let n = 0; n < k; n++) i.sessions.push({ id: `x${t}${n}`, day_type: t, started_at: '2026-10-02T07:00:00', ended_at: '2026-10-02T07:15:00', deleted: false })
+        const p = plan(i, t)
+        expect(p.minutes, `${t} variant ${k}`).toBeGreaterThanOrEqual(10)
+        expect(p.minutes, `${t} variant ${k}`).toBeLessThanOrEqual(16)
+      }
+    }
+  })
+
+  it('keeps warm-up to one drill and the cool-down to one optional stretch', () => {
+    const p = plan(base(), 'B')
+    expect(p.items.filter((i) => i.phase === 'warmup')).toHaveLength(1)
+    const cool = p.items.filter((i) => i.phase === 'cooldown')
+    expect(cool).toHaveLength(1)
+    expect(cool[0].sets).toBe(1)
+    expect(cool[0].notes.join(' ')).toMatch(/Optional/)
+  })
+
   it('alternates plank and dead bug in push sessions', () => {
     const input = base('2026-10-05')
     expect(plan(input, 'A').items.some((i) => i.ladderId === 'plank')).toBe(true)
