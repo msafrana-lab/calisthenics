@@ -496,6 +496,105 @@ The ≤3/10 limit is stricter than the 5/10 used in the Thomeé/Silbernagel mode
 - Protein: about **1.6–2.2 g/kg/day** during a deficit, spread over 3–4 meals of 20–40 g (Morton 2018; Jäger 2017; Murphy 2015).
 - Suggest that the user consult a doctor or registered dietitian for an individual energy target, particularly if they have medical conditions.
 
+
+### R12. Variation rotation
+
+**Purpose:** give each emphasis (hand width, stance, hip angle and so on) exposure about once every 2–3 weeks, without breaking double progression.
+
+**Evidence:**
+- Kassiano 2022 (8 studies): systematic variation may help regional hypertrophy and strength, while excessive, random variation may hinder gains.
+- Fonseca 2014: varying exercises gave hypertrophy in all four quadriceps heads.
+- Baz-Valle 2019: random daily variation gave similar gains and better intrinsic motivation in trained men.
+- ACSM 2026 reported that frequent variation is not necessary (verify).
+
+**Status:** variation is therefore an optional emphasis and adherence tool, not a requirement. The mechanics below are *(heuristic)*.
+
+1. **Progression belongs to the step.** `ladder_progress` stores the step, as now. A variation shares the step's rep or hold range, RIR target, set count and rest. It never has a separate step.
+2. **Which sets count:**
+   - **Step-up (R6.2 and G1):** use sets on the standard version and on variations rated "similar" or "harder".
+   - **R6.1 suggested reps:** use the last session on the **same version** within 6 weeks, plus 1 rep (or +5 s). If there is none, use the last standard result minus 2 reps (minus 10 s for holds), and not below the bottom of the range.
+   - **R7 pain rules:** apply to every version.
+   - **R7 performance-drop rule:** applies only to the standard version and "similar" variations.
+3. **Rotation pattern per ladder:** let *n* be the number of completed sessions on the current step.
+   - For the first 2 sessions on a step (n < 2), use the standard version.
+   - After that, alternate: **standard on every other exposure**, and variations in round-robin order on the remaining exposures (S, V1, S, V2, S, V3 …).
+   - Use at most **3 active variations** per step. If more exist, pick by the priority list for that step (the table order above).
+   - **Ladders in a fixed slot** are trained about twice a week (A, B and C each occur twice in R1), so each variation returns about every 2 weeks (2 variations) or 3 weeks (3 variations).
+   - **Ladders in an alternating slot** (for example `['plank', 'deadbug', 'crawl']`) are trained about once a week. They use at most **1** active variation (S, V1), which returns every 2 weeks.
+4. **When to use the standard version only:**
+   - weeks 1–2 (re-entry) and calibration sessions (R10);
+   - deload weeks and the first week after a deload (R8);
+   - the session after any R7 event on that ladder;
+   - any bridging session (R6.3).
+5. **Skipping a variation for joint reasons:** skip a variation, and use the standard version instead, when its load on a region (Knee, Wrist, Shoulder columns) is higher than the standard's and that region had any of the following:
+   - pain ≥3/10 in the last 2 exposures of any exercise loading it;
+   - a "worse" morning check in the last 7 days;
+   - an active R7 pause.
+6. **Disabling a variation:** if a variation itself gives pain ≥4/10, or is followed by a "worse" morning twice, disable that variation for 4 weeks. R7 still decides any change to the ladder step.
+7. **Same version all session:** the warm-up "potentiate" set uses the same version as the working sets that day.
+8. **Advanced steps:** an advanced step's own variations, if added later, follow the same rule. X ladder steps have no variations for now.
+10. **Choosing a variation by hand:** the workout screen lets the user switch to another variation of the same step for that session (user's choice, October 2026: rotate and swap). This does not change the step.
+9. **Data:** each variation is an `Exercise` with its own ID (for example `P5n`), animation, cues and `regions`, plus:
+   - `variationOf` (step ID);
+   - `difficulty` (`'similar' | 'harder' | 'easier'`);
+   - `priority`.
+
+   Sets are logged under the variation's ID. The engine maps them to the step for progression.
+
+---
+
+### R13. Unlocking advanced steps
+
+The rules extend R6 (which needs **one** session at the top of the range at RIR ≥2) and R7. Advanced steps add more load on a sensitive joint, coordination or balance demand, so they use a stricter, longer window. All thresholds are *(heuristic)*.
+
+#### R13.1 General unlock gate (all advanced steps and all X steps)
+
+The engine offers an advanced step only when all of G1–G6 hold. Each condition uses logged data: sets (reps or seconds, RIR, pain), morning check-ins, ladder steps and programme week.
+
+| Rule | Condition |
+|---|---|
+| **G1. Mastery of the previous step** | In **2 of the last 3** sessions on the prerequisite step, all working sets reached the top of the rep or hold range at **RIR ≥2**. Sets on variations count only if their difficulty is "similar" or "harder" (R12). |
+| **G2. Pain on related joints, 4 weeks** | For every region the new step loads (from its `regions`), the maximum logged pain was **≤2/10** on every set of every exercise loading that region in the last **28 days**. |
+| **G3. Morning checks, 2 weeks** | No "worse" morning check for those regions in the last **14 days**. |
+| **G4. No recent regressions** | No R7 regression or pause, and no R7 performance-drop event, on that ladder in the last **14 days**. No week-on-week rise in pain flagged for those regions. |
+| **G5. Timing** | Programme week ≥ the step's minimum week (table below). It is not a deload week and not the first week after a deload (R8 keeps the same steps that week). |
+| **G6. In-app readiness test** | Passed within the last **14 days**, where the table defines a test. The test runs in place of the warm-up "potentiate" set, or as one extra set at the end of the session. To pass: the stated performance at RIR ≥2, pain ≤2/10 on every related region, and the next morning not "worse". If the morning is "worse", the test counts as failed. |
+
+**After a failed test:** retest no sooner than 7 days later.
+
+**After unlocking:** the first 2–3 sessions use R6.3 bridging: one set on the new step, the remaining sets on the previous step. Variations of the new step are not offered for its first 2 sessions (R12).
+
+**No confirmation step (user's choice, October 2026):** all steps unlock through G1–G6 only. For the highest-risk steps (P9, K11, X6, marked "Caution" below), the app shows a caution before the test that recommends a physiotherapist assessment. The tests for these steps also use stricter pain limits (≤1/10).
+
+**How the app records a test** *(implementation)*: the test is offered as one extra item at the end of a session. The user does it, then answers whether the stated performance was reached at the stated reps in reserve and gives the highest pain. The answer is saved as a set with the exercise ID `test:<step ID>` (reps 1 = passed, 0 = not passed). G3 then applies through the next-morning check.
+
+#### R13.2 Step-specific rules
+
+| ID | Prerequisite step and performance (G1) | Regions checked (G2–G3) | Minimum programme week (G5) | In-app readiness test (G6) | Caution |
+|---|---|---|---|---|---|
+| P10 | P7: 3 × 12 at RIR ≥2 (2 of the last 3 sessions) | Shoulder, wrist | 8 | 8 full push-ups at RIR ≥2, then 30 s C5l (forearm plank with leg lifts) | No |
+| P9k | P10 at the top of the range (or P7 if P10 was skipped) | Shoulder, wrist | 10 | 6 P5s (staggered-hand) push-ups per side at RIR ≥2, then 3 slow P5w reps with a 2 s pause at the bottom, shoulder pain ≤1/10 | No |
+| P9 | P9k: 3 × 10 per side at RIR ≥2 | Shoulder, wrist | 14 | 3 archer push-ups per side from the toes at RIR ≥3, pain ≤1/10 | **Yes** |
+| C9 | C3 (full hollow): 45 s at RIR ≥2 | — (no problem joint) | 6 | 30 s full hollow hold with the lower back kept on the floor | No |
+| C10 | C8: 45 s per side at RIR ≥2 | Shoulder | 8 | 4 slow rotational reps per side | No |
+| A6 | A5 at the top of the range | Shoulder | 8 | 30 s C8 per side, then 10 top-leg abductions per side | No |
+| K10 | K7 and K8 both at the top of the range at RIR ≥2 (2 of the last 3 sessions each) | Knee | 10 | 20 s shallow lateral-lunge hold (about 45° knee flexion) per side, then 5 slow reps per side at RIR ≥3 | No |
+| K9 | K8 at the top of the range, and K10 for 4 weeks with knee pain ≤2/10 | Knee | 14 | 30 s single-leg stance per side without touching the wall, then 5 skater squats per side to a 4-fold mat with fingertips on the wall, RIR ≥3 | No |
+| K11 | K10 at the top of the range at full intended depth | Knee | 16 | Wide stance, shift to each side to the planned depth with the heel flat, 3 reps per side, pain ≤1/10 | **Yes** |
+| H9 | H8: 3 × 12 per side at RIR ≥2 | Knee | 8 | 30 s single-leg stance per side, then 5 H9 reps per side without touching the wall | No |
+| E5 | E4 at 30 s, and hinge at H8 or above | Knee, shoulder | 8 | 30 s single-leg stance per side, then 5 slow static standing bird dogs per side (3 s hold) | No |
+| F4 | F3 at the top of the range | — | 4 | 30 s single-leg stance per side | No |
+| X1 | Plank at C5 or above, with C5 at 40 s at RIR ≥2 | Wrist, shoulder | 5 | 45 s forearm plank, then 20 s bear plank hold | No |
+| X2 | X1: 45 s at RIR ≥2 | Wrist, shoulder | 6 | 10 bear plank shoulder taps (5 per side) with the hips steady, RIR ≥2 | No |
+| X3 | X2 at the top of the range | Wrist, shoulder, knee | 7 | Crawl 4 steps forward and 4 back without the knees touching | No |
+| X4 | X3 at 45 s, and push at P5 or above | Wrist, shoulder | 9 | 45 s forearm plank, then 10 high-plank shoulder taps at RIR ≥2 | No |
+| X5 | X4 at the top of the range, and push at P7 or above | Wrist, shoulder | 12 | 4 up-downs (2 leading with each arm) on fists, wrist and shoulder pain ≤1/10 | No |
+| X6 | X5 at the top of the range, and C8 at 45 s | Wrist, shoulder | 14 | 2 push-ups to side plank per side at RIR ≥3, pain ≤1/10 | **Yes** |
+
+**Consistency with R6 and R7:**
+- G1 and G2 are stricter forms of R6.2. They use 2 of 3 sessions instead of one, and a 4-week pain window.
+- Once a step is unlocked, R6 and R7 apply unchanged. Any R7 regression from an advanced step moves the ladder back one step and restarts G1–G4 for that step.
+
 ---
 
 ## Exercise candidates
@@ -627,6 +726,180 @@ The ≤3/10 limit is stricter than the 5/10 used in the Thomeé/Silbernagel mode
 
 **Count:** 61 strength or holding exercise entries across 9 ladders, plus 12 mobility drills. The core ~40 for the engine's default library are the entries marked **Yes**, **Likely start**, **Week 2+** and **Later** in ladders P, S, E, C, K, H, A and F. T3, P8, P9 and K9 are optional or gated.
 
+### Exercise variations and advanced steps
+
+Last researched: October 2026.
+
+This section extends "Exercise candidates" in two ways:
+
+- **Variations:** versions of an existing ladder step with about the same difficulty and a different emphasis.
+- **Advanced steps:** harder steps appended to the ladders, plus one new ladder (X, crawl and plank movement).
+
+The rotation rule is R12 and the unlock rules are R13 (in "Programme rules derived from the evidence").
+
+**Constraints applied:**
+- Mat and wall only.
+- Sensitive knees, shoulders and wrists, with no diagnosis.
+- No overhead skills and no overhead-loaded moves: no pike push-up, handstand or wall walk.
+- No very advanced balance skills: no crow, pistol squat, planche, L-sit, human flag or headstand.
+- Advanced steps stay at a level that a non-athlete in mid-life could reach with steady practice.
+
+**Source access:** the PubMed, PMC and publisher pages could not be opened from the research environment. Most details below therefore come from abstracts, indexed summaries and secondary reports. Every figure that could not be checked against the full text is marked **(verify)**. EMG (muscle activity) studies show which muscles an exercise targets in healthy, mostly young people. They do not show training outcomes or effects on pain.
+
+**Legend (as in "Exercise candidates", with one addition):**
+- **Knee, Wrist and Shoulder load:** L = low, M = medium, H = high. Shoulder load is a new column. It rates load near end range (horizontal abduction, elevation above 90°, or full bodyweight on one arm), not general effort.
+- **Difficulty vs step:** "similar", "harder" or "easier" compared with the standard version of the same step. This rating is used by R12 below. It is mostly *(heuristic)*, because no study matched the difficulty of these bodyweight variations.
+
+---
+
+#### V. Variations (same step, different emphasis)
+
+The ID is the step ID plus a lowercase letter. A variation keeps the step's rep or hold range, RIR target and progression state (see R12).
+
+##### P. Horizontal push
+
+The P3 and P5 hand positions below also apply to P7 (tempo), which keeps the P5 hand position used on the day. For P1 (wall push-up), P2, P4 and P6, there is no meaningful variation beyond the hand-width rules below.
+
+| ID | Variation | Emphasis vs standard | Difficulty vs step | Knee | Wrist | Shoulder | Source | Exclusions / notes |
+|---|---|---|---|---|---|---|---|---|
+| P3n | Knee push-up, narrow hands (hands just inside shoulder width, elbows close to the ribs; not touching, not "diamond") | More triceps and chest activity | Harder | M (kneeling) | M (L–M on fists) | L–M | Cogley 2005; Marcolin 2015; Youdas 2010 (triceps only; verify); Donkers 1993 (elbow torque) | Higher elbow load: elbow torque was about 71% of maximum with hands together vs about 56% with normal hand placement (Donkers 1993, via a secondary summary; verify). Skip if wrist or elbow pain was >2/10 in the last 2 weeks. |
+| P3w | Knee push-up, wide hands (at most about 1.5× shoulder width) | Lower elbow and triceps demand; more horizontal abduction at the bottom | Easier (verify) | M | M (L on fists) | M | Cogley 2005; Marcolin 2015 (wide gave the lowest pectoral and triceps EMG); Donkers 1993 (about 29% elbow torque with hands apart; verify); Green and Comfort 2007 (bench press: keep grip ≤1.5× biacromial width) | Exclude while shoulder pain >2/10 at the bottom of P3/P5. Stop the descent at chest-to-fist height. |
+| P5n | Full push-up, narrow hands | As P3n | Harder | L | M (L–M on fists) | L–M | As P3n | As P3n. |
+| P5w | Full push-up, wide hands (≤1.5× shoulder width) | As P3w | Easier (verify) | L | M (L on fists) | M | As P3w | As P3w. |
+| P5s | Staggered-hand push-up (one hand about a hand-length ahead; swap sides each set) | Shifts load to the rear arm (unilateral bias) and adds some anti-rotation | Similar to harder | L | M (L on fists) | M | Kotarsky 2018 (used "uneven" push-ups as a progression step); no direct EMG data found *(heuristic)* | Exclude while shoulder pain >2/10. Log both sides as one set. |
+
+##### S. Prone and side-lying shoulder
+
+For S1, S3, S4, S5 and S6 there is no meaningful variation: S7 (holds and slow lowering) is a lever, not a different emphasis.
+
+| ID | Variation | Emphasis vs standard | Difficulty vs step | Knee | Wrist | Shoulder | Source | Exclusions / notes |
+|---|---|---|---|---|---|---|---|---|
+| S0f | Side-lying forward flexion (top arm straight, raised from the hip forward and up) | Lower and middle trapezius with low upper-trapezius activity; complements external rotation | Similar | L | L | L–M | Cools 2007 (one of the four exercises with the best trapezius balance; the reported range was to about 135° of flexion, verify) | Keep the arc at or below 90° (shoulder height). The user excluded overhead work (October 2026), so this cap is permanent. |
+| S2e | Prone extension (arms by the sides, palms in or thumbs out, lift the arms back towards the ceiling) | Low upper/middle trapezius ratio; posterior deltoid; no elevation | Similar | L | L | L | Cools 2007 | None. It is close to E1 (prone cobra), so do not schedule both on the same day. |
+
+##### E. Spinal extension
+
+No variation is proposed. E2 on forearms and E3 with W arms are regressions for wrist or shoulder pain, not changes of emphasis. They are already noted in the E table.
+
+##### C. Core
+
+C1, C2, C3, C4, C6, C7 and C8 have no meaningful variation. A staggered-foot side plank is a regression, not a variation. Faster, combined arm-and-leg dead bugs raise abdominal EMG (Yun 2017), but that makes them a harder version, not a different emphasis.
+
+| ID | Variation | Emphasis vs standard | Difficulty vs step | Knee | Wrist | Shoulder | Source | Exclusions / notes |
+|---|---|---|---|---|---|---|---|---|
+| C5l | Forearm plank with alternating leg lift (lift a straight leg about 10–15 cm, hold 2 s, alternate; total time as for C5) | Gluteus maximus, gluteus medius and anti-rotation | Harder | L | L | L–M | Boren 2011: front plank with hip extension gave the highest gluteus maximus EMG (about 106% MVIC) and about 75% MVIC for gluteus medius (verify) | Keep the pelvis level. If low back discomfort appears, shorten the lift. |
+| C5a | Forearm plank with alternating arm reach (reach forward at shoulder height, hold 2 s, alternate) | Anti-rotation; scapular stabilisers on the support side (3-point support) | Harder | L | L | M | Can 2024 (less body-weight support raised scapular and shoulder muscle activity; verify which variants were tested); Calatayud 2017 (unilateral planks raised trunk activity; verify) | Reach no higher than shoulder height (not overhead). Exclude while shoulder pain >2/10. |
+| C5h | High plank (on hands or fists, arms straight) | More lower trapezius and triceps activity than the forearm plank | Similar | L | M (L on fists) | L–M | Can 2024 | Exclude if wrist pain >2/10 on fists. Adds the wrist to the exercise's pain regions. |
+
+##### K. Knee-dominant
+
+There is no meaningful variation for K0, K1, K2 (wall sits) or K5 (a tempo lever).
+
+| ID | Variation | Emphasis vs standard | Difficulty vs step | Knee | Wrist | Shoulder | Source | Exclusions / notes |
+|---|---|---|---|---|---|---|---|---|
+| K3h | Hip-biased partial squat (sit back, shins kept more vertical, more forward trunk lean, same 0–50/60° knee range) | Lower knee moment, higher hip moment (gluteals, hamstrings) | Similar | L | L | L | Fry 2003 (restricting forward knee travel lowered knee torque and raised hip torque; the trunk became more horizontal); Lorenzetti 2018 | More trunk lean means more lumbar load (Fry 2003). Skip if the back is sore. Fingertips on the wall are allowed for balance. |
+| K3w | Wide-stance partial squat (feet about 1.5× hip width, toes out about 20–30°, knees track over the toes) | More gluteus maximus; more adductor range | Similar | L–M | L | L | Paoli 2009 (gluteus maximus EMG higher with the widest stance; n = 6); Lorenzetti 2018 (stance and foot angle change knee and hip moments; avoid the extremes "narrow + 42° toe-out" and "wide + toes forward") | Do not combine a wide stance with toes pointing forward. Exclude if the groin or inner knee hurts. |
+| K4h | Hip-biased squat to pain-free depth | As K3h | Similar | M | L | L | As K3h | As K3h. |
+| K4w | Wide-stance squat to pain-free depth | As K3w | Similar | M | L | L | As K3w | As K3w. |
+| K6l | Long-stance static split squat with a slight forward trunk lean (hands on the front thigh or fingertips on the wall) | More gluteus maximus and hamstrings; lower patellofemoral load at depth | Similar | M | L | L | Farrokhi 2008 (forward trunk lean raised hip extensor impulse and gluteus maximus/biceps femoris EMG); Escamilla 2008 JOSPT (long step: lower patellofemoral force and stress than a short step at 70–90° knee flexion; verify) | The studies used forward lunges. Applying them to a static split squat is an inference. |
+| K8l | Long-stance split squat with 3-s lowering and forward lean | As K6l | Similar | M–H | L | L | As K6l | As K6l. |
+| K7l | Reverse lunge with forward trunk lean | As K6l | Similar | M–H | L | L | Farrokhi 2008 (forward lunge; transfer to the reverse lunge: verify) | As K6l. |
+| K7b | Reverse lunge to knee drive (step back, lunge, then drive the back knee up to hip height and balance for 1 s) | Balance on one leg; hip flexors; control of the knee in single-leg stance | Harder | M–H | L | L | No direct study found *(heuristic)* | Fingertips on the wall are allowed. Exclude if knee pain >2/10 on K7 in the last 2 weeks. |
+
+##### H. Hip extension and hinge
+
+There is no meaningful variation for H2, H3, H5, H6 or H7.
+
+| ID | Variation | Emphasis vs standard | Difficulty vs step | Knee | Wrist | Shoulder | Source | Exclusions / notes |
+|---|---|---|---|---|---|---|---|---|
+| H1c | Glute bridge, feet close (knees bent to about 135°) | Gluteals with less hamstring activity (useful if the hamstrings cramp) | Similar | L | L | L | Lehecka 2017 (single-leg bridge at 135°: biceps femoris about 23% vs 75% MVIC at 90°, gluteals about the same; verify); a two-leg bridge study reported more gluteus maximus at 135° than at 90° (authors: verify) | Results across studies are not uniform: one study found no gluteus maximus difference between 30° and 120°. |
+| H1f | Glute bridge, feet far (knees bent to about 60–70°, heels on the floor) | More hamstrings | Similar | L | L | L | Studies on bridge knee angle (hamstrings and erector spinae more active at smaller knee angles; verify authors) | Stop if the hamstrings cramp. Use H1c instead. |
+| H1a | Wide-knee bridge (feet wider than the hips, knees pushed out to about 30° of hip abduction) | More gluteus maximus; may reduce lumbar extensor dominance | Similar | L | L | L | Kang 2016 (bridging at 0°, 15° and 30° hip abduction; title: abduction "can facilitate gluteus maximus activity"; exact figures: verify) | Knees stay in line with the toes. Exclude if inner-knee pain. |
+| H4c | Single-leg bridge with the working knee at about 135° | As H1c | Similar | L | L | L | Lehecka 2017 | None. |
+| H8r | Single-leg RDL with opposite-hand reach towards the floor (other fingertips on the wall) | Gluteus medius on the stance side; balance; trunk rotation control | Harder | L–M | L | L | Mo 2023 (loaded single-leg RDL: contralateral loading recommended to work hip extensors and trunk together; transfer to bodyweight: verify); otherwise *(heuristic)* | Keep the reach within the hamstring stretch you can control. |
+
+##### A. Hip abduction
+
+There is no meaningful variation for A2 (Distefano 2009 already rates it the highest for gluteus medius; adding hip flexion would shift work to the tensor fasciae latae), A3 or A4.
+
+| ID | Variation | Emphasis vs standard | Difficulty vs step | Knee | Wrist | Shoulder | Source | Exclusions / notes |
+|---|---|---|---|---|---|---|---|---|
+| A1h | Clamshell with the hips flexed to about 60° (knees further forward) | More upper gluteus maximus; higher gluteal-to-TFL ratio | Similar | L | L | L | 2024 PLoS One study in 30 women (60° > 45° > 30° for the gluteal/TFL index; authors: verify); Sidorkewicz 2014 (no significant difference across 30–60°); Willcox and Burden 2013 (verify findings) | The evidence is mixed, so expect a small effect at most. |
+
+##### F. Calf
+
+| ID | Variation | Emphasis vs standard | Difficulty vs step | Knee | Wrist | Shoulder | Source | Exclusions / notes |
+|---|---|---|---|---|---|---|---|---|
+| F1b | Bent-knee calf raise (knees bent about 30–45°, fingertips on the wall) | Slight shift towards the soleus | Similar (verify) | L–M | L | L | Hébert-Losier 2012 (at 45° knee flexion, soleus about 4% higher and gastrocnemius about 5% lower than at 0°; the authors judged this small) | The emphasis effect is small. Keep it because it varies knee position at low cost. Exclude if knee pain with bent-knee standing. |
+| F2b | Single-leg bent-knee calf raise | As F1b | Similar (verify) | L–M | L | L | As F1b | As F1b. |
+| F1t | Calf raise with toes turned out on one set and in on the next (about 30°) | Toes out: medial gastrocnemius; toes in: lateral gastrocnemius | Similar | L | L | L | Nunes 2020 (regional gastrocnemius thickness changed with foot position; verify duration and figures) | Keep the knees over the toes. |
+
+**Mobility pool:** no variations are proposed. The existing drills already cover the priority regions in R9.
+
+---
+
+#### Advanced steps
+
+"Ladder position" gives where the step goes in `LADDERS`. Prerequisites are given here in short form. The unlock rules are in the next subsection.
+
+##### Steps appended to existing ladders
+
+| ID | Exercise | Ladder position | Muscles | Knee | Wrist | Shoulder | Class / target | Prerequisite (short) | Source |
+|---|---|---|---|---|---|---|---|---|---|
+| P10 | Spiderman push-up (bring one knee towards the same-side elbow on each descent; alternate sides) | push: after P7 | Chest, triceps, front deltoid, obliques, hip flexors | L | M (L on fists) | M | Strength, 6–12 reps (alternating) | P7 at the top of the range | No EMG study found. More dynamic push-ups raise trunk EMG and spine load (Freeman 2006) *(heuristic)* |
+| P9k | Archer push-up from the knees (wide hands; lower towards one hand while the other arm straightens) | push: after P10 | Chest, triceps (unilateral bias) | M (kneeling) | M–H (straight arm) | H | Strength, 6–12 per side | P10 at the top of the range, or P7 if P10 is not used | Kotarsky 2018 (archer push-ups in a progression that produced strength gains) |
+| P9 | Archer push-up from the toes (existing ID) | push: after P9k | As above | L | H | H | Strength, 6–12 per side | P9k at the top of the range | Kotarsky 2018. The existing note stands: physiotherapist clearance is advised. |
+| C9 | Hollow rock (arms by the sides; small rocks keeping the lower back on the floor) | deadbug: after C3 | Abdominals, hip flexors | L | L | L | Hold, 20–45 s | C3 (full hollow) at 45 s | No EMG study found *(heuristic)*. Arms stay by the sides (no overhead reach). |
+| C10 | Rotational side plank (forearm side plank; reach the top arm under the body, rotate, return) | sideplank: after C8 | Obliques, rectus abdominis, gluteus medius, back extensors | L | L | M | Strength, 6–12 per side | C8 at 45 s per side | Youdas 2014: the rotational side bridge gave the highest activity in 3 of 4 trunk muscles; gluteus medius >69% MVIC (verify) |
+| A6 | Side plank star (forearm side plank, top leg abducted and held, top arm pointing to the ceiling) | abduction: after A5 | Gluteus medius, obliques | L | L | M | Hold, 20–45 s per side | A5 at the top of the range | Boren 2011: side plank with hip abduction gave the highest gluteus medius EMG (about 89–103% MVIC; verify) |
+| K10 | Lateral lunge (step sideways, sit back into one hip, other leg straight; shallow first, then to pain-free depth) | knee: after K8 | Quadriceps, gluteals, adductors | H | L | L | Strength, 6–12 per side | K7 and K8 at the top of the range | Escamilla 2008 (Clin Biomech: side lunge had higher patellofemoral force and stress than the forward lunge at 80–90° knee flexion); Escamilla 2022 (higher between 40° and 100°; verify). Keep it shallow until R6.5 allows more depth. |
+| K9 | Skater squat to a folded mat (rear knee lowers towards a mat folded 3–4 times; trunk leans forward; fingertips on the wall at first) (existing ID, replaces "partial shrimp squat") | knee: after K10 | Quadriceps, gluteals (unilateral), balance | H | L | L | Strength, 6–12 per side | K8 at the top of the range and K10 tolerated | Knoll 2019: a forward-leaning single-leg squat gave more gluteus maximus and less quadriceps EMG than the split squat (verify that it matches this movement) |
+| K11 | Cossack squat, supported (hands on the floor or the wall; to pain-free depth) (optional) | knee: after K9 | Quadriceps, gluteals, adductors; hip mobility | H | L (L–M if hands on the floor) | L | Strength, 6–12 per side | K10 at the top of the range at full intended depth | No study found *(heuristic)*. Deep knee flexion plus lateral loading (see K10). Optional; caution shown before the test (R13). |
+| H9 | Free-standing single-leg RDL with opposite-hand reach (no wall) | hinge: after H8 | Gluteus maximus, hamstrings, gluteus medius, balance | L–M | L | L | Strength, 6–12 per side | H8 at the top of the range | Distefano 2009 (single-limb deadlift: high gluteus maximus EMG); Mo 2023 (verify transfer) |
+| E5 | Standing bird dog, dynamic (stand on one leg, hinge forward while the free leg extends back and the opposite arm reaches forward; return to standing) | extension: after E4 | Gluteus maximus, multifidus, lumbar erector spinae, gluteus medius; balance | L–M | L | L–M | Strength, 6–12 per side | E4 at 30 s and H8 reached | Losavio 2023: the dynamic version gave higher activity than the static one (peak about 80% gluteus maximus, 60% multifidus, 55% erector spinae and 45% gluteus medius MVIC; verify) |
+| F4 | Single-leg calf raise without hand support | calf: after F3 | Calves, ankle balance | L | L | L | Endurance, 10–20 | F3 at the top of the range | *(heuristic)*: adds balance without adding equipment |
+
+**Notes on E5 and the overhead rule:** the reaching arm stays at or below shoulder height. The user excluded overhead work (October 2026).
+
+**Ladder order** in `LADDERS` after this change:
+- push: P1, P3, P4, P5, P7, P10, P9k, P9
+- deadbug: C1, C2, C3, C9
+- sideplank: C7, C8, C10
+- abduction: A1, A2, A3, A4, A5, A6
+- knee: K0, K1, K3, K2, K4, K5, K6, K7, K8, K10, K9, K11
+- hinge: H7, H8, H9
+- extension: E1, E2, E3, E4, E5
+- calf: F1, F2, F3, F4
+
+##### New ladder X: crawl and plank movement (anti-rotation, shoulder stability, coordination)
+
+**Justification:** the existing ladders hold static planks or move one limb at a time. The user asked for steps that mix strength, balance and movement at a moderate level. Crawling and plank transitions do this without equipment or overhead positions.
+
+**Evidence:** thin. A 2023 review describes crawling EMG studies that show trunk, shoulder, triceps and leg activity, and reports that quadrupedal training may improve proprioception and range of motion (Eckart 2023). Can 2024 found that reducing body-weight support in planks raises scapular muscle activity. No EMG study of bear crawls, shoulder taps or plank up-downs was found. The ordering below is *(heuristic)*.
+
+**Placement:** session A, as a third option in the plank slot: `['plank', 'deadbug', 'crawl']`. The ladder is only offered once plank is at C5 or above. Its sets count as core, not push, for R3.
+
+| ID | Exercise | Muscles | Knee | Wrist | Shoulder | Class / target | Prerequisite (short) | Source |
+|---|---|---|---|---|---|---|---|---|
+| X1 | Bear plank hold (quadruped, knees hovering 2–5 cm; hands or fists under the shoulders) | Abdominals, serratus anterior, quadriceps (isometric) | L | M (L on fists) | L–M | Hold, 20–45 s | C5 at 40 s | Eckart 2023 *(heuristic for this step)* |
+| X2 | Bear plank shoulder taps (knees hovering; tap the opposite shoulder, alternate) | Anti-rotation core, serratus anterior, shoulder stabilisers | L | M (L on fists) | M | Strength, 6–12 per side | X1 at 45 s | Can 2024 (3-point support; verify) *(heuristic)* |
+| X3 | Bear crawl on the mat (knees hovering; 4 small steps forward and 4 back, then sideways) | Trunk stabilisers, shoulders, triceps, quadriceps; coordination | L–M | M (L on fists) | M | Hold, 20–45 s of continuous crawling | X2 at the top of the range | Eckart 2023 |
+| X4 | High-plank shoulder taps (feet wider than the hips; on hands or fists) | Anti-rotation core, serratus anterior | L | M (L on fists) | M | Strength, 6–12 per side | X3 at 45 s and push at P5 or above | Can 2024 *(heuristic)* |
+| X5 | Plank up-down (forearm plank ↔ high plank on fists or hands; switch the leading arm each rep) | Triceps, chest, serratus anterior, anti-rotation core | L | M–H (M on fists) | M–H | Strength, 6–12 total | X4 at the top of the range and push at P7 | No study found *(heuristic)*. Repeated loading in the transition: elbows and wrists. |
+| X6 | Push-up to side plank (T push-up; rotate into a straight-arm side plank on a hand or fist) (optional) | Chest, triceps, obliques, shoulder stabilisers | L | H | H | Strength, 6–12 total | X5 at the top of the range and C8 at 45 s | Youdas 2014 (rotational side bridge) by analogy *(heuristic)* |
+
+##### Candidates considered and not added
+
+| Candidate | Reason |
+|---|---|
+| Bulgarian split squat | Needs a bench or chair. |
+| Step-ups, deficit calf raises | Need a step. |
+| Copenhagen plank | Needs a bench. |
+| Curtsy lunge | Combines knee flexion with rotation and valgus. No benefit over K10 for these knees *(heuristic)*. |
+| Diamond push-up (P8) | High wrist and elbow load (Donkers 1993). P3n/P5n give the narrow-hand emphasis with less extreme wrist and elbow positions. |
+| Pike push-up, wall walk, handstand, crow, pistol, L-sit, planche, headstand, human flag | Excluded by the user. |
+| Wall sit with a hip-adduction squeeze | No consistent evidence that it changes quadriceps emphasis (verify). It is not added as a variation. |
+
 ---
 
 ## Key uncertainties
@@ -639,3 +912,61 @@ The ≤3/10 limit is stricter than the 5/10 used in the Thomeé/Silbernagel mode
 6. **RIR accuracy** is limited, especially for high-rep sets (Halperin 2022), so the progression rules may need tuning from logged data.
 7. **Weekly stretching dose** (Thomas 2018): whether it applies per muscle or as a total is unclear (verify).
 8. Several page numbers, DOIs and secondary-reported figures are marked **(verify)** throughout.
+9. **EMG is not hypertrophy or pain relief.** Almost all variation evidence is acute surface EMG in small samples (6–40 people) of young, healthy adults, often one session. It shows relative emphasis only.
+10. **Difficulty equivalence between variations is untested** for bodyweight work. The "similar / harder / easier" ratings are judgements. Narrow-hand push-ups (more EMG, more elbow torque) are rated harder. Wide-hand push-ups are rated easier because of lower elbow torque (Donkers 1993, secondary summary; verify).
+11. **Many details could not be checked against full texts:** Lehecka 2017 figures, Kang 2016 results, Boren 2011 percentages, Youdas 2014, Losavio 2023 percentages, Nunes 2020 figures, and the Escamilla 2008 and 2022 knee-angle ranges.
+12. **Side lunges load the patellofemoral joint more than forward lunges** at mid-to-deep knee flexion (Escamilla 2008, 2022). For these knees, K10 and K11 carry the highest knee risk of the new steps. K11 shows a caution before its test for that reason.
+13. **No direct evidence was found** for bear crawls, shoulder taps, plank up-downs, push-up to side plank, Spiderman push-ups or hollow rocks. The X ladder and P10/C9 rest on coaching practice and indirect data.
+14. **Overhead boundary:** S0f and E5 involve unloaded arm elevation. Because the user excluded overhead work (October 2026), they are capped at shoulder height.
+15. **Readiness thresholds** (2 of 3 sessions, 28-day pain window, 14-day morning window, minimum weeks) are design choices. They are not derived from studies. Tune them from logged data.
+
+---
+
+## Sources for variations and advanced steps
+
+Sources already listed earlier in this document are not repeated in full: Cools 2007, Ekstrom 2003, Ludewig 2004, Distefano 2009, Kotarsky 2018 and Escamilla 2001.
+
+**Push-up variations**
+- Cogley RM, et al. *Comparison of muscle activation using various hand positions during the push-up exercise.* Journal of Strength and Conditioning Research, 2005;19(3):628–633. 40 subjects; narrow base > wide base for pectoralis major and triceps EMG.
+- Marcolin G, Petrone N, Moro T, Battaglia G, Bianco A, Paoli A. *Selective activation of shoulder, trunk, and arm muscles: a comparative analysis of different push-up variants.* Journal of Athletic Training, 2015;50(11):1126–1132. DOI: [10.4085/1062-6050-50.9.09](https://doi.org/10.4085/1062-6050-50.9.09). n = 8.
+- Youdas JW, et al. Push-up hand position and Perfect·Pushup EMG study. Journal of Strength and Conditioning Research, 2010 (title, volume and pages: verify). Triceps highest with a narrow hand position; no hand-position effect on the pectoralis (via a secondary review; verify).
+- Donkers MJ, An KN, Chao EY, Morrey BF. *Hand position affects elbow joint load during push-up exercise.* Journal of Biomechanics, 1993;26(6):625–632. Elbow torque figures via a secondary summary (verify).
+- Green CM, Comfort P. *The affect of grip width on bench press performance and risk of injury.* Strength and Conditioning Journal, 2007;29(5):10–14.
+- Ebben WP, et al. *Kinetic analysis of several variations of push-ups.* Journal of Strength and Conditioning Research, 2011;25(10):2891–2894. Peak ground reaction force about 64% of body mass for the standard push-up and about 49% for the knee push-up (via secondary summaries; verify). This helps set difficulty between steps.
+- Freeman S, Karpowicz A, Gray J, McGill S. *Quantifying muscle patterns and spine load during various forms of the push-up.* Medicine & Science in Sports & Exercise, 2006;38(3):570–577 (verify pages). PubMed: <https://pubmed.ncbi.nlm.nih.gov/16540847/>
+
+**Planks and core**
+- Boren K, et al. *Electromyographic analysis of gluteus medius and gluteus maximus during rehabilitation exercises.* International Journal of Sports Physical Therapy, 2011;6(3):206–223 (verify pages). PubMed: <https://pubmed.ncbi.nlm.nih.gov/22034614/>
+- Calatayud J, et al. *Progression of core stability exercises based on the extent of muscle activity.* American Journal of Physical Medicine & Rehabilitation, 2017;96(10):694–699. DOI: [10.1097/PHM.0000000000000713](https://doi.org/10.1097/PHM.0000000000000713)
+- Can EN, Harput G, Turgut E. *Shoulder and scapular muscle activity during low and high plank variations with different body-weight-bearing statuses.* Journal of Strength and Conditioning Research, 2024;38(2):245–252. DOI: [10.1519/JSC.0000000000004622](https://doi.org/10.1519/JSC.0000000000004622)
+- Youdas JW, et al. *Surface electromyographic analysis of core trunk and hip muscles during selected rehabilitation exercises in the side-bridge to neutral spine position.* Sports Health, 2014;6(5):416–421. DOI: [10.1177/1941738114539266](https://doi.org/10.1177/1941738114539266)
+- Yun BG, Lee SJ, So HJ, Shin WS. *Changes in muscle activity of the abdominal muscles according to exercise method and speed during dead bug exercise.* 2017 (journal: verify). 30 adults; faster tempo and combined arm-and-leg movement raised abdominal EMG.
+- Eckart AC. *Quadrupedal movement training: a brief review and practical guide.* ACSM's Health & Fitness Journal, 2023;27(4):19–33. DOI: [10.1249/FIT.0000000000000880](https://doi.org/10.1249/FIT.0000000000000880)
+
+**Squats and lunges**
+- Fry AC, Smith JC, Schilling BK. *Effect of knee position on hip and knee torques during the barbell squat.* Journal of Strength and Conditioning Research, 2003;17(4):629–633.
+- Lorenzetti S, et al. *How to squat? Effects of various stance widths, foot placement angles and level of experience on knee, hip and trunk motion and loading.* BMC Sports Science, Medicine and Rehabilitation, 2018;10:14. DOI: [10.1186/s13102-018-0103-7](https://doi.org/10.1186/s13102-018-0103-7). A 2020 correction changed the sign convention for knee varus.
+- Paoli A, Marcolin G, Petrone N. *The effect of stance width on the electromyographical activity of eight superficial thigh muscles during back squat with different bar loads.* Journal of Strength and Conditioning Research, 2009;23(1):246–250.
+- Farrokhi S, et al. *Trunk position influences the kinematics, kinetics, and muscle activity of the lead lower extremity during the forward lunge exercise.* Journal of Orthopaedic & Sports Physical Therapy, 2008;38(7):403–409. DOI: [10.2519/jospt.2008.2634](https://doi.org/10.2519/jospt.2008.2634)
+- Escamilla RF, et al. *Patellofemoral joint force and stress between a short- and long-step forward lunge.* Journal of Orthopaedic & Sports Physical Therapy, 2008;38(11):681–690 (verify).
+- Escamilla RF, Zheng N, MacLeod TD, et al. *Patellofemoral compressive force and stress during the forward and side lunges with and without a stride.* Clinical Biomechanics, 2008;23(8):1026–1037. DOI: [10.1016/j.clinbiomech.2008.05.002](https://doi.org/10.1016/j.clinbiomech.2008.05.002)
+- Escamilla RF, et al. *Patellofemoral joint loading during the performance of the forward and side lunge with step height variations.* International Journal of Sports Physical Therapy, 2022 (volume and pages: verify). <https://ijspt.scholasticahq.com/article/31876>
+- Knoll MG, et al. *Comparisons of single leg squat variations on lower limb muscle activation and center of pressure alterations.* International Journal of Exercise Science, 2019;12(1):950–959. PubMed: <https://pubmed.ncbi.nlm.nih.gov/31523343/>
+
+**Bridges, hinges and hip abduction**
+- Kang SY, Choung SD, Jeon HS. *Modifying the hip abduction angle during bridging exercise can facilitate gluteus maximus activity.* Manual Therapy, 2016;22:211–215. DOI: [10.1016/j.math.2015.12.010](https://doi.org/10.1016/j.math.2015.12.010)
+- Lehecka BJ, et al. *Building a better gluteal bridge: electromyographic analysis of hip muscle activity during modified single-leg bridges.* International Journal of Sports Physical Therapy, 2017;12(4):543–549.
+- Mo et al. *Effects of loading positions on the activation of trunk and hip muscles during flywheel and dumbbell single-leg Romanian deadlift exercises.* Frontiers in Physiology, 2023. <https://www.frontiersin.org/articles/10.3389/fphys.2023.1264604/full> (authors: verify)
+- Losavio R, Contemori S, Bartoli S, Dieni CV, Panichi R, Biscarini A. *Electromyographic and stabilometric analysis of the static and dynamic "standing bird dog" exercise.* Sports, 2023;11(6):119. DOI: [10.3390/sports11060119](https://doi.org/10.3390/sports11060119)
+- Willcox EL, Burden AM. *The influence of varying hip angle and pelvis position on muscle recruitment patterns of the hip abductor muscles during the clam exercise.* Journal of Orthopaedic & Sports Physical Therapy, 2013;43(5):325–331. DOI: [10.2519/jospt.2013.4004](https://doi.org/10.2519/jospt.2013.4004) (findings: verify)
+- Sidorkewicz N, Cambridge EDJ, McGill SM. *Examining the effects of altering hip orientation on gluteus medius and tensor fascae latae interplay during common non-weight-bearing hip rehabilitation exercises.* Clinical Biomechanics, 2014 (volume and pages: verify).
+- *Effects of differences in femoral anteversion and hip flexion angle on hip abductor muscles activity during clam exercise in females.* PLoS One, 2024 (authors: verify). PubMed: <https://pubmed.ncbi.nlm.nih.gov/38913672/>
+
+**Calf**
+- Hébert-Losier K, et al. *Influence of knee flexion angle and age on triceps surae muscle activity during heel raises.* Journal of Strength and Conditioning Research, 2012;26(11):3124–3133. PubMed: <https://pubmed.ncbi.nlm.nih.gov/22190157/>
+- Nunes JP, et al. *Different foot positioning during calf training to induce portion-specific gastrocnemius muscle hypertrophy.* Journal of Strength and Conditioning Research, 2020;34(8):2347–2351.
+
+**Exercise variation**
+- Kassiano W, et al. *Does varying resistance exercises promote superior muscle hypertrophy and strength gains? A systematic review.* Journal of Strength and Conditioning Research, 2022;36(6):1753–1762.
+- Fonseca RM, et al. *Changes in exercises are more effective than in loading schemes to improve muscle strength.* Journal of Strength and Conditioning Research, 2014;28(11):3085–3092 (verify pages).
+- Baz-Valle E, et al. *The effects of exercise variation in muscle thickness, maximal strength and motivation in resistance trained men.* PLoS One, 2019;14(12):e0226989.

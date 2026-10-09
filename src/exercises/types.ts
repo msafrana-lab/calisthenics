@@ -38,4 +38,11 @@ export type Exercise = {
   cues: string[]
   cautions?: string[]
   animation: Animation
+  /**
+   * Set on a variation (docs/EVIDENCE.md, R12): the ID of the ladder step it
+   * varies. It shares that step's range, sets and progression.
+   */
+  variationOf?: string
+  /** A variation's difficulty compared with the standard version of its step. */
+  difficulty?: 'easier' | 'similar' | 'harder'
 }

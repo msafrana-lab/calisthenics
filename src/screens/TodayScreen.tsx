@@ -6,7 +6,7 @@ import { exerciseById } from '../exercises/library'
 import { ExerciseDetailView } from '../components/ExerciseDetail'
 import { SessionPlayer } from '../components/SessionPlayer'
 import { LADDERS, SESSION_NAMES, type SessionType } from '../programme/ladders'
-import { localDay, morningCheckDue, plan as makePlan, STRETCH_TOP_UP, stretchPlan, type Cycling, type EngineInput, type LadderUpdate, type Morning, type PlanItem } from '../programme/engine'
+import { localDay, morningCheckDue, plan as makePlan, stepIndex, STRETCH_TOP_UP, stretchPlan, type Cycling, type EngineInput, type LadderUpdate, type Morning, type PlanItem } from '../programme/engine'
 import { activeSession, startSession } from '../lib/sessions'
 import { db } from '../lib/db'
 import { importedActivities, loadsLegs, sportName } from '../lib/activities'
@@ -138,6 +138,7 @@ function CardioToday({ value }: { value: Cycling | null }) {
 }
 
 function itemMeta(item: PlanItem) {
+  if (item.test) return 'Readiness test · optional'
   const ex = exerciseById(item.exerciseId)
   const unit = item.measure === 'reps' ? 'reps' : 's'
   const range = `${item.target[0]}${item.target[1] !== item.target[0] ? `–${item.target[1]}` : ''} ${unit}`
@@ -158,7 +159,8 @@ function ItemRow({ item, onOpen }: { item: PlanItem; onOpen: () => void }) {
           <div className="truncate text-[15px] font-semibold">{ex.name}</div>
           <div className="text-[13px] text-[var(--muted)]">
             {itemMeta(item)}
-            {ladder ? ` · step ${ladder.steps.findIndex((s) => s.id === item.exerciseId) + 1} of ${ladder.steps.length}` : ''}
+            {ladder && !item.test ? ` · step ${stepIndex(ladder, item.exerciseId) + 1} of ${ladder.steps.length}` : ''}
+            {ex.variationOf && !item.test ? ' · variation' : ''}
           </div>
         </div>
         <ChevronRight size={18} className="shrink-0 text-[var(--muted)]" />
@@ -371,7 +373,7 @@ export function TodayScreen({ account }: { account: Account }) {
               <Eyebrow className="px-4 pt-4 pb-1">{label}</Eyebrow>
               <ul className="divide-y divide-[var(--border)]">
                 {items.map((i) => (
-                  <ItemRow key={`${phase}-${i.exerciseId}`} item={i} onOpen={() => setOpenId(i.exerciseId)} />
+                  <ItemRow key={`${phase}-${i.exerciseId}${i.test ? '-test' : ''}`} item={i} onOpen={() => setOpenId(i.exerciseId)} />
                 ))}
               </ul>
             </div>
