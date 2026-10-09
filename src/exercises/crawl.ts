@@ -109,7 +109,7 @@ const quadruped = bearPose({ hip: KNEEL_HIP })
  * slightly back, so the hand rises forwards and up on its way to the shoulder.
  */
 const tapArm = (shoulder: Vec): Limb => {
-  const hand = add(shoulder, [3, 2])
+  const hand = add(shoulder, [1, 3.5])
   const back = (b: 1 | -1) => middleJoint(shoulder, hand, BODY.upperArm, BODY.forearm, b)[0]
   return freeTo(shoulder, hand, BODY.upperArm, BODY.forearm, back(1) < back(-1) ? 1 : -1)
 }
@@ -234,12 +234,13 @@ function forearmDown(shoulder: Vec): Limb {
 }
 
 const FOREARM = forearmDown(FA_SHOULDER)
-/** Hand lifted between the forearm and the push-up position, elbow up and back. */
-const armInAir = (shoulder: Vec): Limb => {
-  const hand: Vec = [(FA_HAND[0] + PUSH_HAND[0]) / 2, HAND_FLOOR - 5]
-  const high = (b: 1 | -1) => middleJoint(shoulder, hand, BODY.upperArm, BODY.forearm, b)[1]
-  return freeTo(shoulder, hand, BODY.upperArm, BODY.forearm, high(1) < high(-1) ? 1 : -1)
-}
+/**
+ * Arm in the air during the transition. Low (shoulders at forearm height): the
+ * elbow lifts back and the hand hovers under the shoulder. Top (high plank):
+ * the arm hangs with the elbow slightly bent and the hand just off the mat.
+ */
+const LOW_AIR: Limb = { a: [300, 80] }
+const TOP_AIR: Limb = { a: [350, 30] }
 
 type Arms = { near: Limb; far: Limb }
 const lowPlank = (a: Arms) => toePose(FA_ELEVATION, a)
@@ -249,8 +250,8 @@ const topPlank = (a: Arms) => toePose(TOE_TOP, a)
 function upDownFrames(lead: 'near' | 'far'): Keyframe[] {
   const arms = (leadArm: Limb, other: Limb): Arms => (lead === 'near' ? { near: leadArm, far: other } : { near: other, far: leadArm })
   const hand = handPin(PUSH_HAND)
-  const lowAir = armInAir(FA_SHOULDER)
-  const topAir = armInAir(TOP_SHOULDER)
+  const lowAir = LOW_AIR
+  const topAir = TOP_AIR
   return [
     { pose: lowPlank(arms(lowAir, FOREARM)), move: 0.4, label: 'Up' },
     { pose: lowPlank(arms(hand, FOREARM)), move: 0.3, label: 'Up' },
@@ -455,11 +456,11 @@ const pushUpToSidePlank: Exercise = {
       { pose: highPlank(), move: 1, hold: 0.3, label: 'Return' },
       { pose: toePose(TOE_BOTTOM, { near: handPin(PUSH_HAND), far: handPin(PUSH_HAND) }), move: 2, hold: 0.2, label: 'Lower' },
       { pose: highPlank(), move: 1.2, hold: 0.2, label: 'Push' },
-      { pose: sidePlankPose('near'), move: 1.2, hold: 1.5, label: 'Rotate (front view)' },
+      { pose: sidePlankPose('near'), move: 1.2, hold: 1.5, label: 'Rotate' },
       { pose: highPlank(), move: 1, hold: 0.3, label: 'Return' },
       { pose: toePose(TOE_BOTTOM, { near: handPin(PUSH_HAND), far: handPin(PUSH_HAND) }), move: 2, hold: 0.2, label: 'Lower' },
       { pose: highPlank(), move: 1.2, hold: 0.2, label: 'Push' },
-      { pose: sidePlankPose('far'), move: 1.2, hold: 1.5, label: 'Other side (front view)' },
+      { pose: sidePlankPose('far'), move: 1.2, hold: 1.5, label: 'Other side' },
     ],
     viewBox: T_VIEWBOX,
   },
