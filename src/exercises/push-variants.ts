@@ -104,8 +104,8 @@ const TOE_BOTTOM = bisect((e) => toeShoulder(e)[1] - 97.5, -2, 20)
 const TOE_WIDE_BOTTOM = bisect((e) => toeShoulder(e)[1] - 92.5, -2, 20)
 
 // Staggered hands: the near hand about a hand-length ahead of the far hand.
-const STAGGER_FRONT: Vec = [PUSH_HAND[0] + 4, HAND_FLOOR]
-const STAGGER_BACK: Vec = [PUSH_HAND[0] - 5, HAND_FLOOR]
+const STAGGER_FRONT: Vec = [PUSH_HAND[0] + 2, HAND_FLOOR]
+const STAGGER_BACK: Vec = [PUSH_HAND[0] - 7, HAND_FLOOR]
 
 const PUSH_VIEWBOX = [16, 52, 128, 64] as const
 
@@ -173,7 +173,7 @@ const SPIDER_WIDTH = 15
 const PUSH_TOP_LIFT: Lift = { chest: 1, arms: 0.6, legs: 0.6 }
 const PUSH_BOTTOM_LIFT: Lift = { chest: 0.3, arms: 0.3, legs: 0.4 }
 /** Knee out to the side and forwards towards the elbow; shin pointing back, foot off the mat. */
-const KNEE_TO_ELBOW = [42, 292] as const
+const KNEE_TO_ELBOW = [42, 280] as const
 const mirrorLeg = (l: readonly [number, number]) => [180 - l[0], 180 - l[1]] as const
 
 const spiderPose = (lift: Lift, legs?: TopLegs) => topPushUpPose({ knees: false, shift: 0, width: SPIDER_WIDTH, lift, legs })

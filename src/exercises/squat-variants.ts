@@ -62,7 +62,7 @@ const SQUAT_TOP: SquatShape = { knee: 6, shin: 2, lean: 2, arms: 6 }
 // Same knee range as K3 (55°) and K4 (108°), with the shins kept more upright
 // and the hips sent further back, so the trunk leans further forward.
 const HIP_PARTIAL_BOTTOM: SquatShape = { knee: 55, shin: 7, lean: 44, arms: 82 }
-const HIP_PARALLEL_BOTTOM: SquatShape = { knee: 105, shin: 17, lean: 60, arms: 76 }
+const HIP_PARALLEL_BOTTOM: SquatShape = { knee: 105, shin: 18, lean: 58, arms: 78 }
 
 const SQUAT_VIEW = [20, 2, 104, 114] as const
 
@@ -95,8 +95,8 @@ function frontArms(hip: Vec, torso: number, arms: Arms): { armNear: Limb; armFar
   const shoulder = add(hip, dir(torso), BODY.torso)
   const hand = (side: 1 | -1): Vec => {
     if (arms === 'hips') return onTorso(hip, torso, [side * 5.5, -6])
-    if (arms === 'wall') return onTorso(shoulder, torso, [side * 6, 9])
-    return onTorso(shoulder, torso, [side * 1.2, 14])
+    if (arms === 'wall') return onTorso(shoulder, torso, [side * 5, 19])
+    return onTorso(shoulder, torso, [side * 1.2, 17])
   }
   return { armNear: { pin: hand(1), bend: 1 }, armFar: { pin: hand(-1), bend: -1 } }
 }
@@ -296,7 +296,7 @@ const wideSquat: Exercise = {
   animation: {
     frames: [
       { pose: widePose(6), move: 1.3, hold: 0.5, label: 'Stand' },
-      { pose: widePose(100), move: 2.4, hold: 0.3, label: 'Lower' },
+      { pose: widePose(95), move: 2.4, hold: 0.3, label: 'Lower' },
     ],
     viewBox: FRONT_VIEW,
   },
