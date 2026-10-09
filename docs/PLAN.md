@@ -17,6 +17,7 @@ Personal training app: daily bodyweight sessions on a mat, cycling (mostly indoo
 | Session length | About 15 min. A/B/C: 1 warm-up drill plus an easy first set of the first exercise, 3 strength exercises, 1 optional stretch; D (mobility) keeps its longer stretch list. The engine estimates the duration and tests keep each session at 10–16 min | User's choice: sessions had too many warm-ups and stretches. Trade-off: A/B/C now give 1 stretch instead of the 2–3 in R9, so the weekly stretching dose per region relies mostly on D and is below the R9 target. |
 | Optional additions | After the planned exercises, the finish screen offers up to 2 extra exercises (2 sets each): first the other ladder of a rotating slot, then muscle groups with the fewest sets this week. None in a deload week (R8), none that would take a group past 12 sets a week (R3), no legs on a hard ride day (R1), nothing after a next-morning flare-up (R7). A stretch top-up (3 stretches, 30 s each side, about 4 min) is offered on Today: hip flexors, hamstrings and calves after a ride, otherwise rotating through the R9 priority regions. It does not count as a programme session. | User's choice. The top-up offsets the shorter cool-downs; R9's weekly dose per region is what matters (Thomas 2018). |
 | Easier and Harder in a session | Each asks "Just today" or "From now on". A step used just today does not move the ladder; an easier one still applies the pain rule (R7). | User's choice ("1-UP" option). |
+| Variations and advanced steps | Variations for every step where a valid one exists, rotated by R12 (standard version every other session) and selectable by hand in the workout screen ("Version"). Advanced steps and a new crawl ladder (X1–X6) unlock through R13: mastery, 4 weeks without pain above 2/10, 2 weeks without a worse morning, a minimum week, then an in-app readiness test. No overhead skills and no very advanced balance skills; arm raises stay at shoulder height. No physiotherapist confirmation step; the highest-risk steps (P9, K11, X6) show a caution before their test. | User's choices (October 2026). Evidence and sources: `EVIDENCE.md`, "Exercise variations and advanced steps". |
 | Visual design | Light, premium style: warm off-white background, white cards with soft shadows, one green accent, Inter typeface, filled and tapered figure on a soft stage, dark mode | User's choice, to look like a paid fitness app. |
 | Weight and activity data | Direct server-side link to Withings (weigh-ins) and Strava (rides and other sports; leg-heavy sports also move the legs session), instead of Apple Health | Data originates there; no iPhone Shortcut to maintain; richer ride data (indoor flag, heart rate, power, workout tag) to class rides as easy or hard automatically. Setup: `docs/INTEGRATIONS.md`. |
 
@@ -36,12 +37,18 @@ Personal training app: daily bodyweight sessions on a mat, cycling (mostly indoo
 4. **Progress** (done): weight 7-day average with daily weigh-ins, weekly cycling minutes against the 150–300 min WHO range, working sets per muscle group this week against the 6–10 target, best-set history per progression with step changes marked; date range 4 weeks / 12 weeks / 1 year; table view for every chart.
 5. **Strava and Withings link** (done): Edge Function `integrations` with OAuth, imports every 3 hours and on app open; imported rides set the day's easy/hard flag unless set by hand; weekly cycling minutes on Progress. Apple Health was dropped as the route because the data originates in Strava and Withings.
 6. **Shorter sessions and redesign** (done): sessions cut to about 15 min (see the decision table); multi-ladder slots alternate between sessions of the same type; new visual design across all screens.
+7. **Session options** (done): extra exercises after a session, "just today" steps, stretch top-up.
+8. **Variations and advanced steps** (done): about 45 new exercises with animations, R12 rotation, R13 readiness tests.
 
 ## Known limitations of the animations
 
 The figure is a flat 2D drawing, so movements towards or away from the camera cannot be shown directly. These read less clearly and rely on their written cues: side-lying external rotation (S0), clamshell (A1), side planks (C7, C8, A4, A5), thoracic open book (M6), floor pec stretch (M8), and the shoulder-blade "plus" of P2/P6. Hip flexion in the figure-4 stretch (M3) is shown as the simpler ankle-cross set-up.
 
 ## Not yet implemented from the rules
+
+- R13 G4 (no regression in the last 14 days) is covered only through G2 and G3 (pain and morning checks); step changes are not stored with dates.
+- R13 bridging after an unlock (one set on the new step, the rest on the previous one) is not automatic; the new step starts at the bottom of its range.
+- R12.3 limits a variation's own suggested reps to the last 6 weeks; R12.7 (warm-up set on the same version) is left to the user.
 
 - Reactive deloads (R8: performance drops on 3+ exercises, repeated joint flare-ups, poor sleep); only the planned week-6 deload is applied.
 - Placing the mobility day on the hardest cycling day (R1); the legs session is moved away from hard rides, but D is not moved.

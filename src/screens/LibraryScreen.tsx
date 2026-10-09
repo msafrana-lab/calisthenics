@@ -65,7 +65,10 @@ export function LibraryScreen() {
             </div>
             <div className="space-y-0.5 p-3">
               <div className="text-[14px] leading-snug font-semibold">{e.name}</div>
-              <div className="text-[12px] text-[var(--muted)]">{targetText(e)}</div>
+              <div className="text-[12px] text-[var(--muted)]">
+                {targetText(e)}
+                {e.variationOf ? ' · variation' : ''}
+              </div>
             </div>
           </button>
         ))}

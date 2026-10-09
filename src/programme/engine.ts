@@ -2,7 +2,7 @@
 // pain rules of docs/EVIDENCE.md (R1–R8). Pure functions over the training
 // history, so they can be tested without a database.
 import type { ExerciseClass, Group, Region } from '../exercises/types'
-import { LADDERS, ROTATION, TEMPLATES, type Ladder, type SessionType } from './ladders'
+import { LADDERS, NOT_WITH, ROTATION, TEMPLATES, type Ladder, type SessionType } from './ladders'
 
 // ---------------------------------------------------------------- inputs
 
@@ -15,6 +15,11 @@ export type ExerciseInfo = {
   regions: Region[]
   perSide?: boolean
   group?: Group
+  /** Variations (R12): the step varied and the difficulty compared with it. */
+  variationOf?: string
+  difficulty?: 'easier' | 'similar' | 'harder'
+  kneeLoad?: 'low' | 'medium' | 'high'
+  wristLoad?: 'low' | 'medium' | 'high'
 }
 
 export type DoneSession = { id: string; day_type: string; started_at: string; ended_at: string | null; deleted: boolean }
@@ -60,6 +65,8 @@ export type PlanItem = {
   rir: number | null
   restSeconds: number
   notes: string[]
+  /** A readiness test for an advanced step (R13 G6) instead of working sets. */
+  test?: { stepId: string; text: string; painMax: number; caution: boolean }
 }
 
 /** Programme sessions A–D, plus 'S' for an optional stretch top-up (not part of the rotation). */
@@ -141,9 +148,25 @@ export function dueType(history: SessionType[]): { due: SessionType; position: n
 }
 
 const LADDER_OF = new Map<string, string>()
-for (const l of Object.values(LADDERS)) for (const st of l.steps) LADDER_OF.set(st.id, l.id)
+const STEP_OF = new Map<string, string>()
+for (const l of Object.values(LADDERS))
+  for (const st of l.steps)
+    for (const id of [st.id, ...(st.variants ?? [])]) {
+      LADDER_OF.set(id, l.id)
+      STEP_OF.set(id, st.id)
+    }
 
 export const ladderOfExercise = (exerciseId: string) => LADDER_OF.get(exerciseId)
+/** The ladder step an exercise belongs to: itself, or the step a variation varies (R12). */
+export const stepOf = (exerciseId: string) => STEP_OF.get(exerciseId) ?? exerciseId
+/** Index of an exercise's step in its ladder (-1 if it is not on the ladder). */
+export const stepIndex = (ladder: Ladder, exerciseId: string) => ladder.steps.findIndex((st) => st.id === stepOf(exerciseId))
+
+/** Exercise ID under which a readiness test result is logged (R13 G6): reps 1 = passed, 0 = not passed. */
+export const testId = (stepId: string) => `test:${stepId}`
+
+/** A ladder whose first step is gated (the crawl ladder) stays closed until that step is unlocked. */
+export const isOpen = (input: Pick<EngineInput, 'steps'>, ladder: Ladder) => !ladder.steps[0].gate || input.steps[ladder.id] !== undefined
 
 function amount(s: DoneSet): number {
   return s.reps ?? s.seconds ?? 0
@@ -163,7 +186,7 @@ function sessionsWith(input: EngineInput, exerciseId: string): DoneSession[] {
 }
 
 function sessionsWithLadder(input: EngineInput, ladder: Ladder): DoneSession[] {
-  const exIds = new Set(ladder.steps.map((s) => s.id))
+  const exIds = new Set(ladder.steps.flatMap((s) => [s.id, ...(s.variants ?? [])]))
   const ids = new Set(input.sets.filter((s) => !s.deleted && exIds.has(s.exercise_id)).map((s) => s.session_id))
   return completed(input)
     .filter((s) => ids.has(s.id))
@@ -171,7 +194,38 @@ function sessionsWithLadder(input: EngineInput, ladder: Ladder): DoneSession[] {
 }
 
 function ladderRegions(input: EngineInput, ladder: Ladder): Set<Region> {
-  return new Set(ladder.steps.flatMap((st) => input.catalogue(st.id)?.regions ?? []))
+  return new Set(ladder.steps.flatMap((st) => [st.id, ...(st.variants ?? [])].flatMap((id) => input.catalogue(id)?.regions ?? [])))
+}
+
+type Counting = 'all' | 'progress' | 'performance'
+
+/**
+ * Sets of one ladder step in a session: the standard version and its
+ * variations (R12). 'progress' leaves out easier variations (R6.2, R13 G1);
+ * 'performance' keeps the standard version and similar ones (R7).
+ */
+function stepSets(input: EngineInput, sessionId: string, stepId: string, counting: Counting = 'all'): DoneSet[] {
+  return input.sets.filter((s) => {
+    if (s.deleted || s.session_id !== sessionId || stepOf(s.exercise_id) !== stepId) return false
+    if (s.exercise_id === stepId || counting === 'all') return true
+    const d = input.catalogue(s.exercise_id)?.difficulty
+    return counting === 'progress' ? d !== 'easier' : d === 'similar'
+  })
+}
+
+/** Completed sessions with sets on a step (any version), most recent first. */
+function sessionsWithStep(input: EngineInput, stepId: string, counting: Counting = 'all'): DoneSession[] {
+  return completed(input)
+    .filter((s) => stepSets(input, s.id, stepId, counting).length > 0)
+    .reverse()
+}
+
+const maxPainOf = (sets: DoneSet[]) => Math.max(0, ...sets.map((s) => s.pain ?? 0))
+
+/** Sessions started in the last `days` days, today included. */
+function sessionsSince(input: EngineInput, days: number): Set<string> {
+  const since = addDays(input.today, -days)
+  return new Set(input.sessions.filter((s) => !s.deleted && localDay(s.started_at) > since).map((s) => s.id))
 }
 
 /** The morning check-in recorded on the day after a session, if any. */
@@ -206,10 +260,133 @@ function targetRir(info: ExerciseInfo, week: number, deload: boolean): number | 
 
 function suggestion(input: EngineInput, info: ExerciseInfo): number {
   const [lo, hi] = info.target
+  const reps = info.measure === 'reps'
+  const clamp = (n: number) => Math.min(hi, Math.max(lo, n))
   const last = sessionsWith(input, info.id)[0]
+  const best = (s: DoneSession, id: string) => Math.max(...setsOf(input, s.id, id).map(amount))
+  // R12: a variation uses its own last result within 6 weeks, otherwise the
+  // standard version's last result minus 2 reps (10 s).
+  if (info.variationOf && !(last && daysBetween(localDay(last.started_at), input.today) <= 42)) {
+    const base = sessionsWith(input, info.variationOf)[0]
+    return base ? clamp(best(base, info.variationOf) - (reps ? 2 : 10)) : lo
+  }
   if (!last) return lo
-  const best = Math.max(...setsOf(input, last.id, info.id).map(amount))
-  return Math.min(hi, Math.max(lo, best + (info.measure === 'reps' ? 1 : 5)))
+  return clamp(best(last, info.id) + (reps ? 1 : 5))
+}
+
+// ---------------------------------------------------------------- variations (R12)
+
+const LOAD = { low: 0, medium: 1, high: 2 } as const
+
+/** A joint region that is irritated: pain 3/10 or more in the last 14 days, or a worse morning in the last 7. */
+function regionFlagged(input: EngineInput, region: Region): boolean {
+  const recent = sessionsSince(input, 14)
+  const painful = input.sets.some((s) => !s.deleted && recent.has(s.session_id) && (s.pain ?? 0) >= 3 && input.catalogue(s.exercise_id)?.regions.includes(region))
+  const since = addDays(input.today, -7)
+  return painful || input.days.some((d) => d.day > since && d.morning?.[region] === 'worse')
+}
+
+/** R12.5: the variation loads an irritated joint more than the standard version. */
+function riskier(input: EngineInput, baseId: string, variantId: string): boolean {
+  const base = input.catalogue(baseId)
+  const v = input.catalogue(variantId)
+  if (!base || !v) return true
+  const more: Region[] = []
+  if (LOAD[v.kneeLoad ?? 'low'] > LOAD[base.kneeLoad ?? 'low']) more.push('knee')
+  if (LOAD[v.wristLoad ?? 'low'] > LOAD[base.wristLoad ?? 'low']) more.push('wrist')
+  for (const r of v.regions) if (!base.regions.includes(r) && !more.includes(r)) more.push(r)
+  return more.some((r) => regionFlagged(input, r))
+}
+
+/** R12.6: a variation that caused pain 4/10 or more, or two worse mornings, rests for 4 weeks. */
+function variationRested(input: EngineInput, variantId: string): boolean {
+  const recent = sessionsSince(input, 28)
+  if (input.sets.some((s) => !s.deleted && recent.has(s.session_id) && s.exercise_id === variantId && (s.pain ?? 0) >= 4)) return true
+  const regions = new Set(input.catalogue(variantId)?.regions ?? [])
+  const worse = sessionsWith(input, variantId).filter((s) => recent.has(s.id) && worseAfter(input, s, regions))
+  return worse.length >= 2
+}
+
+const weekAfterDeload = (week: number) => week > 6 && (week - 1) % 6 === 0
+
+/**
+ * R12 rotation: the standard version for the first 2 sessions on a step, then
+ * the standard version and variations in turn (S, V1, S, V2 …), with at most
+ * 3 variations (1 in an alternating slot). Standard only in weeks 1–2, deload
+ * weeks and the week after, after a pain event on the ladder, and when a
+ * variation would load an irritated joint more.
+ */
+function chooseVersion(input: EngineInput, ladder: Ladder, step: number, alternating: boolean, week: number): string {
+  const st = ladder.steps[step]
+  const variants = (st.variants ?? []).filter((v) => input.catalogue(v) && !variationRested(input, v)).slice(0, alternating ? 1 : 3)
+  if (!variants.length || week <= 2 || isDeloadWeek(week) || weekAfterDeload(week)) return st.id
+  const n = sessionsWithStep(input, st.id).length
+  if (n < 2) return st.id
+  const last = sessionsWithLadder(input, ladder)[0]
+  const lastSets = last ? input.sets.filter((s) => !s.deleted && s.session_id === last.id && ladderOfExercise(s.exercise_id) === ladder.id) : []
+  if (last && (maxPainOf(lastSets) >= 3 || worseAfter(input, last, ladderRegions(input, ladder)))) return st.id
+  const k = n - 2
+  if (k % 2 === 0) return st.id
+  const v = variants[((k - 1) / 2) % variants.length]
+  return riskier(input, st.id, v) ? st.id : v
+}
+
+// ---------------------------------------------------------------- advanced steps (R13)
+
+/** G1: in 2 of the last 3 sessions on the step, every counting set reached the top of the range with 2+ in reserve. */
+function mastered(input: EngineInput, stepId: string): boolean {
+  const info = input.catalogue(stepId)
+  if (!info) return false
+  const top = sessionsWithStep(input, stepId, 'progress')
+    .slice(0, 3)
+    .filter((s) => stepSets(input, s.id, stepId, 'progress').every((x) => amount(x) >= info.target[1] && (x.rir ?? 0) >= 2))
+  return top.length >= 2
+}
+
+/** R13 G1–G5 for a gated step; the readiness test (G6) is offered once these hold. */
+export function gateStatus(input: EngineInput, ladder: Ladder, index: number): { ok: boolean; missing: string[] } {
+  const gate = ladder.steps[index]?.gate
+  if (!gate) return { ok: true, missing: [] }
+  const week = programmeWeek(input)
+  const missing: string[] = []
+  if (![gate.prereq, ...(gate.alsoMastered ?? [])].every((id) => mastered(input, id))) missing.push('mastery')
+  for (const r of gate.requires ?? []) {
+    const other = LADDERS[r.ladder]
+    if (!isOpen(input, other) || currentStep(input, other, week) < other.steps.findIndex((st) => st.id === r.atLeast)) missing.push(`${other.name} step`)
+  }
+  // G2: pain 2/10 or less for 4 weeks on the joints the step loads (or on the ladder itself).
+  const recent = sessionsSince(input, 28)
+  const loads = (id: string) => (gate.regions.length ? gate.regions.some((r) => input.catalogue(id)?.regions.includes(r)) : ladderOfExercise(id) === ladder.id)
+  if (input.sets.some((s) => !s.deleted && recent.has(s.session_id) && (s.pain ?? 0) > 2 && loads(s.exercise_id))) missing.push('pain')
+  // G3: no worse morning for those joints in 2 weeks.
+  const since = addDays(input.today, -14)
+  if (input.days.some((d) => d.day > since && gate.regions.some((r) => d.morning?.[r] === 'worse'))) missing.push('morning')
+  // G5: timing.
+  if (week < gate.minWeek || isDeloadWeek(week) || weekAfterDeload(week)) missing.push('timing')
+  return { ok: missing.length === 0, missing }
+}
+
+/** Most recent readiness test result for a step: day and whether it passed. */
+function lastTest(input: EngineInput, stepId: string, painMax: number): { day: string; passed: boolean } | null {
+  const byId = new Map(input.sessions.filter((s) => !s.deleted).map((s) => [s.id, s]))
+  const tests = input.sets
+    .filter((s) => !s.deleted && s.exercise_id === testId(stepId) && byId.has(s.session_id))
+    .map((s) => ({ day: localDay(byId.get(s.session_id)!.started_at), passed: s.reps === 1 && (s.pain ?? 0) <= painMax }))
+    .sort((a, b) => a.day.localeCompare(b.day))
+  return tests.at(-1) ?? null
+}
+
+/** The gated step a session on `stepId` can test for, if R13 G1–G5 hold and no test was tried in the last 7 days. */
+function testFor(input: EngineInput, stepId: string, week: number): { ladder: Ladder; index: number } | null {
+  for (const ladder of Object.values(LADDERS)) {
+    const index = isOpen(input, ladder) ? currentStep(input, ladder, week) + 1 : 0
+    const gate = ladder.steps[index]?.gate
+    if (!gate || gate.prereq !== stepId || !input.catalogue(ladder.steps[index].id)) continue
+    const last = lastTest(input, ladder.steps[index].id, gate.painMax ?? 2)
+    if (last && daysBetween(last.day, input.today) < 7) continue
+    if (gateStatus(input, ladder, index).ok) return { ladder, index }
+  }
+  return null
 }
 
 /** One plan entry for an exercise, with targets from the history (R4–R6). */
@@ -293,7 +470,8 @@ export function plan(input: EngineInput, override?: SessionType): Plan {
       if (it) items.push(it)
       continue
     }
-    const ids = Array.isArray(slot.ladder) ? slot.ladder : [slot.ladder]
+    const ids = (Array.isArray(slot.ladder) ? slot.ladder : [slot.ladder]).filter((id) => isOpen(input, LADDERS[id]))
+    if (!ids.length) continue
     const ladder = LADDERS[ids[typeCount % ids.length]]
     const notes: string[] = []
     const regions = ladderRegions(input, ladder)
@@ -317,11 +495,32 @@ export function plan(input: EngineInput, override?: SessionType): Plan {
     if (!recent.length) notes.push('First time: stop at 2 reps in reserve or pain 3/10, whichever comes first.')
 
     const step = currentStep(input, ladder, week)
-    const it = item('main', ladder.steps[step].id, sets, ladder.id, notes)
-    if (it) items.push(it)
+    const version = chooseVersion(input, ladder, step, Array.isArray(slot.ladder), week)
+    if (version !== ladder.steps[step].id) notes.push(`Variation of ${input.catalogue(ladder.steps[step].id)?.name ?? 'your step'}: same range and progression.`)
+    const it = item('main', version, sets, ladder.id, notes)
+    if (!it) continue
+    items.push(it)
+
+    // R13 G6: a readiness test for the next advanced step, after the working sets.
+    const test = !deload ? testFor(input, ladder.steps[step].id, week) : null
+    if (test) {
+      const st = test.ladder.steps[test.index]
+      const gate = st.gate!
+      const t = item('main', st.id, 1, test.ladder.id, ['Readiness test: optional. Do it fresh, after a short rest.'])
+      if (t) items.push({ ...t, rir: null, restSeconds: 0, test: { stepId: st.id, text: gate.test, painMax: gate.painMax ?? 2, caution: !!gate.caution } })
+    }
   }
 
-  const firstMain = items.find((i) => i.phase === 'main' && i.rir !== null)
+  // R12: some variations are not used next to a similar exercise on the same day.
+  for (let i = 0; i < items.length; i++) {
+    const avoid = NOT_WITH[items[i].exerciseId]
+    if (avoid && items.some((o) => avoid.includes(o.exerciseId))) {
+      const std = buildItem(input, { phase: 'main', exerciseId: stepOf(items[i].exerciseId), sets: items[i].sets, ladderId: items[i].ladderId, notes: items[i].notes.filter((n) => !n.startsWith('Variation of')) })
+      if (std) items[i] = std
+    }
+  }
+
+  const firstMain = items.find((i) => i.phase === 'main' && i.rir !== null && !i.test)
   if (firstMain && type !== 'D') firstMain.notes.unshift('Warm-up set first: one easy set at 4+ reps in reserve (not logged).')
 
   for (const id of template.cooldown) {
@@ -402,7 +601,7 @@ export function extraOptions(input: EngineInput, type: PlanType, planned: PlanIt
 
   const candidates = (['A', 'B', 'C'] as const)
     .flatMap((t) => TEMPLATES[t].main.flatMap((s) => ('ladder' in s ? [s.ladder].flat() : [])))
-    .filter((id, i, all) => all.indexOf(id) === i && !used.has(id))
+    .filter((id, i, all) => all.indexOf(id) === i && !used.has(id) && isOpen(input, LADDERS[id]))
     .flatMap((id) => {
       const ladder = LADDERS[id]
       const exerciseId = ladder.steps[currentStep(input, ladder, week)].id
@@ -479,22 +678,24 @@ export function evaluate(input: EngineInput, sessionId: string): LadderUpdate[] 
   const week = programmeWeek(input)
   const deload = isDeloadWeek(week)
   const updates: LadderUpdate[] = []
-  const exerciseIds = [...new Set(input.sets.filter((s) => !s.deleted && s.session_id === sessionId).map((s) => s.exercise_id))]
+  const logged = input.sets.filter((s) => !s.deleted && s.session_id === sessionId)
+  // Variations count for their step (R12).
+  const stepIds = [...new Set(logged.filter((s) => ladderOfExercise(s.exercise_id)).map((s) => stepOf(s.exercise_id)))]
 
-  for (const exerciseId of exerciseIds) {
-    const ladderId = ladderOfExercise(exerciseId)
-    const info = input.catalogue(exerciseId)
+  for (const stepId of stepIds) {
+    const ladderId = ladderOfExercise(stepId)
+    const info = input.catalogue(stepId)
     if (!ladderId || !info) continue
     const ladder = LADDERS[ladderId]
-    const from = ladder.steps.findIndex((st) => st.id === exerciseId)
-    const sets = setsOf(input, sessionId, exerciseId)
+    const from = stepIndex(ladder, stepId)
+    const all = stepSets(input, sessionId, stepId)
     const [lo, hi] = info.target
-    const maxPain = Math.max(0, ...sets.map((s) => s.pain ?? 0))
+    const maxPain = maxPainOf(all)
 
     // A step tried "just today" does not move the ladder: a harder one is a
     // one-off; an easier one only counts for the pain rule.
     const current = currentStep(input, ladder, week)
-    if (from > current) continue
+    if (!isOpen(input, ladder) || from > current) continue
     if (from < current) {
       if (maxPain >= 4 && from > 0) updates.push({ ladderId, from: current, to: from - 1, reason: `Pain ${maxPain}/10 even on the easier variation: one more step easier.` })
       continue
@@ -513,23 +714,40 @@ export function evaluate(input: EngineInput, sessionId: string): LadderUpdate[] 
     }
     if (maxPain === 3) continue // R7: allowed, but no progression
 
-    // R7 performance drop: below the range in two consecutive sessions without pain.
+    // R7 performance drop: below the range in two consecutive sessions without
+    // pain, on the standard version or a similar variation.
     const below = (sid: string) => {
-      const ss = setsOf(input, sid, exerciseId)
-      return ss.length > 0 && Math.max(...ss.map(amount)) < lo && Math.max(0, ...ss.map((s) => s.pain ?? 0)) <= 2
+      const ss = stepSets(input, sid, stepId, 'performance')
+      return ss.length > 0 && Math.max(...ss.map(amount)) < lo && maxPainOf(ss) <= 2
     }
-    const previous = sessionsWith(input, exerciseId).find((s) => s.id !== sessionId && s.started_at < session.started_at)
+    const previous = sessionsWithStep(input, stepId, 'performance').find((s) => s.id !== sessionId && s.started_at < session.started_at)
     if (below(sessionId) && previous && below(previous.id) && from > 0) {
       updates.push({ ladderId, from, to: from - 1, reason: 'Below the target range twice in a row: one step easier.' })
       continue
     }
 
-    const allTop = sets.length > 0 && sets.every((s) => amount(s) >= hi && (s.rir ?? 0) >= 2)
+    const counting = stepSets(input, sessionId, stepId, 'progress')
+    const allTop = counting.length > 0 && counting.every((s) => amount(s) >= hi && (s.rir ?? 0) >= 2)
     if (allTop && !deload && from < ladder.steps.length - 1) {
       const next = ladder.steps[from + 1]
-      if ((next.minWeek ?? 0) > week) continue
+      // Advanced steps open only through a readiness test (R13).
+      if (next.gate || (next.minWeek ?? 0) > week) continue
       updates.push({ ladderId, from, to: from + 1, reason: `Top of the range with reps to spare: next step, ${input.catalogue(next.id)?.name ?? next.id}.` })
     }
+  }
+
+  // R13 G6: a passed readiness test unlocks its step if G1–G5 still hold.
+  for (const t of logged.filter((s) => s.exercise_id.startsWith('test:'))) {
+    const stepId = t.exercise_id.slice('test:'.length)
+    const ladderId = ladderOfExercise(stepId)
+    if (!ladderId) continue
+    const ladder = LADDERS[ladderId]
+    const index = stepIndex(ladder, stepId)
+    const gate = ladder.steps[index]?.gate
+    const open = isOpen(input, ladder)
+    const current = open ? currentStep(input, ladder, week) : -1
+    if (!gate || index !== current + 1 || t.reps !== 1 || (t.pain ?? 0) > (gate.painMax ?? 2) || !gateStatus(input, ladder, index).ok) continue
+    updates.push({ ladderId, from: current, to: index, reason: `Readiness test passed: ${input.catalogue(stepId)?.name ?? stepId} unlocked. Start at the bottom of the range.` })
   }
   return updates
 }
@@ -559,7 +777,7 @@ export function morningUpdates(input: EngineInput, sessionId: string, morning: M
     if (!ladderId || !info || !info.regions.some((r) => worse.has(r))) continue
     const ladder = LADDERS[ladderId]
     const current = Math.min(input.steps[ladderId] ?? ladder.start, ladder.steps.length - 1)
-    const performed = ladder.steps.findIndex((st) => st.id === exerciseId)
+    const performed = stepIndex(ladder, exerciseId)
     // Already moved down after the session itself (pain during the set): do not drop twice.
     if (current < performed) continue
     if (current > 0) updates.push({ ladderId, from: current, to: current - 1, reason: 'Joint worse the next morning: one step easier and fewer sets.' })

@@ -2,6 +2,7 @@ import { ChevronLeft, TriangleAlert } from 'lucide-react'
 import { FigureView } from '../animation/FigureView'
 import type { Exercise } from '../exercises/types'
 import { Card, Eyebrow, Tag } from '../ui'
+import { exerciseById } from '../exercises/library'
 
 const LOAD_LABEL = { low: 'Low', medium: 'Medium', high: 'High' } as const
 
@@ -50,6 +51,7 @@ export function ExerciseDetailView({ exercise, onBack }: { exercise: Exercise; o
       </div>
       <div className="flex flex-wrap gap-1.5">
         <Tag tone="accent">Target {targetText(exercise)}</Tag>
+        {exercise.variationOf && <Tag>Variation of {exerciseById(exercise.variationOf)?.name ?? exercise.variationOf}</Tag>}
         <Tag>Knee load: {LOAD_LABEL[exercise.kneeLoad]}</Tag>
         <Tag>Wrist load: {LOAD_LABEL[exercise.wristLoad]}</Tag>
       </div>

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { ExerciseClass, Group, Region } from '../exercises/types'
-import { dueType, evaluate, extraOptions, morningCheckDue, morningUpdates, plan, programmeWeek, stretchPlan, weeklySetsByGroup, type DayLog, type DoneSession, type DoneSet, type EngineInput, type ExerciseInfo } from './engine'
+import { dueType, evaluate, extraOptions, morningCheckDue, morningUpdates, plan, programmeWeek, stepOf, stretchPlan, testId, weeklySetsByGroup, type DayLog, type DoneSession, type DoneSet, type EngineInput, type ExerciseInfo } from './engine'
 import { LADDERS, TEMPLATES, type SessionType } from './ladders'
 
 // Catalogue covering every id used by the ladders and templates.
@@ -15,9 +15,15 @@ const SPECIAL: Record<string, Partial<ExerciseInfo>> = {
   S1: { cls: 'endurance', target: [10, 20], regions: [] },
   S2: { cls: 'endurance', target: [10, 20], regions: [] },
   S3: { cls: 'endurance', target: [10, 20], regions: ['shoulder'] },
+  P3n: { variationOf: 'P3', difficulty: 'harder', regions: ['shoulder', 'wrist', 'knee'] },
+  P3w: { variationOf: 'P3', difficulty: 'easier', regions: ['shoulder', 'wrist', 'knee'] },
+  P7: { regions: ['shoulder', 'wrist'] },
+  P10: { regions: ['shoulder', 'wrist'] },
 }
 const allIds = new Set([
   ...Object.values(LADDERS).flatMap((l) => l.steps.map((s) => s.id)),
+  'P3n', // the only variations in this catalogue, so other ladders keep their standard version
+  'P3w',
   ...Object.values(TEMPLATES).flatMap((t) => [...t.warmup, ...t.cooldown, ...t.main.flatMap((s) => ('exercise' in s ? [s.exercise] : []))]),
 ])
 const GROUP: Record<string, Group> = { P: 'push', C: 'core', K: 'legs', F: 'legs', H: 'hips', A: 'hips', S: 'back', E: 'back', M: 'mobility', W: 'warmup' }
@@ -306,5 +312,107 @@ describe('stretch top-up (R9)', () => {
     input.sessions.push({ id: 'st', day_type: 'S', started_at: '2026-10-20T08:00:00', ended_at: '2026-10-20T08:04:00', deleted: false })
     expect(plan(input).type).toBe('A')
     expect(programmeWeek(input)).toBe(1)
+  })
+})
+
+describe('variations (R12)', () => {
+  const history = (input: EngineInput, n: number, id = 'P3') => {
+    for (let i = 0; i < n; i++) addSession(input, `2026-10-${String(1 + i * 2).padStart(2, '0')}`, 'A', [[id, 8]])
+  }
+  const pushItem = (input: EngineInput) => plan(input, 'A').items.find((i) => i.ladderId === 'push' && !i.test)!
+
+  it('maps a variation to its step', () => {
+    expect(stepOf('P3n')).toBe('P3')
+    expect(stepOf('P3')).toBe('P3')
+  })
+
+  it('uses the standard version first, then alternates it with the variations', () => {
+    const versions = [0, 1, 2, 3, 4, 5].map((n) => {
+      const input = base('2026-10-26') // week 4
+      history(input, n)
+      if (!n) addSession(input, '2026-10-01', 'B')
+      return pushItem(input).exerciseId
+    })
+    expect(versions).toEqual(['P3', 'P3', 'P3', 'P3n', 'P3', 'P3w'])
+  })
+
+  it('keeps the standard version in re-entry weeks, deload weeks and after pain', () => {
+    const early = base('2026-10-10')
+    history(early, 3)
+    expect(pushItem(early).exerciseId).toBe('P3')
+
+    const hurt = base('2026-10-26')
+    history(hurt, 2)
+    addSession(hurt, '2026-10-24', 'A', [['P3', 8, 2, 3]])
+    expect(pushItem(hurt).exerciseId).toBe('P3')
+  })
+
+  it('counts harder variations towards a step up, but not easier ones', () => {
+    const input = base('2026-10-20')
+    const harder = addSession(input, '2026-10-20', 'A', [['P3n', 12, 2], ['P3n', 12, 2]])
+    expect(evaluate(input, harder.id)).toEqual([expect.objectContaining({ ladderId: 'push', from: 1, to: 2 })])
+    const easier = addSession(input, '2026-10-20', 'A', [['P3w', 12, 2], ['P3w', 12, 2]])
+    expect(evaluate(input, easier.id)).toEqual([])
+  })
+})
+
+describe('advanced steps (R13)', () => {
+  // Push at P7 (index 4); P10 (index 5) is gated: P7 mastered, week 8+, pain-free, then a test.
+  const ready = (today = '2026-11-20') => {
+    const input = base(today)
+    input.steps.push = 4
+    addSession(input, '2026-09-25', 'B') // week 1 starts 25 Sep; 20 Nov is week 9
+    for (const d of ['2026-11-14', '2026-11-17']) addSession(input, d, 'A', [['P7', 12, 2], ['P7', 12, 3]])
+    return input
+  }
+  const testItem = (input: EngineInput) => plan(input, 'A').items.find((i) => i.test)
+
+  it('does not step up into a gated step automatically', () => {
+    const input = ready()
+    const s = addSession(input, '2026-11-20', 'A', [['P7', 12, 2], ['P7', 12, 2]])
+    expect(evaluate(input, s.id)).toEqual([])
+  })
+
+  it('offers the readiness test once mastery, pain history and timing hold', () => {
+    expect(testItem(ready())).toMatchObject({ exerciseId: 'P10', sets: 1, test: { stepId: 'P10' } })
+    const early = ready()
+    early.sessions.find((x) => x.day_type === 'B')!.started_at = '2026-10-05T07:00:00' // 20 Nov is then week 7
+    expect(testItem(early)).toBeUndefined()
+  })
+
+  it('withholds the test after recent joint pain or a worse morning', () => {
+    const pain = ready()
+    addSession(pain, '2026-11-18', 'B', [['P3', 8, 2, 3]])
+    expect(testItem(pain)).toBeUndefined()
+    const morning = ready()
+    day(morning, { day: '2026-11-18', morning: { wrist: 'worse' } })
+    expect(testItem(morning)).toBeUndefined()
+  })
+
+  it('unlocks the step when the test is passed, and waits 7 days after a failed one', () => {
+    const input = ready()
+    const passed = addSession(input, '2026-11-20', 'A', [[testId('P10'), 1, 2, 0]])
+    expect(evaluate(input, passed.id)).toEqual([expect.objectContaining({ ladderId: 'push', from: 4, to: 5 })])
+
+    const failed = ready()
+    const f = addSession(failed, '2026-11-20', 'A', [[testId('P10'), 0, 2, 0]])
+    expect(evaluate(failed, f.id)).toEqual([])
+    failed.today = '2026-11-24'
+    expect(testItem(failed)).toBeUndefined()
+    failed.today = '2026-11-27'
+    expect(testItem(failed)).toBeDefined()
+  })
+
+  it('keeps the crawl ladder closed until its first step is unlocked', () => {
+    const slotLadders = (input: EngineInput) => new Set([0, 1, 2, 3, 4, 5].map((k) => {
+      const i = base('2026-10-20')
+      Object.assign(i.steps, input.steps)
+      for (let j = 0; j < k; j++) addSession(i, '2026-10-01', 'A')
+      return plan(i, 'A').items.find((x) => ['plank', 'deadbug', 'crawl'].includes(x.ladderId ?? ''))!.ladderId
+    }))
+    expect(slotLadders(base())).toEqual(new Set(['plank', 'deadbug']))
+    const open = base()
+    open.steps.crawl = 0
+    expect(slotLadders(open)).toEqual(new Set(['plank', 'deadbug', 'crawl']))
   })
 })

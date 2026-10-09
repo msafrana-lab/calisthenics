@@ -1,7 +1,7 @@
 // Progress figures computed from the local training history. Pure functions,
 // tested in metrics.test.ts.
 import type { ExerciseClass, Group } from '../exercises/types'
-import { localDay } from '../programme/engine'
+import { localDay, stepIndex } from '../programme/engine'
 import { LADDERS } from '../programme/ladders'
 
 const DAY_MS = 864e5
@@ -120,17 +120,19 @@ export type HistoryPoint = { day: string; exerciseId: string; name: string; best
 export function ladderHistory(ladderId: string, sessions: SessionRow[], sets: SetRow[], catalogue: (id: string) => ExerciseMeta | undefined): HistoryPoint[] {
   const ladder = LADDERS[ladderId]
   if (!ladder) return []
-  const ids = new Set(ladder.steps.map((s) => s.id))
   const done = finishedSessions(sessions)
   const best = new Map<string, { session: SessionRow; exerciseId: string; best: number }>()
   for (const s of sets) {
     const session = done.get(s.session_id)
-    if (s.deleted || !session || !ids.has(s.exercise_id)) continue
+    // Variations are shown as their step (R12).
+    const step = stepIndex(ladder, s.exercise_id)
+    if (s.deleted || !session || step < 0) continue
+    const stepId = ladder.steps[step].id
     const amount = s.reps ?? s.seconds ?? 0
     const cur = best.get(s.session_id)
     // If two steps were done in one session, keep the harder one.
-    const harder = cur && ladder.steps.findIndex((x) => x.id === s.exercise_id) > ladder.steps.findIndex((x) => x.id === cur.exerciseId)
-    if (!cur || harder || (cur.exerciseId === s.exercise_id && amount > cur.best)) best.set(s.session_id, { session, exerciseId: s.exercise_id, best: amount })
+    const harder = cur && step > stepIndex(ladder, cur.exerciseId)
+    if (!cur || harder || (cur.exerciseId === stepId && amount > cur.best)) best.set(s.session_id, { session, exerciseId: stepId, best: amount })
   }
   const rows = [...best.values()].sort((a, b) => a.session.started_at.localeCompare(b.session.started_at))
   return rows.map((r, i) => {
