@@ -1,7 +1,7 @@
 // Programme engine: decides today's session and applies the progression and
 // pain rules of docs/EVIDENCE.md (R1–R8). Pure functions over the training
 // history, so they can be tested without a database.
-import type { ExerciseClass, Region } from '../exercises/types'
+import type { ExerciseClass, Group, Region } from '../exercises/types'
 import { LADDERS, ROTATION, TEMPLATES, type Ladder, type SessionType } from './ladders'
 
 // ---------------------------------------------------------------- inputs
@@ -14,6 +14,7 @@ export type ExerciseInfo = {
   target: readonly [number, number]
   regions: Region[]
   perSide?: boolean
+  group?: Group
 }
 
 export type DoneSession = { id: string; day_type: string; started_at: string; ended_at: string | null; deleted: boolean }
@@ -61,8 +62,12 @@ export type PlanItem = {
   notes: string[]
 }
 
+/** Programme sessions A–D, plus 'S' for an optional stretch top-up (not part of the rotation). */
+export type PlanType = SessionType | 'S'
+export const STRETCH_TOP_UP = 'S'
+
 export type Plan = {
-  type: SessionType
+  type: PlanType
   week: number
   deload: boolean
   /** Estimated duration in minutes. */
@@ -207,6 +212,38 @@ function suggestion(input: EngineInput, info: ExerciseInfo): number {
   return Math.min(hi, Math.max(lo, best + (info.measure === 'reps' ? 1 : 5)))
 }
 
+/** One plan entry for an exercise, with targets from the history (R4–R6). */
+export function buildItem(
+  input: EngineInput,
+  { phase, exerciseId, sets, ladderId, notes = [] }: { phase: Phase; exerciseId: string; sets: number; ladderId?: string; notes?: string[] },
+): PlanItem | null {
+  const info = input.catalogue(exerciseId)
+  if (!info) return null
+  const week = programmeWeek(input)
+  return {
+    phase,
+    exerciseId,
+    ladderId,
+    sets,
+    target: info.target,
+    measure: info.measure,
+    suggested: phase === 'main' ? suggestion(input, info) : info.target[0],
+    rir: phase === 'main' ? targetRir(info, week, isDeloadWeek(week)) : null,
+    restSeconds: phase === 'main' ? REST[info.cls] : 0,
+    notes,
+  }
+}
+
+/** R1: no legs session on a hard cycling day, nor the day after one if the knee flared after the last legs session. */
+function legsBlocked(input: EngineInput): { blocked: boolean; hardToday: boolean } {
+  const today = input.days.find((d) => d.day === input.today)
+  const yesterday = input.days.find((d) => d.day === addDays(input.today, -1))
+  const lastB = completed(input).filter((s) => s.day_type === 'B').at(-1)
+  const kneeFlaredAfterB = !!lastB && morningAfter(input, lastB)?.knee === 'worse'
+  const hardToday = today?.cycling === 'hard'
+  return { blocked: hardToday || (yesterday?.cycling === 'hard' && kneeFlaredAfterB), hardToday }
+}
+
 export function plan(input: EngineInput, override?: SessionType): Plan {
   const week = programmeWeek(input)
   const deload = isDeloadWeek(week)
@@ -216,14 +253,10 @@ export function plan(input: EngineInput, override?: SessionType): Plan {
   const warnings: string[] = []
 
   // R1 cycling adjustment: no legs session on a hard cycling day.
-  const today = input.days.find((d) => d.day === input.today)
-  const yesterday = input.days.find((d) => d.day === addDays(input.today, -1))
-  const lastB = completed(input).filter((s) => s.day_type === 'B').at(-1)
-  const kneeFlaredAfterB = !!lastB && morningAfter(input, lastB)?.knee === 'worse'
-  const legsBlocked = today?.cycling === 'hard' || (yesterday?.cycling === 'hard' && kneeFlaredAfterB)
+  const legs = legsBlocked(input)
 
   let type: SessionType = override ?? due
-  if (!override && type === 'B' && legsBlocked) {
+  if (!override && type === 'B' && legs.blocked) {
     for (let i = 0; i < ROTATION.length; i++) {
       const candidate = ROTATION[(position + i) % ROTATION.length]
       if (candidate !== 'B') {
@@ -232,7 +265,7 @@ export function plan(input: EngineInput, override?: SessionType): Plan {
       }
     }
     reasons.push(
-      today?.cycling === 'hard'
+      legs.hardToday
         ? 'Hard ride today, so the legs session moves to the next day.'
         : 'Hard ride yesterday and knee pain after the last legs session, so legs move to another day.',
     )
@@ -245,22 +278,8 @@ export function plan(input: EngineInput, override?: SessionType): Plan {
   // How many sessions of this type are done: rotates multi-ladder slots.
   const typeCount = history.filter((t) => t === type).length
 
-  const item = (phase: Phase, exerciseId: string, sets: number, ladderId?: string, notes: string[] = []): PlanItem | null => {
-    const info = input.catalogue(exerciseId)
-    if (!info) return null
-    return {
-      phase,
-      exerciseId,
-      ladderId,
-      sets,
-      target: info.target,
-      measure: info.measure,
-      suggested: phase === 'main' ? suggestion(input, info) : info.target[0],
-      rir: phase === 'main' ? targetRir(info, week, deload) : null,
-      restSeconds: phase === 'main' ? REST[info.cls] : 0,
-      notes,
-    }
-  }
+  const item = (phase: Phase, exerciseId: string, sets: number, ladderId?: string, notes: string[] = []) =>
+    buildItem(input, { phase, exerciseId, sets, ladderId, notes })
 
   for (const id of template.warmup) {
     const it = item('warmup', id, 1)
@@ -333,8 +352,119 @@ export function estimateSeconds(plan: Pick<Plan, 'items' | 'type'>, catalogue: (
   }
   // The easy warm-up set of the first exercise (not part of the plan items).
   const first = plan.items.find((i) => i.phase === 'main' && i.rir !== null)
-  if (first && plan.type !== 'D') total += 40
+  if (first && plan.type !== 'D' && plan.type !== STRETCH_TOP_UP) total += 40
   return total
+}
+
+// ---------------------------------------------------------------- optional additions
+
+/** R3: at most about 12 hard sets per muscle group per week. */
+export const WEEKLY_SET_CAP = 12
+const EXTRA_SETS = 2
+
+/** Monday of the week containing `day`. */
+function mondayOf(day: string): string {
+  const weekday = (new Date(`${day}T12:00:00Z`).getUTCDay() + 6) % 7
+  return addDays(day, -weekday)
+}
+
+/** Working sets per muscle group since Monday, including a session in progress. */
+export function weeklySetsByGroup(input: EngineInput): Map<Group, number> {
+  const monday = mondayOf(input.today)
+  const inWeek = new Set(
+    input.sessions.filter((s) => !s.deleted && localDay(s.started_at) >= monday && localDay(s.started_at) <= input.today).map((s) => s.id),
+  )
+  const counts = new Map<Group, number>()
+  for (const set of input.sets) {
+    if (set.deleted || !inWeek.has(set.session_id)) continue
+    const info = input.catalogue(set.exercise_id)
+    if (!info?.group || info.cls === 'stretch' || info.cls === 'drill') continue
+    counts.set(info.group, (counts.get(info.group) ?? 0) + 1)
+  }
+  return counts
+}
+
+/**
+ * Up to two optional exercises to add after a session (user's choice, October
+ * 2026). Candidates are ladders not trained in this session: first the other
+ * ladder of a rotating slot, then muscle groups with the fewest sets this week.
+ * Nothing is offered in a deload week (R8). A group is left out when two more
+ * sets would pass the weekly cap (R3), legs are left out on a hard cycling day
+ * (R1), and a ladder is left out after a next-morning flare-up (R7).
+ */
+export function extraOptions(input: EngineInput, type: PlanType, planned: PlanItem[], max = 2): PlanItem[] {
+  const week = programmeWeek(input)
+  if (isDeloadWeek(week) || type === STRETCH_TOP_UP) return []
+  const used = new Set(planned.map((i) => i.ladderId).filter(Boolean))
+  const sameDay = new Set(type === 'D' ? [] : TEMPLATES[type].main.flatMap((s) => ('ladder' in s ? [s.ladder].flat() : [])))
+  const weekly = weeklySetsByGroup(input)
+  const legs = legsBlocked(input).blocked
+
+  const candidates = (['A', 'B', 'C'] as const)
+    .flatMap((t) => TEMPLATES[t].main.flatMap((s) => ('ladder' in s ? [s.ladder].flat() : [])))
+    .filter((id, i, all) => all.indexOf(id) === i && !used.has(id))
+    .flatMap((id) => {
+      const ladder = LADDERS[id]
+      const exerciseId = ladder.steps[currentStep(input, ladder, week)].id
+      const info = input.catalogue(exerciseId)
+      if (!info?.group) return []
+      if ((weekly.get(info.group) ?? 0) + EXTRA_SETS > WEEKLY_SET_CAP) return []
+      if (legs && (info.group === 'legs' || info.group === 'hips')) return []
+      const last = sessionsWithLadder(input, ladder)[0]
+      if (last && worseAfter(input, last, ladderRegions(input, ladder))) return []
+      return [{ id, exerciseId, group: info.group, rank: (sameDay.has(id) ? 0 : 100) + (weekly.get(info.group) ?? 0) }]
+    })
+    .sort((a, b) => a.rank - b.rank)
+
+  // Prefer two different muscle groups.
+  const picked: typeof candidates = []
+  for (const c of candidates) if (picked.length < max && !picked.some((p) => p.group === c.group)) picked.push(c)
+  for (const c of candidates) if (picked.length < max && !picked.includes(c)) picked.push(c)
+
+  return picked.flatMap((c) => {
+    const it = buildItem(input, { phase: 'main', exerciseId: c.exerciseId, sets: EXTRA_SETS, ladderId: c.id, notes: ['Extra exercise: 2 sets at the usual effort.'] })
+    return it ? [it] : []
+  })
+}
+
+/** Stretches for priority regions (R9). The quadriceps stretch (M5) is left out for the knees. */
+const TOP_UP_POOL = ['M1', 'M2', 'M4', 'M8', 'M6', 'M3'] as const
+/** Hip flexors, hamstrings and calves: the regions a ride shortens or loads most (heuristic). */
+const AFTER_RIDE = ['M1', 'M2', 'M4'] as const
+
+/**
+ * Optional stretch top-up of about 4 min (R9), added because the shorter
+ * sessions stretch less than R9's target. One 30 s hold per stretch and side:
+ * the weekly total per region is what matters most (Thomas 2018), so short
+ * daily holds add up. After a ride (today or yesterday): hip flexors,
+ * hamstrings and calves. Otherwise three stretches rotating by day, skipping
+ * the one in today's cool-down.
+ */
+export function stretchPlan(input: EngineInput, rideToday: boolean): Plan {
+  let ids: string[]
+  if (rideToday) ids = [...AFTER_RIDE]
+  else {
+    const dayIndex = Math.round(Date.parse(`${input.today}T12:00:00Z`) / DAY_MS)
+    ids = [0, 1, 2, 3].map((k) => TOP_UP_POOL[(dayIndex * 3 + k) % TOP_UP_POOL.length])
+    const doneToday = input.sessions.find((s) => !s.deleted && s.ended_at && localDay(s.started_at) === input.today && isType(s.day_type))
+    const skip = doneToday ? TEMPLATES[doneToday.day_type as SessionType].cooldown : []
+    ids = ids.filter((id) => !skip.includes(id)).slice(0, 3)
+  }
+  const items = ids.flatMap((id) => {
+    const it = buildItem(input, { phase: 'cooldown', exerciseId: id, sets: 1 })
+    return it ? [it] : []
+  })
+  const p: Plan = {
+    type: STRETCH_TOP_UP,
+    week: programmeWeek(input),
+    deload: false,
+    reasons: [rideToday ? 'After your ride: hip flexors, hamstrings and calves.' : 'Extra stretching towards the weekly target.'],
+    warnings: [],
+    items,
+    minutes: 0,
+  }
+  p.minutes = Math.round(estimateSeconds(p, input.catalogue) / 60)
+  return p
 }
 
 // ---------------------------------------------------------------- progression
@@ -360,6 +490,15 @@ export function evaluate(input: EngineInput, sessionId: string): LadderUpdate[] 
     const sets = setsOf(input, sessionId, exerciseId)
     const [lo, hi] = info.target
     const maxPain = Math.max(0, ...sets.map((s) => s.pain ?? 0))
+
+    // A step tried "just today" does not move the ladder: a harder one is a
+    // one-off; an easier one only counts for the pain rule.
+    const current = currentStep(input, ladder, week)
+    if (from > current) continue
+    if (from < current) {
+      if (maxPain >= 4 && from > 0) updates.push({ ladderId, from: current, to: from - 1, reason: `Pain ${maxPain}/10 even on the easier variation: one more step easier.` })
+      continue
+    }
 
     if (maxPain >= 4) {
       if (from > 0) {

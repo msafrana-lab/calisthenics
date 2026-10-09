@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { Bike, Check, ChevronRight, Clock, Dumbbell, Info, Play, Shuffle, Sparkles, TriangleAlert } from 'lucide-react'
+import { Bike, Check, ChevronRight, Clock, Dumbbell, Info, Play, Shuffle, Sparkles, StretchHorizontal, TriangleAlert } from 'lucide-react'
 import { FigureView } from '../animation/FigureView'
 import { exerciseById } from '../exercises/library'
 import { ExerciseDetailView } from '../components/ExerciseDetail'
 import { SessionPlayer } from '../components/SessionPlayer'
 import { LADDERS, SESSION_NAMES, type SessionType } from '../programme/ladders'
-import { localDay, morningCheckDue, plan as makePlan, type Cycling, type LadderUpdate, type Morning, type PlanItem } from '../programme/engine'
+import { localDay, morningCheckDue, plan as makePlan, STRETCH_TOP_UP, stretchPlan, type Cycling, type EngineInput, type LadderUpdate, type Morning, type PlanItem } from '../programme/engine'
 import { activeSession, startSession } from '../lib/sessions'
 import { db } from '../lib/db'
 import { importedActivities, loadsLegs, sportName } from '../lib/activities'
@@ -167,7 +167,49 @@ function ItemRow({ item, onOpen }: { item: PlanItem; onOpen: () => void }) {
   )
 }
 
-function Summary({ updates, onClose }: { updates: LadderUpdate[]; onClose: () => void }) {
+/** A ride or leg-loading activity today or yesterday (set by hand or imported). */
+function rodeRecently(input: EngineInput) {
+  const yesterday = addDays(input.today, -1)
+  return input.days.some((d) => (d.day === input.today || d.day === yesterday) && (d.cycling === 'easy' || d.cycling === 'hard'))
+}
+
+function StretchTopUp({ input }: { input: EngineInput }) {
+  const p = stretchPlan(input, rodeRecently(input))
+  return (
+    <Card className="space-y-4 p-5">
+      <div className="flex items-start gap-3">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--accent-soft)] text-[var(--accent-ink)]">
+          <StretchHorizontal size={20} />
+        </span>
+        <div className="min-w-0 flex-1">
+          <h2 className="text-[17px] font-semibold">Stretch top-up</h2>
+          <p className="text-[13px] text-[var(--muted)]">
+            Optional · about {Math.max(2, p.minutes)} min · {p.reasons[0]}
+          </p>
+        </div>
+      </div>
+      <div className="flex gap-2">
+        {p.items.map((i) => {
+          const ex = exerciseById(i.exerciseId)
+          if (!ex) return null
+          return (
+            <div key={i.exerciseId} className="min-w-0 flex-1 space-y-1">
+              <div className="overflow-hidden rounded-2xl bg-[var(--stage)] ring-1 ring-[var(--border)]">
+                <FigureView animation={ex.animation} showLabel={false} time={ex.animation.frames[0].move} />
+              </div>
+              <div className="truncate text-center text-[12px] text-[var(--muted)]">{ex.name}</div>
+            </div>
+          )
+        })}
+      </div>
+      <button className="btn btn-secondary w-full" onClick={() => startSession(STRETCH_TOP_UP)}>
+        <Play size={17} fill="currentColor" /> Start stretches
+      </button>
+    </Card>
+  )
+}
+
+function Summary({ updates, stretch, onClose }: { updates: LadderUpdate[]; stretch: boolean; onClose: () => void }) {
   return (
     <div className="space-y-5 pt-6">
       <div className="flex flex-col items-center gap-3 text-center">
@@ -177,6 +219,7 @@ function Summary({ updates, onClose }: { updates: LadderUpdate[]; onClose: () =>
         <h1 className="text-[28px] font-semibold">Session complete</h1>
         <p className="max-w-xs text-sm text-[var(--muted)]">Saved on this phone and backed up when you are online.</p>
       </div>
+      {!stretch && (
       <Card className="p-5">
         <Eyebrow>Next time</Eyebrow>
         {updates.length ? (
@@ -195,6 +238,7 @@ function Summary({ updates, onClose }: { updates: LadderUpdate[]; onClose: () =>
           <p className="mt-2 text-sm text-[var(--muted)]">Same exercises: aim for one more rep or a few more seconds.</p>
         )}
       </Card>
+      )}
       <button className="btn btn-primary w-full" onClick={onClose}>
         Done
       </button>
@@ -208,20 +252,22 @@ export function TodayScreen({ account }: { account: Account }) {
   const [override, setOverride] = useState<SessionType | undefined>()
   const [choosing, setChoosing] = useState(false)
   const [openId, setOpenId] = useState<string | null>(null)
-  const [summary, setSummary] = useState<LadderUpdate[] | null>(null)
+  const [summary, setSummary] = useState<{ updates: LadderUpdate[]; stretch: boolean } | null>(null)
 
   if (!input) return null
 
-  if (summary) return <Summary updates={summary} onClose={() => setSummary(null)} />
+  if (summary) return <Summary updates={summary.updates} stretch={summary.stretch} onClose={() => setSummary(null)} />
 
   if (session) {
+    const stretch = session.day_type === STRETCH_TOP_UP
     const type = (['A', 'B', 'C', 'D'] as const).find((t) => t === session.day_type)
     return (
       <SessionPlayer
         session={session}
-        plan={makePlan(input, type)}
+        plan={stretch ? stretchPlan(input, rodeRecently(input)) : makePlan(input, type)}
+        input={input}
         onFinished={(u) => {
-          setSummary(u)
+          setSummary({ updates: u, stretch })
           account.syncNow()
         }}
       />
@@ -235,7 +281,8 @@ export function TodayScreen({ account }: { account: Account }) {
   const todayLog = input.days.find((d) => d.day === input.today)
   const check = morningCheckDue(input)
   const finished = input.sessions.filter((s) => !s.deleted && s.ended_at)
-  const doneDays = new Set(finished.map((s) => localDay(s.started_at)))
+  const doneDays = new Set(finished.filter((s) => s.day_type !== STRETCH_TOP_UP).map((s) => localDay(s.started_at)))
+  const stretchedToday = finished.some((s) => s.day_type === STRETCH_TOP_UP && localDay(s.started_at) === input.today)
   const doneToday = doneDays.has(input.today)
   const lead = exerciseById(p.items.find((i) => i.phase === 'main')?.exerciseId ?? '')
   const mainCount = p.items.filter((i) => i.phase === 'main').length
@@ -311,6 +358,8 @@ export function TodayScreen({ account }: { account: Account }) {
       </section>
 
       <CardioToday value={todayLog?.cycling ?? null} />
+
+      {!stretchedToday && <StretchTopUp input={input} />}
 
       <SectionTitle>Plan</SectionTitle>
       <Card className="overflow-hidden">

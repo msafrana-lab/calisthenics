@@ -1,19 +1,46 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { ChevronDown, ChevronLeft, ChevronRight, ChevronsDown, ChevronsUp, Info, SkipForward, X } from 'lucide-react'
+import { ChevronDown, ChevronLeft, ChevronRight, ChevronsDown, ChevronsUp, Info, Plus, RotateCcw, SkipForward, X } from 'lucide-react'
 import { FigureView } from '../animation/FigureView'
 import { exerciseById } from '../exercises/library'
 import { LADDERS, SESSION_NAMES, type SessionType } from '../programme/ladders'
-import type { LadderUpdate, Plan, PlanItem } from '../programme/engine'
+import { buildItem, extraOptions, STRETCH_TOP_UP, type EngineInput, type LadderUpdate, type Plan, type PlanItem } from '../programme/engine'
 import { db, type WorkoutSession } from '../lib/db'
 import { discardSession } from '../lib/sessions'
 import { finishProgrammeSession, setLadderStep } from '../lib/programme'
-import { Card, Eyebrow, Segmented, Tag } from '../ui'
+import { Card, Eyebrow, Segmented, Tag, Thumb } from '../ui'
 import { ExerciseInfo, targetText } from './ExerciseDetail'
 import { LoggedSets, SetLogger } from './SetLogger'
 import { HoldTimer, RestTimer } from './Timer'
 
 const PHASE_LABEL = { warmup: 'Warm-up', main: 'Workout', cooldown: 'Cool-down · optional' } as const
+
+type Custom = {
+  /** Ladders added after the planned exercises. */
+  extras: string[]
+  /** Exercise used just for today, per ladder. */
+  swaps: Record<string, string>
+}
+
+/** Changes made to this session on this device: extra exercises and one-off steps. */
+function useSessionCustom(sessionId: string) {
+  const key = `player-custom:${sessionId}`
+  const [custom, setCustom] = useState<Custom>(() => {
+    try {
+      return { extras: [], swaps: {}, ...JSON.parse(localStorage.getItem(key) ?? '{}') }
+    } catch {
+      return { extras: [], swaps: {} }
+    }
+  })
+  useEffect(() => {
+    try {
+      localStorage.setItem(key, JSON.stringify(custom))
+    } catch {
+      // Storage unavailable: the changes last until the app is closed.
+    }
+  }, [key, custom])
+  return [custom, setCustom] as const
+}
 
 /** Index of the item to resume at, remembered per session on this device. */
 function useStoredIndex(sessionId: string) {
@@ -35,50 +62,134 @@ function useStoredIndex(sessionId: string) {
   return [index, setIndex] as const
 }
 
-function VariationSwitch({ item }: { item: PlanItem }) {
+function StepButton({ dir, name, onPick }: { dir: 'easier' | 'harder'; name?: string; onPick: () => void }) {
+  const Icon = dir === 'easier' ? ChevronsDown : ChevronsUp
+  return (
+    <button
+      disabled={!name}
+      className="flex items-center gap-2 rounded-2xl bg-[var(--surface)] px-3 py-2.5 text-left text-[13px] ring-1 ring-[var(--border)] disabled:opacity-40"
+      onClick={onPick}
+    >
+      <Icon size={17} className="shrink-0 text-[var(--accent)]" />
+      <span className="min-w-0">
+        <span className="block text-[11px] text-[var(--muted)]">{dir === 'easier' ? 'Easier' : 'Harder'}</span>
+        <span className="block truncate font-medium">{name ?? '—'}</span>
+      </span>
+    </button>
+  )
+}
+
+/**
+ * Easier and Harder options from the ladder. Each asks whether the change is
+ * for today only (the ladder stays where it is) or from now on.
+ */
+function VariationSwitch({ item, planned, onToday }: { item: PlanItem; planned: string; onToday: (exerciseId: string | null) => void }) {
+  const [pending, setPending] = useState<number | null>(null)
   if (!item.ladderId) return null
   const ladder = LADDERS[item.ladderId]
   const step = ladder.steps.findIndex((s) => s.id === item.exerciseId)
-  const easier = step > 0 ? exerciseById(ladder.steps[step - 1].id) : undefined
-  const harder = step < ladder.steps.length - 1 ? exerciseById(ladder.steps[step + 1].id) : undefined
-  if (!easier && !harder) return null
+  const own = ladder.steps.findIndex((s) => s.id === planned)
+  const at = (i: number) => (i >= 0 && i < ladder.steps.length ? exerciseById(ladder.steps[i].id) : undefined)
+  const easier = at(step - 1)
+  const harder = at(step + 1)
+  const target = pending === null ? undefined : at(pending)
+
   return (
-    <div className="grid grid-cols-2 gap-2">
-      <button
-        disabled={!easier}
-        className="flex items-center gap-2 rounded-2xl bg-[var(--surface)] px-3 py-2.5 text-left text-[13px] ring-1 ring-[var(--border)] disabled:opacity-40"
-        onClick={() => setLadderStep(ladder.id, step - 1)}
-      >
-        <ChevronsDown size={17} className="shrink-0 text-[var(--accent)]" />
-        <span className="min-w-0">
-          <span className="block text-[11px] text-[var(--muted)]">Easier</span>
-          <span className="block truncate font-medium">{easier?.name ?? '—'}</span>
-        </span>
-      </button>
-      <button
-        disabled={!harder}
-        className="flex items-center gap-2 rounded-2xl bg-[var(--surface)] px-3 py-2.5 text-left text-[13px] ring-1 ring-[var(--border)] disabled:opacity-40"
-        onClick={() => setLadderStep(ladder.id, step + 1)}
-      >
-        <ChevronsUp size={17} className="shrink-0 text-[var(--accent)]" />
-        <span className="min-w-0">
-          <span className="block text-[11px] text-[var(--muted)]">Harder</span>
-          <span className="block truncate font-medium">{harder?.name ?? '—'}</span>
-        </span>
-      </button>
+    <div className="space-y-2">
+      {step !== own && (
+        <div className="flex items-center justify-between gap-2 rounded-2xl bg-[var(--accent-soft)] px-3 py-2 text-[13px] text-[var(--accent-ink)]">
+          <span>
+            Just today: {step > own ? 'harder' : 'easier'} than your step ({exerciseById(planned)?.name}).
+          </span>
+          <button className="inline-flex shrink-0 items-center gap-1 font-semibold" onClick={() => onToday(null)}>
+            <RotateCcw size={14} /> Undo
+          </button>
+        </div>
+      )}
+      <div className="grid grid-cols-2 gap-2">
+        <StepButton dir="easier" name={easier?.name} onPick={() => setPending(step - 1)} />
+        <StepButton dir="harder" name={harder?.name} onPick={() => setPending(step + 1)} />
+      </div>
+      {target && pending !== null && (
+        <Card className="space-y-3 p-4">
+          <p className="text-[14px]">
+            Switch to <b>{target.name}</b>
+          </p>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              className="btn btn-secondary"
+              onClick={() => {
+                onToday(pending === own ? null : target.id)
+                setPending(null)
+              }}
+            >
+              Just today
+            </button>
+            <button
+              className="btn btn-primary"
+              onClick={async () => {
+                await setLadderStep(ladder.id, pending)
+                onToday(null)
+                setPending(null)
+              }}
+            >
+              From now on
+            </button>
+          </div>
+          <button className="w-full text-center text-[13px] text-[var(--muted)]" onClick={() => setPending(null)}>
+            Cancel
+          </button>
+        </Card>
+      )}
     </div>
+  )
+}
+
+function ExtraOffer({ options, onAdd }: { options: PlanItem[]; onAdd: (ladderId: string) => void }) {
+  if (!options.length) return null
+  return (
+    <Card className="space-y-3 p-5">
+      <div>
+        <h2 className="text-[17px] font-semibold">Time for more?</h2>
+        <p className="mt-1 text-sm text-[var(--muted)]">Optional: 2 sets of an exercise you did not train today, chosen from the muscle groups with the fewest sets this week.</p>
+      </div>
+      <ul className="space-y-2">
+        {options.map((o) => {
+          const ex = exerciseById(o.exerciseId)
+          if (!ex || !o.ladderId) return null
+          return (
+            <li key={o.ladderId}>
+              <button className="flex w-full items-center gap-3 rounded-2xl bg-[var(--surface-2)] p-2 pr-3 text-left ring-1 ring-[var(--border)]" onClick={() => onAdd(o.ladderId!)}>
+                <Thumb size={52}>
+                  <FigureView animation={ex.animation} showLabel={false} time={ex.animation.frames[0].move} />
+                </Thumb>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-[15px] font-semibold">{ex.name}</span>
+                  <span className="block text-[13px] text-[var(--muted)]">
+                    2 × {targetText(ex)} · {LADDERS[o.ladderId].name}
+                  </span>
+                </span>
+                <Plus size={20} className="shrink-0 text-[var(--accent)]" />
+              </button>
+            </li>
+          )
+        })}
+      </ul>
+    </Card>
   )
 }
 
 function Finish({ session, onDone }: { session: WorkoutSession; onDone: (updates: LadderUpdate[]) => void }) {
   const [effort, setEffort] = useState<number | null>(null)
   const [busy, setBusy] = useState(false)
+  const stretch = session.day_type === STRETCH_TOP_UP
   return (
     <Card className="space-y-5 p-5">
       <div>
         <h2 className="text-[22px] font-semibold">Nice work</h2>
-        <p className="mt-1 text-sm text-[var(--muted)]">How hard was the session overall? Optional.</p>
+        {!stretch && <p className="mt-1 text-sm text-[var(--muted)]">How hard was the session overall? Optional.</p>}
       </div>
+      {!stretch && (
       <div className="space-y-1.5">
         <Segmented
           size="sm"
@@ -92,6 +203,7 @@ function Finish({ session, onDone }: { session: WorkoutSession; onDone: (updates
           <span>Maximal</span>
         </div>
       </div>
+      )}
       <button
         className="btn btn-primary w-full"
         disabled={busy}
@@ -106,11 +218,43 @@ function Finish({ session, onDone }: { session: WorkoutSession; onDone: (updates
   )
 }
 
-export function SessionPlayer({ session, plan, onFinished }: { session: WorkoutSession; plan: Plan; onFinished: (updates: LadderUpdate[]) => void }) {
+export function SessionPlayer({
+  session,
+  plan,
+  input,
+  onFinished,
+}: {
+  session: WorkoutSession
+  plan: Plan
+  input: EngineInput
+  onFinished: (updates: LadderUpdate[]) => void
+}) {
   const [index, setIndex] = useStoredIndex(session.id)
   const [resting, setResting] = useState(false)
   const [showInfo, setShowInfo] = useState(false)
-  const items = plan.items
+  const [custom, setCustom] = useSessionCustom(session.id)
+
+  // Planned items with today's one-off steps, then any extra exercises.
+  const swapped = plan.items.map((it) => {
+    const id = it.ladderId && custom.swaps[it.ladderId]
+    if (!id) return it
+    const alt = buildItem(input, { phase: it.phase, exerciseId: id, sets: it.sets, ladderId: it.ladderId, notes: it.notes })
+    return alt ?? it
+  })
+  const extras = custom.extras.flatMap((ladderId) => {
+    const ladder = LADDERS[ladderId]
+    const id = custom.swaps[ladderId] ?? plan.items.find((i) => i.ladderId === ladderId)?.exerciseId ?? ladder?.steps[Math.min(input.steps[ladderId] ?? ladder.start, ladder.steps.length - 1)].id
+    const it = id && buildItem(input, { phase: 'main', exerciseId: id, sets: 2, ladderId, notes: ['Extra exercise: 2 sets at the usual effort.'] })
+    return it ? [it] : []
+  })
+  const items = [...swapped, ...extras]
+  const planned = (it: PlanItem) => {
+    if (!it.ladderId) return it.exerciseId
+    const ladder = LADDERS[it.ladderId]
+    return plan.items.find((p) => p.ladderId === it.ladderId)?.exerciseId ?? ladder.steps[Math.min(input.steps[it.ladderId] ?? ladder.start, ladder.steps.length - 1)].id
+  }
+  // Offered on the finish screen only; the engine leaves out ladders already in the session.
+  const offers = index >= items.length ? extraOptions(input, plan.type, items) : []
   const atEnd = index >= items.length
   const item = items[Math.min(index, items.length - 1)]
   const exercise = item && exerciseById(item.exerciseId)
@@ -164,7 +308,14 @@ export function SessionPlayer({ session, plan, onFinished }: { session: WorkoutS
         </div>
 
         {atEnd || !item || !exercise ? (
-          <div className="pt-6">
+          <div className="space-y-4 pt-6">
+            <ExtraOffer
+              options={offers}
+              onAdd={(ladderId) => {
+                setCustom((c) => ({ ...c, extras: [...c.extras, ladderId] }))
+                go(items.length)
+              }}
+            />
             <Finish session={session} onDone={onFinished} />
           </div>
         ) : (
@@ -174,7 +325,7 @@ export function SessionPlayer({ session, plan, onFinished }: { session: WorkoutS
             </div>
 
             <div>
-              <Eyebrow className="text-[var(--accent)]">{PHASE_LABEL[item.phase]}</Eyebrow>
+              <Eyebrow className="text-[var(--accent)]">{session.day_type === STRETCH_TOP_UP ? 'Stretch' : PHASE_LABEL[item.phase]}</Eyebrow>
               <h1 className="mt-1 text-[26px] leading-tight font-semibold">{exercise.name}</h1>
               <div className="mt-2 flex flex-wrap gap-1.5">
                 {item.phase === 'main' ? (
@@ -211,7 +362,19 @@ export function SessionPlayer({ session, plan, onFinished }: { session: WorkoutS
 
             {item.phase === 'main' ? (
               <>
-                <VariationSwitch item={item} />
+                <VariationSwitch
+                  key={item.ladderId}
+                  item={item}
+                  planned={planned(item)}
+                  onToday={(id) =>
+                    setCustom((c) => {
+                      const swaps = { ...c.swaps }
+                      if (id) swaps[item.ladderId!] = id
+                      else delete swaps[item.ladderId!]
+                      return { ...c, swaps }
+                    })
+                  }
+                />
                 <LoggedSets exercise={exercise} sessionId={session.id} />
                 <Card className="p-5">
                   {resting && !setsComplete ? (

@@ -4,11 +4,13 @@
 
 export type SessionType = 'A' | 'B' | 'C' | 'D'
 
-export const SESSION_NAMES: Record<SessionType, string> = {
+/** Names of the programme sessions and of the optional stretch top-up ('S'). */
+export const SESSION_NAMES: Record<SessionType | 'S', string> = {
   A: 'Push and front core',
   B: 'Legs and hips',
   C: 'Back, shoulder blades and side core',
   D: 'Mobility',
+  S: 'Stretch top-up',
 }
 
 /** Default week (R1). Missed days do not skip ahead: the sequence simply continues. */
