@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import type { ExerciseClass, Region } from '../exercises/types'
-import { dueType, evaluate, morningCheckDue, morningUpdates, plan, programmeWeek, type DayLog, type DoneSession, type DoneSet, type EngineInput, type ExerciseInfo } from './engine'
+import type { ExerciseClass, Group, Region } from '../exercises/types'
+import { dueType, evaluate, extraOptions, morningCheckDue, morningUpdates, plan, programmeWeek, stretchPlan, weeklySetsByGroup, type DayLog, type DoneSession, type DoneSet, type EngineInput, type ExerciseInfo } from './engine'
 import { LADDERS, TEMPLATES, type SessionType } from './ladders'
 
 // Catalogue covering every id used by the ladders and templates.
@@ -20,10 +20,12 @@ const allIds = new Set([
   ...Object.values(LADDERS).flatMap((l) => l.steps.map((s) => s.id)),
   ...Object.values(TEMPLATES).flatMap((t) => [...t.warmup, ...t.cooldown, ...t.main.flatMap((s) => ('exercise' in s ? [s.exercise] : []))]),
 ])
+const GROUP: Record<string, Group> = { P: 'push', C: 'core', K: 'legs', F: 'legs', H: 'hips', A: 'hips', S: 'back', E: 'back', M: 'mobility', W: 'warmup' }
 const catalogue = (id: string): ExerciseInfo | undefined => {
   if (!allIds.has(id)) return undefined
   const cls: ExerciseClass = id.startsWith('M') ? 'stretch' : id.startsWith('W') ? 'drill' : 'strength'
   return {
+    group: GROUP[id[0]],
     id,
     name: id,
     cls,
@@ -198,6 +200,7 @@ describe('progression and pain (R6, R7)', () => {
 
   it('waits for the minimum week before stepping up', () => {
     const input = base()
+    input.steps.prone = 1
     const s = addSession(input, '2026-10-08', 'C', [['S2', 20, 3], ['S2', 20, 3]]) // next step S3 needs week 2
     expect(evaluate(input, s.id)).toEqual([])
   })
@@ -232,5 +235,76 @@ describe('progression and pain (R6, R7)', () => {
     const p = plan(input, 'A')
     expect(p.items.some((i) => i.ladderId === 'push')).toBe(false)
     expect(p.warnings.join(' ')).toMatch(/physiotherapist/)
+  })
+})
+
+describe('one-off steps ("just today")', () => {
+  it('does not move the ladder after a harder step tried once', () => {
+    const input = base('2026-10-20')
+    const s = addSession(input, '2026-10-20', 'A', [['P5', 12, 3], ['P5', 12, 3]]) // current step is P3
+    expect(evaluate(input, s.id)).toEqual([])
+  })
+
+  it('only applies the pain rule to an easier step used once', () => {
+    const input = base('2026-10-20')
+    input.steps.push = 3 // P5
+    const easy = addSession(input, '2026-10-20', 'A', [['P3', 12, 3], ['P3', 12, 3]])
+    expect(evaluate(input, easy.id)).toEqual([])
+    const hurt = addSession(input, '2026-10-20', 'A', [['P3', 8, 2, 5]])
+    expect(evaluate(input, hurt.id)).toEqual([expect.objectContaining({ ladderId: 'push', from: 3, to: 0 })])
+  })
+})
+
+describe('extra exercises after a session', () => {
+  it('offers the other ladder of a rotating slot first, then another muscle group', () => {
+    const input = base('2026-10-20') // week 3, a Tuesday
+    const p = plan(input, 'A')
+    const extras = extraOptions(input, 'A', p.items)
+    expect(extras).toHaveLength(2)
+    expect(extras[0].ladderId).toBe('deadbug') // plank was used in this slot
+    expect(extras.every((e) => e.sets === 2 && e.phase === 'main')).toBe(true)
+    expect(extras.map((e) => e.ladderId)).not.toContain('push')
+  })
+
+  it('leaves out groups that would pass 12 sets this week, and legs on a hard ride day', () => {
+    const input = base('2026-10-21') // Wednesday
+    addSession(input, '2026-10-19', 'B', Array.from({ length: 11 }, () => ['K3', 10] as [string, number]))
+    expect(weeklySetsByGroup(input).get('legs')).toBe(11)
+    const ids = (type: SessionType) => extraOptions(input, type, plan(input, type).items, 20).map((e) => e.ladderId)
+    expect(ids('A')).not.toContain('knee')
+    expect(ids('A')).toContain('bridge')
+    day(input, { day: '2026-10-21', cycling: 'hard' })
+    expect(ids('A')).not.toContain('bridge')
+  })
+
+  it('offers nothing in a deload week', () => {
+    const input = base('2026-11-05')
+    addSession(input, '2026-10-01', 'A', [['P3', 8]]) // week 1 starts 1 Oct; 5 Nov is week 6
+    expect(extraOptions(input, 'A', plan(input, 'A').items)).toEqual([])
+  })
+})
+
+describe('stretch top-up (R9)', () => {
+  it('targets hip flexors, hamstrings and calves after a ride', () => {
+    const p = stretchPlan(base(), true)
+    expect(p.items.map((i) => i.exerciseId)).toEqual(['M1', 'M2', 'M4'])
+    expect(p.items.every((i) => i.sets === 1 && i.phase === 'cooldown')).toBe(true)
+    expect(p.minutes).toBeLessThanOrEqual(5)
+  })
+
+  it('rotates three stretches and skips the one already done today', () => {
+    const input = base('2026-10-20')
+    addSession(input, '2026-10-20', 'A')
+    const ids = stretchPlan(input, false).items.map((i) => i.exerciseId)
+    expect(ids).toHaveLength(3)
+    expect(ids).not.toContain('M8') // session A's cool-down
+    expect(stretchPlan(base('2026-10-21'), false).items.map((i) => i.exerciseId)).not.toEqual(stretchPlan(base('2026-10-20'), false).items.map((i) => i.exerciseId))
+  })
+
+  it('does not count as a programme session', () => {
+    const input = base('2026-10-20')
+    input.sessions.push({ id: 'st', day_type: 'S', started_at: '2026-10-20T08:00:00', ended_at: '2026-10-20T08:04:00', deleted: false })
+    expect(plan(input).type).toBe('A')
+    expect(programmeWeek(input)).toBe(1)
   })
 })

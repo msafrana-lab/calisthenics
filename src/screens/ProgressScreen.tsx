@@ -54,7 +54,8 @@ export function ProgressScreen() {
   const day = today()
   const range = RANGES.find((r) => r.id === rangeId)!
   const from = addDays(day, -7 * range.weeks + 1)
-  const finished = data.sessions.filter((s) => !s.deleted && s.ended_at !== null)
+  // Programme sessions only: a stretch top-up ('S') is not a training session.
+  const finished = data.sessions.filter((s) => !s.deleted && s.ended_at !== null && s.day_type !== 'S')
   const firstDay = finished.map((s) => localDay(s.started_at)).sort()[0] ?? day
 
   // Headline figures
