@@ -48,6 +48,6 @@ The figure is a flat 2D drawing, so movements towards or away from the camera ca
 ## Open points to check
 
 - First real Strava and Withings connections: the OAuth and data formats follow the providers' documentation but could not be tested from the build environment.
-- Supabase security advisor: `pg_net` is installed in the `public` schema (moving it needs a drop and re-create), and leaked-password protection is off (an Auth setting in the dashboard; may require a paid plan, verify).
+- Supabase security advisor: leaked-password protection is off (an Auth setting in the dashboard; may require a paid plan, verify). The `app_config` notice (RLS on, no policy) is intended: only the service role reads it. `pg_net` was moved to the `extensions` schema on 2026-10-09.
 - Supabase free projects pause after a period of inactivity (verify the current rule on supabase.com). Whether the scheduled import counts as activity is not confirmed.
 - After creating your account, turn off new sign-ups in Supabase (Authentication settings) so no one else can register.
