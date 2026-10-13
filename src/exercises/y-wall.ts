@@ -49,8 +49,6 @@ function upperIntersection(c1: Vec, r1: number, c2: Vec, r2: number): Vec {
   return p[1] < q[1] ? p : q
 }
 
-const shoulderOf = (p: Pose): Vec => add(p.hip, dir(p.torso), BODY.torso)
-
 /**
  * Hand on the opposite shoulder (as X4). Seen from the side both shoulders
  * project to one point, so the hand is drawn at the shoulder with the elbow
@@ -113,7 +111,7 @@ function leanPose(l: Lean, arms: { near: Limb; far: Limb }, knee: { near?: Knee;
 const Y18: Lean = { toe: [34, ANKLE_FLOOR], lean: 22 }
 const Y18_SHOULDER = leanBase(Y18).shoulder
 /** Upper arm almost level, so the elbow sits just below shoulder height. */
-const Y18_ELBOW = add(Y18_SHOULDER, dir(92), BODY.upperArm)
+const Y18_ELBOW = add(Y18_SHOULDER, dir(88), BODY.upperArm)
 /** Forearm flat on the wall, pointing up from the elbow. */
 const Y18_HAND: Vec = [Y18_ELBOW[0], Y18_ELBOW[1] - BODY.forearm]
 const Y18_WALL = Y18_ELBOW[0] + 2.1
@@ -123,12 +121,12 @@ function forearmOnWall(): Limb {
   return { pin: Y18_HAND, bend: toWall(1) > toWall(-1) ? 1 : -1 }
 }
 const Y18_ARMS = { near: forearmOnWall(), far: forearmOnWall() }
-const MARCH: Knee = { hip: 70, knee: 85 }
+const MARCH: Knee = { hip: 88, knee: 95 }
 
 // -- Y19 and Y20: hands on the wall at chest height, arms straight
 
 /** Straight arm from the shoulder, slightly downwards to chest height. */
-const handFrom = (l: Lean): Vec => add(leanBase(l).shoulder, dir(96), STRAIGHT_ARM)
+const handFrom = (l: Lean): Vec => add(leanBase(l).shoulder, dir(86), STRAIGHT_ARM)
 
 const Y19: Lean = { toe: [26, ANKLE_FLOOR], lean: 36 }
 const Y19_HAND = handFrom(Y19)
@@ -274,7 +272,7 @@ const TN_SHAPE: HingeShape = { knee: 18, shin: 4, lean: 48 }
 const TN_HIP = hingeHip(TN_ANKLE, TN_SHAPE)
 const TN_TORSO = 180 - TN_SHAPE.lean
 const TN_SHOULDER = add(TN_HIP, dir(TN_TORSO), BODY.torso)
-const TN_HAND = add(TN_SHOULDER, dir(94), STRAIGHT_ARM - 0.5)
+const TN_HAND = add(TN_SHOULDER, dir(86), STRAIGHT_ARM - 0.5)
 const TN_WALL = TN_HAND[0] + 2.1
 
 function threadPose(near: Limb, head: number): Pose {
@@ -293,7 +291,7 @@ function threadPose(near: Limb, head: number): Pose {
 }
 
 /** Hand reaching under the supporting arm towards the far side (seen from the side: down and slightly back). */
-const THREAD: Limb = { a: [352, 356] }
+const THREAD: Limb = { a: [346, 342] }
 /** On the way out the elbow bends as the arm turns outwards. */
 const THREAD_TURN: Limb = { a: [318, 220] }
 /** Opened to the side: the hand level with the shoulder, no higher. */
@@ -302,19 +300,17 @@ const OPEN: Limb = { a: [270, 268] }
 // -- Y26: hands on the thighs, spine rounding and arching
 
 const CC_ANKLE: Vec = [56, ANKLE_FLOOR]
-const CC_SHAPE: HingeShape = { knee: 24, shin: 8, lean: 42 }
+const CC_SHAPE: HingeShape = { knee: 38, shin: 8, lean: 64 }
 const CC_HIP = hingeHip(CC_ANKLE, CC_SHAPE)
 const CC_TORSO = 180 - CC_SHAPE.lean
 const CC_KNEE = add(CC_ANKLE, dir(180 - CC_SHAPE.shin), BODY.shin)
 const CC_SHOULDER = add(CC_HIP, dir(CC_TORSO), BODY.torso)
-/** Hands rest on the front of the thighs, just above the knees. */
-const CC_HAND: Vec = (() => {
-  const along = add(CC_HIP, dir(angleTo(CC_HIP, CC_KNEE)), BODY.thigh * 0.8)
-  const front = dir(angleTo(CC_HIP, CC_KNEE) + 90)
-  const hand = add(along, front, 2.5)
-  // Keep a straight-but-soft arm reachable.
-  return dist(CC_SHOULDER, hand) < STRAIGHT_ARM - 0.5 ? hand : add(along, front, 0)
-})()
+/** Hands rest on the front of the thighs, as far down as a soft, nearly straight arm reaches. */
+const thighPoint = (f: number): Vec => {
+  const a = angleTo(CC_HIP, CC_KNEE)
+  return add(add(CC_HIP, dir(a), BODY.thigh * f), dir(a + 90), 2.5)
+}
+const CC_HAND = thighPoint(bisect((f) => dist(CC_SHOULDER, thighPoint(f)) - (STRAIGHT_ARM - 1), 0.3, 0.95))
 
 function catCowPose(spine: number, head: number): Pose {
   const leg: Limb = { pin: CC_ANKLE, bend: 1 }
