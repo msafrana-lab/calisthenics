@@ -46,6 +46,8 @@ function useProgressData() {
   }, [])
 }
 
+const RATING_LABEL = { easy: 'Too easy', right: 'About right', hard: 'Too hard' } as const
+
 export function ProgressScreen() {
   const data = useProgressData()
   const [rangeId, setRangeId] = useState<(typeof RANGES)[number]['id']>('12w')
@@ -130,24 +132,23 @@ export function ProgressScreen() {
       </ChartCard>
 
       <SectionTitle>Exercise history</SectionTitle>
-      <p className="-mt-2 px-1 text-xs text-[var(--muted)]">Best set per session. A labelled point marks a move to a new step; reps usually drop there because the exercise is harder.</p>
+      <p className="-mt-2 px-1 text-xs text-[var(--muted)]">Step reached on each progression, per session. A labelled point marks a move to a new step.</p>
       {!histories.length && <p className="text-sm text-[var(--muted)]">No finished sessions in this period yet.</p>}
       {histories.map(({ ladder, points }) => {
-        const unit = points[0].measure === 'reps' ? 'reps' : 's'
         const current = points[points.length - 1]
         return (
           <ChartCard
             key={ladder.id}
             title={ladder.name}
-            subtitle={`Now: ${current.name}`}
-            table={{ head: ['Date', 'Exercise', `Best (${unit})`], rows: points.slice().reverse().map((p) => [shortDate(p.day), p.name, p.best]) }}
+            subtitle={`Now: ${current.name} (step ${current.step} of ${ladder.steps.length})`}
+            table={{ head: ['Date', 'Exercise', 'Step', 'Rating'], rows: points.slice().reverse().map((p) => [shortDate(p.day), p.name, p.step, RATING_LABEL[p.rating]]) }}
           >
             <LineChart
-              points={points.map((p) => ({ day: p.day, value: p.best, note: p.stepChange ? '↑ new step' : undefined }))}
+              points={points.map((p) => ({ day: p.day, value: p.step, note: p.stepChange ? '↑ new step' : undefined }))}
               from={from}
               to={day}
-              format={(v) => String(Math.round(v))}
-              valueLabel={unit}
+              format={(v) => `Step ${Math.round(v)}`}
+              valueLabel="step"
               height={130}
             />
           </ChartCard>

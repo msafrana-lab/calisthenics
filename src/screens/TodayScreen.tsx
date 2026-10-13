@@ -4,7 +4,7 @@ import { Bike, Check, ChevronRight, Clock, Dumbbell, Info, Play, Shuffle, Sparkl
 import { FigureView } from '../animation/FigureView'
 import { exerciseById } from '../exercises/library'
 import { ExerciseDetailView } from '../components/ExerciseDetail'
-import { SessionPlayer } from '../components/SessionPlayer'
+import { BLOCK_LABEL, IntervalPlayer } from '../components/IntervalPlayer'
 import { LADDERS, SESSION_NAMES, type SessionType } from '../programme/ladders'
 import { localDay, morningCheckDue, plan as makePlan, stepIndex, STRETCH_TOP_UP, stretchPlan, type Cycling, type EngineInput, type LadderUpdate, type Morning, type PlanItem } from '../programme/engine'
 import { activeSession, startSession } from '../lib/sessions'
@@ -17,11 +17,7 @@ import type { Region } from '../exercises/types'
 import type { Account } from '../lib/useAccount'
 
 const REGION_LABEL: Record<Region, string> = { knee: 'Knees', shoulder: 'Shoulders', wrist: 'Wrists' }
-const PHASES = [
-  ['warmup', 'Warm-up'],
-  ['main', 'Workout'],
-  ['cooldown', 'Cool-down'],
-] as const
+const BLOCKS = ['ramp', 'build', 'peak', 'winddown'] as const
 
 function greeting() {
   const h = new Date().getHours()
@@ -140,9 +136,8 @@ function CardioToday({ value }: { value: Cycling | null }) {
 function itemMeta(item: PlanItem) {
   if (item.test) return 'Readiness test · optional'
   const ex = exerciseById(item.exerciseId)
-  const unit = item.measure === 'reps' ? 'reps' : 's'
-  const range = `${item.target[0]}${item.target[1] !== item.target[0] ? `–${item.target[1]}` : ''} ${unit}`
-  return `${item.sets > 1 ? `${item.sets} × ` : ''}${range}${ex?.perSide ? ' each side' : ''}`
+  const rounds = item.rounds && item.rounds > 1 ? `${item.rounds} × ` : ''
+  return `${rounds}${item.work ?? 30} s${ex?.perSide ? ' each side' : ''}`
 }
 
 function ItemRow({ item, onOpen }: { item: PlanItem; onOpen: () => void }) {
@@ -264,7 +259,7 @@ export function TodayScreen({ account }: { account: Account }) {
     const stretch = session.day_type === STRETCH_TOP_UP
     const type = (['A', 'B', 'C', 'D'] as const).find((t) => t === session.day_type)
     return (
-      <SessionPlayer
+      <IntervalPlayer
         session={session}
         plan={stretch ? stretchPlan(input, rodeRecently(input)) : makePlan(input, type)}
         input={input}
@@ -287,7 +282,7 @@ export function TodayScreen({ account }: { account: Account }) {
   const stretchedToday = finished.some((s) => s.day_type === STRETCH_TOP_UP && localDay(s.started_at) === input.today)
   const doneToday = doneDays.has(input.today)
   const lead = exerciseById(p.items.find((i) => i.phase === 'main')?.exerciseId ?? '')
-  const mainCount = p.items.filter((i) => i.phase === 'main').length
+  const mainCount = p.items.filter((i) => !i.test && i.block !== undefined).length
 
   return (
     <div className="space-y-5">
@@ -365,20 +360,32 @@ export function TodayScreen({ account }: { account: Account }) {
 
       <SectionTitle>Plan</SectionTitle>
       <Card className="overflow-hidden">
-        {PHASES.map(([phase, label]) => {
-          const items = p.items.filter((i) => i.phase === phase)
+        {BLOCKS.map((block) => {
+          const items = p.items.filter((i) => i.block === block && !i.test)
           if (!items.length) return null
           return (
-            <div key={phase} className="border-b border-[var(--border)] last:border-b-0">
-              <Eyebrow className="px-4 pt-4 pb-1">{label}</Eyebrow>
+            <div key={block} className="border-b border-[var(--border)] last:border-b-0">
+              <Eyebrow className="px-4 pt-4 pb-1">{BLOCK_LABEL[block]}</Eyebrow>
               <ul className="divide-y divide-[var(--border)]">
                 {items.map((i) => (
-                  <ItemRow key={`${phase}-${i.exerciseId}${i.test ? '-test' : ''}`} item={i} onOpen={() => setOpenId(i.exerciseId)} />
+                  <ItemRow key={`${block}-${i.exerciseId}`} item={i} onOpen={() => setOpenId(i.exerciseId)} />
                 ))}
               </ul>
             </div>
           )
         })}
+        {p.items.some((i) => i.test) && (
+          <div className="border-t border-[var(--border)]">
+            <Eyebrow className="px-4 pt-4 pb-1">After the intervals</Eyebrow>
+            <ul>
+              {p.items
+                .filter((i) => i.test)
+                .map((i) => (
+                  <ItemRow key={`test-${i.exerciseId}`} item={i} onOpen={() => setOpenId(i.exerciseId)} />
+                ))}
+            </ul>
+          </div>
+        )}
       </Card>
     </div>
   )

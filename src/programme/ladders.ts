@@ -26,6 +26,10 @@ export type Step = {
   variants?: string[]
   /** Advanced step: unlocked by R13 (mastery, pain history, timing and a readiness test), never by R6 alone. */
   gate?: Gate
+  /** Other ladders that must be at or past a step before this one is used (Y ladders). */
+  requires?: { ladder: string; atLeast: string }[]
+  /** Joints that must have had no pain of 3/10 or more in the last 14 days. */
+  calm?: Region[]
 }
 
 export type Gate = {
@@ -49,7 +53,7 @@ export type Gate = {
 
 export type Ladder = { id: string; name: string; steps: Step[]; start: number }
 
-type StepOpts = { minWeek?: number; variants?: string[]; gate?: Gate }
+type StepOpts = { minWeek?: number; variants?: string[]; gate?: Gate; requires?: Step['requires']; calm?: Region[] }
 const s = (id: string, minWeekOrOpts?: number | StepOpts): Step =>
   typeof minWeekOrOpts === 'object' ? { id, ...minWeekOrOpts } : { id, minWeek: minWeekOrOpts }
 const g = (prereq: string, minWeek: number, regions: Region[], test: string, more: Partial<Gate> = {}): Gate => ({ prereq, minWeek, regions, test, ...more })
@@ -193,69 +197,95 @@ export const LADDERS: Record<string, Ladder> = {
     start: 0,
   },
   cuff: { id: 'cuff', name: 'Rotator cuff', steps: [s('S0', { variants: ['S0f'] })], start: 0 },
+
+  // Dynamic jump-free moves for timed sessions (EVIDENCE.md, "Y ladders").
+  ymarch: { id: 'ymarch', name: 'March and box', steps: [s('W1'), s('Y1'), s('Y2'), s('Y3')], start: 1 },
+  ylateral: { id: 'ylateral', name: 'Lateral steps', steps: [s('Y4'), s('Y5'), s('Y6', { calm: ['knee'] })], start: 0 },
+  ysquat: {
+    id: 'ysquat',
+    name: 'Squat flow',
+    steps: [s('Y7', { requires: [{ ladder: 'knee', atLeast: 'K3' }] }), s('Y8'), s('Y9', { requires: [{ ladder: 'knee', atLeast: 'K4' }] })],
+    start: 0,
+  },
+  yhinge: { id: 'yhinge', name: 'Hinge flow', steps: [s('Y10'), s('Y11'), s('Y12', { requires: [{ ladder: 'hinge', atLeast: 'H8' }] })], start: 0 },
+  yrotate: {
+    id: 'yrotate',
+    name: 'Lunge and rotation',
+    steps: [s('Y13'), s('Y14', { requires: [{ ladder: 'knee', atLeast: 'K6' }] }), s('Y15', { requires: [{ ladder: 'knee', atLeast: 'K6' }] })],
+    start: 0,
+  },
+  ycossack: { id: 'ycossack', name: 'Lateral hip', steps: [s('Y16'), s('Y17', { requires: [{ ladder: 'knee', atLeast: 'K4' }], calm: ['knee'] })], start: 0 },
+  ywall: {
+    id: 'ywall',
+    name: 'Wall to floor plank',
+    steps: [
+      s('Y18'),
+      s('Y19'),
+      s('Y20', { requires: [{ ladder: 'plank', atLeast: 'C4' }] }),
+      s('Y21', {
+        requires: [
+          { ladder: 'plank', atLeast: 'C5' },
+          { ladder: 'push', atLeast: 'P3' },
+        ],
+        calm: ['wrist'],
+      }),
+    ],
+    start: 0,
+  },
 }
 
 /** Variations not used on a day that already has the named exercise (R12: S2e is close to E1). */
 export const NOT_WITH: Record<string, string[]> = { S2e: ['E1'] }
 
 /**
- * A slot in a session: a ladder (progressing exercise) or a fixed exercise.
- * With several ladders, the slot rotates through them on successive sessions
- * of the same type (e.g. plank one push day, dead bug the next).
+ * A slot in a timed session (R14):
+ * - a ladder (or ladders that take turns on successive sessions of the type),
+ *   optionally capped at a step, with a fallback exercise when the ladder
+ *   can't be used and a replacement on hard ride days (R1);
+ * - a fixed exercise;
+ * - a primer: a ladder step `below` steps easier than the current one;
+ * - `rampOf`: a Y ladder at the step below the current one (R14 ramp rule).
  */
-export type Slot = { ladder: string | string[]; sets: number } | { exercise: string; sets: number }
+export type Slot =
+  | { ladder: string | string[]; maxStep?: string; fallback?: string; hardRide?: string; rounds?: number }
+  | { exercise: string; hardRide?: string }
+  | { primer: string; below: number }
+  | { rampOf: string }
 
-export type Template = { warmup: string[]; main: Slot[]; cooldown: string[] }
+export type Template = { ramp: Slot[]; build: Slot[]; peak: Slot[]; winddown: Slot[] }
 
-// Sessions are sized for about 15 minutes (user's choice, October 2026):
-// - Warm-up: one drill matched to the day, then one easy set of the first
-//   exercise (R2's "potentiate" step). Shorter than R2's 3–4 min by choice.
-// - Main: 3 exercises, about 7 working sets (R2: 6–9). Secondary exercises
-//   alternate between the two sessions of each type in a week, which keeps
-//   weekly sets per group within R3's 6–10 (12 at most).
-// - Cool-down: one optional stretch, 1 × 30 s per side. Most of the stretching
-//   dose (R9) moves to the mobility day; full-range strength work also
-//   improves flexibility (Afonso 2021).
-// Knee caution: no child's pose (M9) or side-lying quad stretch (M5) by default.
+// Timed 15-minute sessions (R14.1, user's choice, October 2026): exercises in
+// increasing complexity, so the Ramp replaces the warm-up; strength ladders in
+// Build before the pulse circuit in Peak; slow mobility and stretches last.
+// Knee caution: no child's pose (M9) or side-lying quad stretch (M5); M12 is
+// not used (overhead).
 export const TEMPLATES: Record<SessionType, Template> = {
   A: {
-    warmup: ['W2'],
-    main: [
-      { ladder: 'push', sets: 3 },
-      { ladder: 'serratus', sets: 2 },
-      { ladder: ['plank', 'deadbug', 'crawl'], sets: 2 },
-    ],
-    cooldown: ['M8'],
+    ramp: [{ exercise: 'Y24' }, { exercise: 'Y4' }, { rampOf: 'ywall' }, { primer: 'push', below: 2 }],
+    build: [{ ladder: 'push' }, { ladder: ['plank', 'deadbug', 'crawl'] }],
+    peak: [{ ladder: 'ywall' }, { ladder: 'ymarch' }, { ladder: 'serratus' }],
+    winddown: [{ exercise: 'M8' }, { exercise: 'M6' }],
   },
   B: {
-    warmup: ['H7'],
-    main: [
-      { ladder: 'knee', sets: 3 },
-      { ladder: 'bridge', sets: 2 },
-      { ladder: ['abduction', 'calf'], sets: 2 },
-    ],
-    cooldown: ['M2'],
+    ramp: [{ exercise: 'Y23' }, { exercise: 'F1' }, { rampOf: 'yhinge' }, { primer: 'knee', below: 2 }],
+    build: [{ ladder: 'knee' }, { ladder: 'bridge' }],
+    // The two rotating slots change together: abduction with the squat flow, calf with the hinge flow.
+    peak: [{ ladder: 'ylateral' }, { ladder: ['abduction', 'calf'] }, { ladder: ['ysquat', 'yhinge'], fallback: 'Y10' }],
+    winddown: [{ exercise: 'M2' }, { exercise: 'M4' }],
   },
   C: {
-    warmup: ['M7'],
-    main: [
-      { ladder: 'prone', sets: 3 },
-      { ladder: 'extension', sets: 2 },
-      { ladder: ['sweep', 'sideplank'], sets: 2 },
-    ],
-    cooldown: ['M3'],
+    ramp: [{ exercise: 'Y26' }, { exercise: 'Y25' }, { exercise: 'Y4' }, { exercise: 'Y10' }],
+    build: [{ ladder: 'prone' }, { ladder: ['sweep', 'sideplank'] }],
+    peak: [{ ladder: 'ymarch' }, { ladder: 'extension' }, { ladder: 'ylateral', maxStep: 'Y5', hardRide: 'Y18' }],
+    winddown: [{ exercise: 'M3' }, { exercise: 'M6' }],
   },
   D: {
-    warmup: ['W1'],
-    main: [
-      { exercise: 'M1', sets: 2 },
-      { exercise: 'M2', sets: 2 },
-      { exercise: 'M4', sets: 1 },
-      { exercise: 'M8', sets: 1 },
-      { exercise: 'M3', sets: 1 },
-      { exercise: 'M6', sets: 1 },
-      { ladder: 'cuff', sets: 2 },
-    ],
-    cooldown: [],
+    ramp: [{ exercise: 'W1' }, { exercise: 'Y23' }, { exercise: 'Y22' }, { exercise: 'Y13' }],
+    build: [{ ladder: 'yrotate' }, { ladder: 'ycossack' }, { ladder: ['cuff', 'deadbug'], rounds: 1 }],
+    peak: [],
+    winddown: [{ exercise: 'M1' }, { exercise: 'M2' }, { exercise: 'M4' }, { exercise: 'M8' }, { exercise: 'M3' }, { exercise: 'M6' }],
   },
 }
+
+/** Ladders used by the strength part of each session type (Build and Peak). */
+export const slotLadders = (t: Template) => [...t.build, ...t.peak].flatMap((s) => ('ladder' in s ? [s.ladder].flat() : []))

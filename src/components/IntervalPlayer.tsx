@@ -3,8 +3,8 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { ChevronDown, Pause, Play, Plus, SkipBack, SkipForward, Volume2, X } from 'lucide-react'
 import { FigureView } from '../animation/FigureView'
 import { exerciseById } from '../exercises/library'
-import { SESSION_NAMES } from '../programme/ladders'
-import { buildItem, testId, type Block, type EngineInput, type LadderUpdate, type Plan, type PlanItem } from '../programme/engine'
+import { LADDERS, SESSION_NAMES } from '../programme/ladders'
+import { buildItem, extraOptions, programmeWeek, testId, timing, type Block, type EngineInput, type LadderUpdate, type Plan, type PlanItem, type Rating } from '../programme/engine'
 import { buildTimeline, totalSeconds, type Interval, type Segment } from '../programme/timeline'
 import { db, type WorkoutSession } from '../lib/db'
 import { discardSession, logSet } from '../lib/sessions'
@@ -20,7 +20,6 @@ import { ReadinessTest, VariationSwitch } from './StepChoice'
 export const BLOCK_LABEL: Record<Block, string> = { ramp: 'Ramp', build: 'Build', peak: 'Peak', winddown: 'Wind-down' }
 
 /** Rating stored as reps in reserve (R16): too easy = 4, about right = 2, too hard = 0. */
-export type Rating = 'easy' | 'right' | 'hard'
 export const RATING_RIR: Record<Rating, number> = { easy: 4, right: 2, hard: 0 }
 
 type Custom = {
@@ -28,6 +27,8 @@ type Custom = {
   swaps: Record<string, string>
   /** One more round of the Build block added at the end. */
   extraRound: boolean
+  /** Ladders added at the end as extra exercises (2 rounds each). */
+  extras: string[]
   /** Seconds done, so a reload resumes where the session was. */
   elapsed: number
 }
@@ -36,9 +37,9 @@ function useCustom(sessionId: string) {
   const key = `interval-custom:${sessionId}`
   const [custom, setCustom] = useState<Custom>(() => {
     try {
-      return { swaps: {}, extraRound: false, elapsed: 0, ...JSON.parse(localStorage.getItem(key) ?? '{}') }
+      return { swaps: {}, extraRound: false, extras: [], elapsed: 0, ...JSON.parse(localStorage.getItem(key) ?? '{}') }
     } catch {
-      return { swaps: {}, extraRound: false, elapsed: 0 }
+      return { swaps: {}, extraRound: false, extras: [], elapsed: 0 }
     }
   })
   useEffect(() => {
@@ -197,23 +198,36 @@ export function IntervalPlayer({ session, plan, input, onFinished }: { session: 
   const [stage, setStage] = useState<'run' | 'tests' | 'rate'>('run')
   const [showInfo, setShowInfo] = useState(false)
 
-  // Planned items with today's swaps applied (same timing).
-  const items = useMemo(
-    () =>
-      plan.items.map((it) => {
-        const id = it.ladderId && !it.test && custom.swaps[it.ladderId]
-        const alt = id ? buildItem(input, { phase: it.phase, exerciseId: id, sets: it.sets, ladderId: it.ladderId, notes: it.notes }) : null
-        return alt ? { ...it, ...alt, block: it.block, work: it.work, rest: it.rest, rounds: it.rounds } : it
-      }),
-    [plan.items, custom.swaps, input],
-  )
+  const buildTime = timing(input, programmeWeek(input)).build
+  // Planned items with today's swaps applied (same timing), then extra exercises.
+  const items = useMemo(() => {
+    const planned = plan.items.map((it) => {
+      const id = it.ladderId && !it.test && custom.swaps[it.ladderId]
+      const alt = id ? buildItem(input, { phase: it.phase, exerciseId: id, sets: it.sets, ladderId: it.ladderId, notes: it.notes }) : null
+      return alt ? { ...it, ...alt, block: it.block, work: it.work, rest: it.rest, rounds: it.rounds } : it
+    })
+    const extras = custom.extras.flatMap((ladderId) => {
+      const ladder = LADDERS[ladderId]
+      const id = ladder?.steps[Math.min(input.steps[ladderId] ?? ladder.start, ladder.steps.length - 1)].id
+      const it = id && buildItem(input, { phase: 'main', exerciseId: id, sets: 2, ladderId, notes: ['Extra exercise.'] })
+      return it ? [{ ...it, block: 'build' as const, work: buildTime.work, rest: buildTime.rest, rounds: 2 }] : []
+    })
+    return [...planned, ...extras]
+  }, [plan.items, custom.swaps, custom.extras, input, buildTime.work, buildTime.rest])
   const intervals = useMemo<Interval[]>(() => {
-    const base = plan.intervals ?? []
-    if (!custom.extraRound) return base
-    const build = base.filter((iv) => items[iv.item]?.block === 'build' && iv.round === 1)
-    const last = base.at(-1)
-    return [...base.map((iv, i) => (i === base.length - 1 && last ? { ...iv, rest: 20 } : iv)), ...build.map((iv) => ({ ...iv, round: (items[iv.item].rounds ?? 1) + 1 }))]
-  }, [plan.intervals, custom.extraRound, items])
+    const base = (plan.intervals ?? []).map((iv) => ({ ...iv }))
+    const more: Interval[] = []
+    if (custom.extraRound)
+      for (const iv of base) if (items[iv.item]?.block === 'build' && iv.round === 1) more.push({ ...iv, round: (items[iv.item].rounds ?? 1) + 1 })
+    custom.extras.forEach((_, k) => {
+      const i = plan.items.length + k
+      if (!items[i]) return
+      const perSide = !!exerciseById(items[i].exerciseId)?.perSide
+      for (const round of [1, 2]) more.push({ item: i, round, work: buildTime.work, rest: buildTime.rest, perSide, switch: perSide ? 10 : undefined })
+    })
+    if (more.length && base.length) base[base.length - 1].rest = 20
+    return [...base, ...more]
+  }, [plan.intervals, plan.items.length, custom.extraRound, custom.extras, items, buildTime.work, buildTime.rest])
   const segments = useMemo(() => buildTimeline(intervals), [intervals])
   const tests = items.filter((i) => i.test)
   const testsDone = useLiveQuery(
@@ -403,6 +417,29 @@ export function IntervalPlayer({ session, plan, input, onFinished }: { session: 
           <h2 className="text-[22px] font-semibold">Intervals done</h2>
           <p className="text-sm text-[var(--muted)]">Rate each exercise next, so the programme can adjust.</p>
         </Card>
+        {extraOptions(input, plan.type, items).map((o) => {
+          const ex = exerciseById(o.exerciseId)
+          if (!ex || !o.ladderId) return null
+          return (
+            <button
+              key={o.ladderId}
+              className="flex w-full items-center gap-3 rounded-2xl bg-[var(--surface)] p-2 pr-3 text-left ring-1 ring-[var(--border)]"
+              onClick={() => {
+                unlockCues()
+                setCustom((c) => ({ ...c, extras: [...c.extras, o.ladderId!] }))
+              }}
+            >
+              <Thumb size={52}>
+                <FigureView animation={ex.animation} showLabel={false} time={ex.animation.frames[0].move} />
+              </Thumb>
+              <span className="min-w-0 flex-1">
+                <span className="block text-[12px] text-[var(--muted)]">Add an exercise · 2 × {buildTime.work} s</span>
+                <span className="block truncate text-[15px] font-semibold">{ex.name}</span>
+              </span>
+              <Plus size={20} className="shrink-0 text-[var(--accent)]" />
+            </button>
+          )
+        })}
         {!custom.extraRound && plan.items.some((i) => i.block === 'build') && (
           <Card className="space-y-3 p-5">
             <div>

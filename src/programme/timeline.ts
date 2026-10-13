@@ -11,6 +11,8 @@ export type Interval = {
   /** Rest after the interval, in seconds (0 for none). */
   rest: number
   perSide: boolean
+  /** Pause between the sides of a per-side exercise (default SIDE_SWITCH_SECONDS). */
+  switch?: number
 }
 
 export type Segment = {
@@ -39,7 +41,7 @@ export function buildTimeline(intervals: Interval[]): Segment[] {
   intervals.forEach((iv, i) => {
     if (iv.perSide) {
       push({ kind: 'work', item: iv.item, round: iv.round, side: 1, seconds: iv.work })
-      push({ kind: 'rest', item: iv.item, round: iv.round, side: 2, seconds: SIDE_SWITCH_SECONDS })
+      push({ kind: 'rest', item: iv.item, round: iv.round, side: 2, seconds: iv.switch ?? SIDE_SWITCH_SECONDS })
       push({ kind: 'work', item: iv.item, round: iv.round, side: 2, seconds: iv.work })
     } else {
       push({ kind: 'work', item: iv.item, round: iv.round, seconds: iv.work })
