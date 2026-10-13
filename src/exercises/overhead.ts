@@ -162,7 +162,7 @@ const QUAD_HIP: Vec = [HAND[0] - Math.sqrt(BODY.torso ** 2 - (FLOOR - BODY.thigh
 const QUAD_ANKLE = ankleOnToes(DOG_TOE_X, QUAD_FOOT)
 const DOG_ANKLE = ankleOnToes(DOG_TOE_X, DOG_FOOT)
 /** Arms and back in one line; knees slightly soft. */
-const DOG_HIP = upperIntersection(HAND, TOP_ARM + BODY.torso - 0.2, DOG_ANKLE, LEG - 1.5)
+const DOG_HIP = upperIntersection(HAND, TOP_ARM + BODY.torso - 0.2, DOG_ANKLE, LEG - 1)
 
 function dogPose(hip: Vec, ankle: Vec, foot: number): Pose {
   const b = topBody(hip)
