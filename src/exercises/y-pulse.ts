@@ -2,8 +2,8 @@
 // (Y24) and wrist circles (M11) — docs/EVIDENCE.md, "Y. Dynamic jump-free
 // moves (Y ladders)" and the M pool.
 //
-// Every move keeps one foot on the floor and the arms at or below shoulder
-// height. Y1–Y3 and Y24 are drawn from the side. Y4 is lateral and drawn from
+// Every move keeps one foot on the floor. Y4 and Y24 take the arms overhead,
+// within a pain-free range. Y1–Y3 and Y24 are drawn from the side. Y4 is lateral and drawn from
 // the front, as in squat-variants.ts: the near (dark) leg and arm are on the
 // right of the screen, the far (faded) ones on the left, both starting at the
 // single hip and shoulder points.
@@ -139,6 +139,11 @@ function boxingMarchPose(up: 'near' | 'far' | 'none'): Pose {
   }
 }
 
+/** For the moves that take the arms overhead (Y4, Y24). */
+const OVERHEAD_RANGE =
+  "Shoulder: raise the arms only as far as is pain-free; keep them at shoulder height if the shoulder pinches."
+const SHOULDER_STOP = 'Stop at shoulder pain 3/10.'
+
 const PUNCH_CAUTIONS = [
   'Punches forward only, at or below shoulder height.',
   'Do not lock the elbows.',
@@ -249,9 +254,10 @@ const JACK_STEP = 18 // the stepping foot lands this far out
 const JACK_LIFT = 3.5 // foot height in the air
 
 const ARMS_DOWN = { near: { a: [10, 6] } as Limb, far: { a: [350, 354] } as Limb }
-const ARMS_HALF = { near: { a: [50, 54] } as Limb, far: { a: [310, 306] } as Limb }
-/** Out to the sides, just below shoulder height, elbows soft. */
-const ARMS_UP = { near: { a: [87, 85] } as Limb, far: { a: [273, 275] } as Limb }
+/** Passing shoulder height on the way up or down, elbows soft. */
+const ARMS_HALF = { near: { a: [92, 96] } as Limb, far: { a: [268, 264] } as Limb }
+/** Overhead in a wide V, as in a jumping jack, elbows soft. */
+const ARMS_UP = { near: { a: [158, 166] } as Limb, far: { a: [202, 194] } as Limb }
 
 type JackPhase = 'in' | 'lift' | 'out'
 
@@ -300,14 +306,19 @@ const stepJack: Exercise = {
   target: [30, 45],
   kneeLoad: 'low',
   wristLoad: 'low',
-  regions: [],
+  regions: ['shoulder'],
   components: ['pulse'],
   cues: [
     'Stand tall, feet together or hip-width apart, arms by your sides.',
-    'Step one foot out to the side as both arms rise sideways to shoulder height.',
-    'Step back in as the arms lower, then step out to the other side.',
+    'Step one foot out to the side as both arms sweep out to the sides and up overhead.',
+    'Step back in as the arms sweep down, then step out to the other side.',
   ],
-  cautions: ['Arms no higher than shoulder height.', 'Soft knees.', 'Never hop: one foot always stays on the floor.'],
+  cautions: [
+    OVERHEAD_RANGE,
+    SHOULDER_STOP,
+    'Soft knees.',
+    'Never hop: one foot always stays on the floor.',
+  ],
   animation: {
     frames: [
       { pose: stepJackPose('right', 'lift'), move: 0.22, label: 'Step out' },
@@ -319,11 +330,11 @@ const stepJack: Exercise = {
       { pose: stepJackPose('left', 'lift'), move: 0.22, label: 'Step in' },
       { pose: stepJackPose('left', 'in'), move: 0.22, label: 'Step in' },
     ],
-    viewBox: [CX - 54, 2, 108, 114],
+    viewBox: [CX - 54, -8, 108, 124],
   },
 }
 
-// ---------------------------------------------------------------- Y24 wall slide to shoulder height
+// ---------------------------------------------------------------- Y24 wall slide
 
 /** Wall surface; the person faces the wall, which is on the right. */
 const WALL_SURFACE = 100
@@ -331,16 +342,19 @@ const WALL_SURFACE = 100
 const FOREARM_X = WALL_SURFACE - 1.9
 const SLIDE_ANKLE: Vec = [80, ANKLE_FLOOR]
 const SLIDE_LOW = 50 // upper arm angle at the bottom: elbows below the chest
-const SLIDE_HIGH = 90 // elbows at shoulder height, the cap
+const SLIDE_MID = 90 // elbows passing shoulder height
+const SLIDE_HIGH = 140 // arms near full elevation, elbows a little straighter
 
 /**
- * Forearms vertical on the wall; `upper` is the upper-arm angle. The trunk
- * leans in slightly so the elbows stay on the wall as they rise and fall.
+ * Forearms vertical on the wall; `upper` is the upper-arm angle and `lean` the
+ * trunk's lean towards the wall. The shoulders sit where the elbows touch the
+ * wall, and the hips follow, so the elbows stay on the wall as they rise and fall.
  */
-function wallSlidePose(upper: number, spine = 0): Pose {
-  const hip: Vec = [81.5 - ((upper - SLIDE_LOW) / (SLIDE_HIGH - SLIDE_LOW)) * 1.2, hipYOver(1.5)]
+function wallSlidePose(upper: number, lean: number, spine = 0): Pose {
   const shoulderX = FOREARM_X - BODY.upperArm * Math.sin(upper * RAD)
-  const torso = 180 - Math.asin((shoulderX - hip[0]) / BODY.torso) / RAD
+  const hipX = shoulderX - BODY.torso * Math.sin(lean * RAD)
+  const hip: Vec = [hipX, hipYOver(hipX - SLIDE_ANKLE[0])]
+  const torso = 180 - lean
   const arm: Limb = { a: [upper, 180] }
   const leg: Limb = { pin: SLIDE_ANKLE, bend: 1 }
   return {
@@ -357,9 +371,13 @@ function wallSlidePose(upper: number, spine = 0): Pose {
   }
 }
 
+const SLIDE_BOTTOM = wallSlidePose(SLIDE_LOW, 8)
+const SLIDE_PASS = wallSlidePose(SLIDE_MID, 3)
+const SLIDE_TOP = wallSlidePose(SLIDE_HIGH, 6)
+
 const wallSlide: Exercise = {
   id: 'Y24',
-  name: 'Wall slide to shoulder height',
+  name: 'Wall slide',
   group: 'back',
   cls: 'flow',
   muscles: ['Serratus anterior', 'Lower trapezius'],
@@ -371,19 +389,21 @@ const wallSlide: Exercise = {
   components: ['mobility', 'strength'],
   cues: [
     'Stand facing a wall, forearms on it, elbows below chest height.',
-    'Slide the forearms up until the elbows reach shoulder height, no higher.',
-    'Add a small "plus": push the forearms into the wall so the shoulder blades move forward.',
+    'Slide the forearms up the wall towards overhead, letting the elbows straighten a little as the arms rise.',
+    'At the top, add a small "plus": push the forearms into the wall so the shoulder blades move forward and up.',
     'Slide back down slowly and repeat.',
   ],
-  cautions: ['Stop when the elbows reach shoulder height; no overhead range.', 'Stop if shoulder pain goes above 2/10.'],
+  cautions: [OVERHEAD_RANGE, SHOULDER_STOP],
   animation: {
     frames: [
-      { pose: wallSlidePose(SLIDE_LOW), move: 1.5, hold: 0.3, label: 'Slide down' },
-      { pose: wallSlidePose(SLIDE_HIGH), move: 1.5, hold: 0.2, label: 'Slide up' },
-      { pose: wallSlidePose(SLIDE_HIGH, 2), move: 0.6, hold: 0.8, label: 'Plus' },
+      { pose: SLIDE_BOTTOM, move: 1, hold: 0.3, label: 'Slide down' },
+      { pose: SLIDE_PASS, move: 0.8, label: 'Slide up' },
+      { pose: SLIDE_TOP, move: 0.9, hold: 0.2, label: 'Slide up' },
+      { pose: wallSlidePose(SLIDE_HIGH, 6, 2), move: 0.6, hold: 0.8, label: 'Plus' },
+      { pose: SLIDE_PASS, move: 1, label: 'Slide down' },
     ],
     wall: { x: WALL_SURFACE + 6 },
-    viewBox: [40, 4, 76, 112],
+    viewBox: [40, -8, 76, 124],
   },
 }
 

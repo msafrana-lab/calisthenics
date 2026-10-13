@@ -62,8 +62,10 @@ const SQUAT_RISE: SquatShape = { knee: 3, shin: 4, lean: 2, heel: 1 }
 
 /** Arms reaching forward for balance at chest height. */
 const ARMS_COUNTER: Limb = { a: [66, 72] }
-/** Arms reaching forward at shoulder height (never higher). */
+/** Arms reaching forward at shoulder height. */
 const ARMS_SHOULDER: Limb = { a: [86, 88] }
+/** Arms reaching up overhead, close to the line of the trunk. */
+const ARMS_OVERHEAD: Limb = { a: [165, 170] }
 
 const SQUAT_VIEW = [20, 2, 104, 114] as const
 
@@ -99,7 +101,7 @@ const squatCalfRaise: Exercise = {
 
 const squatReach: Exercise = {
   id: 'Y8',
-  name: 'Squat with forward reach',
+  name: 'Squat with reach-up',
   group: 'legs',
   cls: 'flow',
   components: ['strength', 'pulse', 'mobility'],
@@ -108,22 +110,27 @@ const squatReach: Exercise = {
   target: [30, 45],
   kneeLoad: 'medium',
   wristLoad: 'low',
-  regions: ['knee'],
+  regions: ['knee', 'shoulder'],
   cues: [
     'Feet hip-width apart; lower into a partial squat with the arms by your sides.',
     SQUAT_DEPTH_CUE,
-    'As you stand, reach both arms forward to shoulder height, no higher, and rise onto the toes.',
-    'Lower the heels and the arms together, back flat. ' + NO_HOP,
+    'As you stand, reach both arms forward and up overhead and rise onto the toes.',
+    'Lower the heels and the arms together, ribs down, back flat. ' + NO_HOP,
   ],
-  cautions: ['Arms stop at shoulder height.', 'Depth never deeper than your current squat step.', KNEE_DEPTH],
+  cautions: [
+    'Shoulder: raise the arms only as far as is pain-free; keep them at shoulder height if the shoulder pinches.',
+    'Stop at shoulder pain 3/10.',
+    'Depth never deeper than your current squat step.',
+    KNEE_DEPTH,
+  ],
   animation: {
     frames: [
       { pose: squatPose(SQUAT_STAND, ARM_HANGING), move: 1.2, hold: 0.3, label: 'Lower arms' },
       { pose: squatPose(SQUAT_BOTTOM, { a: [12, 16] }), move: 2, hold: 0.3, label: 'Squat' },
-      { pose: squatPose(SQUAT_STAND, { a: [58, 64] }), move: 1.1, label: 'Stand' },
-      { pose: squatPose(SQUAT_RISE, ARMS_SHOULDER), move: 0.8, hold: 0.8, label: 'Reach' },
+      { pose: squatPose(SQUAT_STAND, { a: [70, 76] }), move: 1.1, label: 'Stand' },
+      { pose: squatPose(SQUAT_RISE, ARMS_OVERHEAD), move: 0.9, hold: 0.8, label: 'Reach up' },
     ],
-    viewBox: SQUAT_VIEW,
+    viewBox: [20, -16, 104, 132],
   },
 }
 

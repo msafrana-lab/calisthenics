@@ -205,7 +205,8 @@ const freeCalfRaise: Exercise = {
 // the figure lies on its side in profile, head to the right, front facing down
 // the screen. The near arm is the top arm; the far arm is the bottom arm, under
 // the head. Arm angle 270 = along the trunk to the hip, 0 = straight out in
-// front of the chest (90° of flexion, shoulder height).
+// front of the chest (90° of flexion, shoulder height), 45 = 135° of flexion,
+// overhead beyond the head.
 
 const SL_TOP_HIP: Vec = [62, 54]
 const SL_LEG: Limb = { a: [296, 262] }
@@ -240,17 +241,17 @@ const sideLyingFlexion: Exercise = {
   cues: [
     'Lie on your side, head on your lower arm or a pillow, knees slightly bent.',
     'Top arm straight, resting along your side with the hand on the thigh.',
-    'Keeping the elbow straight, raise the arm forwards until it points straight out in front of the chest (shoulder height), no further; hold 2 s.',
+    'Keeping the elbow straight, raise the arm forwards past the front of the chest and on overhead, to about 135° (hand beyond the head); hold 2 s.',
     'Lower slowly to the thigh; do not roll the body backwards.',
   ],
   cautions: [
-    'Shoulder: stop at shoulder height (90°). Overhead work is excluded, so this limit is permanent.',
-    'Stop the set at shoulder pain of 4/10 or more.',
+    'Shoulder: raise the arm only as far as is pain-free; keep it at shoulder height (90°) if the shoulder pinches.',
+    'Stop at shoulder pain 3/10.',
   ],
   animation: {
     frames: [
-      { pose: sideLyingFlexionPose(5), move: 2, hold: 0.5, label: 'Lower' },
-      { pose: sideLyingFlexionPose(90), move: 1.5, hold: 2, label: 'Raise' },
+      { pose: sideLyingFlexionPose(5), move: 2.5, hold: 0.5, label: 'Lower' },
+      { pose: sideLyingFlexionPose(135), move: 2, hold: 2, label: 'Raise' },
     ],
     view: 'top',
     viewBox: [6, 24, 132, 76],

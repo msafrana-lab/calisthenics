@@ -336,9 +336,8 @@ const freeRdl: Exercise = {
   },
 }
 
-// E5: the reaching arm stays at or below shoulder height (user's overhead rule):
-// it is never raised beyond a right angle to the trunk, so in the hinge the hand
-// is below the shoulder.
+// E5: the reaching arm goes forward to ear level, in line with the trunk, as in
+// the classic bird dog (full shoulder flexion within a pain-free range).
 const E5_TOP: HingeShape = { knee: 8, shin: 2, lean: 4 }
 const E5_BOTTOM: HingeShape = { knee: 18, shin: 4, lean: 50 }
 
@@ -357,11 +356,12 @@ const standingBirdDog: Exercise = {
   cues: [
     'Stand tall on one leg, knee soft, the same-side hand on the hip.',
     'Hinge forward as the free leg extends back and the opposite arm reaches forward.',
-    'Raise the arm no higher than shoulder height (at most a right angle to the body); keep the hips level and the back flat.',
+    'Reach the arm forward to ear level, in line with the trunk; keep the hips level and the back flat.',
     'Return to standing with control. Do all reps, then switch sides.',
   ],
   cautions: [
-    'Shoulder: no overhead reach; keep the reaching arm at or below shoulder height.',
+    'Shoulder: raise the arm only as far as is pain-free; keep it at shoulder height (a right angle to the trunk) if the shoulder pinches.',
+    'Stop at shoulder pain 3/10.',
     'Stand near a wall so you can touch it if you lose balance.',
     'Knees: keep pain at 2/10 or below.',
   ],
@@ -377,8 +377,8 @@ const standingBirdDog: Exercise = {
         pose: singleLegPose(E5_BOTTOM, {
           free: freeBehind(E5_BOTTOM.lean),
           freeFoot: freeFootBehind(E5_BOTTOM.lean),
-          // Right angle to the trunk: shoulder height relative to the body.
-          reach: { a: [90 - E5_BOTTOM.lean, 90 - E5_BOTTOM.lean] },
+          // In line with the trunk: the arm beside the ear.
+          reach: { a: [176 - E5_BOTTOM.lean, 178 - E5_BOTTOM.lean] },
           other: handOnHip,
         }),
         move: 1.8,
@@ -386,7 +386,7 @@ const standingBirdDog: Exercise = {
         label: 'Reach',
       },
     ],
-    viewBox: [0, 2, 112, 114],
+    viewBox: [8, 2, 116, 114],
   },
 }
 

@@ -264,8 +264,8 @@ function wgsElbow(): Pose {
 
 function wgsOpen(): Pose {
   const base = wgsBase(42)
-  // Arm opened back level with the shoulder: never above it.
-  return { ...base, armNear: { a: [270, 270] }, armFar: reach(base, WGS_FAR_HAND, -1) }
+  // The chest turns open and the arm rotates up towards the ceiling.
+  return { ...base, armNear: { a: [182, 182] }, armFar: reach(base, WGS_FAR_HAND, -1) }
 }
 
 const standingWorldsGreatest: Exercise = {
@@ -280,14 +280,16 @@ const standingWorldsGreatest: Exercise = {
   perSide: true,
   kneeLoad: 'medium',
   wristLoad: 'low',
-  regions: ['knee'],
+  regions: ['knee', 'shoulder'],
   cues: [
     'Long split stance, back knee off the floor, hands on the front thigh.',
     'Lean forward and lower the same-side elbow towards the inside of the front knee.',
-    'Turn the chest open and take that arm out to shoulder height, no higher.',
+    'Turn the chest open and rotate that arm up towards the ceiling; eyes follow the hand.',
     'Return the hand to the thigh and repeat; then switch sides.',
   ],
   cautions: [
+    'Shoulder: raise the arm only as far as is pain-free; keep it at shoulder height if the shoulder pinches.',
+    'Stop at shoulder pain 3/10.',
     'No hand on the floor (wrist-free).',
     'Only once the knee ladder is at K6 or above.',
     'Optional half-kneeling version (pad under the knee) only if kneeling pain is 2/10 or below (as M1).',
