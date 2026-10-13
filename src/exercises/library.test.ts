@@ -27,8 +27,12 @@ describe('programme references', () => {
     const { LADDERS, TEMPLATES } = await import('../programme/ladders')
     const { exerciseById } = await import('./library')
     const ids = [
-      ...Object.values(LADDERS).flatMap((l) => l.steps.map((s) => s.id)),
-      ...Object.values(TEMPLATES).flatMap((t) => [...t.warmup, ...t.cooldown, ...t.main.flatMap((s) => ('exercise' in s ? [s.exercise] : []))]),
+      ...Object.values(LADDERS).flatMap((l) => l.steps.flatMap((s) => [s.id, ...(s.variants ?? [])])),
+      ...Object.values(TEMPLATES).flatMap((t) =>
+        [...t.ramp, ...t.build, ...t.peak, ...t.winddown].flatMap((s) =>
+          'exercise' in s ? [s.exercise, ...(s.hardRide ? [s.hardRide] : [])] : 'ladder' in s ? [...(s.fallback ? [s.fallback] : []), ...(s.hardRide ? [s.hardRide] : [])] : [],
+        ),
+      ),
     ]
     expect(ids.filter((id) => !exerciseById(id))).toEqual([])
   })

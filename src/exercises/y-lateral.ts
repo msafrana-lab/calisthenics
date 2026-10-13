@@ -146,7 +146,7 @@ function skaterArms(hip: Vec, torso: number): Arms {
     // Right arm swings back and out to the side.
     armNear: { a: [52, 70] },
     // Left hand across the body towards the right knee.
-    armFar: { pin: [s[0] + 10, s[1] + 29], bend: -1 },
+    armFar: { pin: [s[0] + 16, s[1] + 24], bend: -1 },
   }
 }
 
