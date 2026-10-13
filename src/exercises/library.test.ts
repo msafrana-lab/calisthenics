@@ -15,7 +15,8 @@ describe('exercise library', () => {
     expect(e.target[0]).toBeLessThanOrEqual(e.target[1])
     expect(e.animation.frames.length).toBeGreaterThanOrEqual(2)
     for (const f of e.animation.frames) expect(f.move).toBeGreaterThan(0)
-    if (e.cls === 'hold' || e.cls === 'stretch') expect(e.measure).toBe('seconds')
+    if (e.cls === 'hold' || e.cls === 'stretch' || e.cls === 'flow') expect(e.measure).toBe('seconds')
+    if (e.cls === 'flow') expect(e.components?.length).toBeGreaterThan(0)
     if (e.cls === 'strength' || e.cls === 'endurance' || e.cls === 'cuff') expect(e.measure).toBe('reps')
     if (e.kneeLoad !== 'low') expect(e.regions).toContain('knee')
   })
@@ -26,8 +27,12 @@ describe('programme references', () => {
     const { LADDERS, TEMPLATES } = await import('../programme/ladders')
     const { exerciseById } = await import('./library')
     const ids = [
-      ...Object.values(LADDERS).flatMap((l) => l.steps.map((s) => s.id)),
-      ...Object.values(TEMPLATES).flatMap((t) => [...t.warmup, ...t.cooldown, ...t.main.flatMap((s) => ('exercise' in s ? [s.exercise] : []))]),
+      ...Object.values(LADDERS).flatMap((l) => l.steps.flatMap((s) => [s.id, ...(s.variants ?? [])])),
+      ...Object.values(TEMPLATES).flatMap((t) =>
+        [...t.ramp, ...t.build, ...t.peak, ...t.winddown].flatMap((s) =>
+          'exercise' in s ? [s.exercise, ...(s.hardRide ? [s.hardRide] : [])] : 'ladder' in s ? [...(s.fallback ? [s.fallback] : []), ...(s.hardRide ? [s.hardRide] : [])] : [],
+        ),
+      ),
     ]
     expect(ids.filter((id) => !exerciseById(id))).toEqual([])
   })

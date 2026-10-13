@@ -71,7 +71,7 @@ export function weeklyMinutes(rides: RideRow[], today: string, weeks: number): W
 // ---------------------------------------------------------------- training volume
 
 export type SessionRow = { id: string; started_at: string; ended_at: string | null; deleted: boolean }
-export type SetRow = { session_id: string; exercise_id: string; reps: number | null; seconds: number | null; deleted: boolean }
+export type SetRow = { session_id: string; exercise_id: string; reps: number | null; seconds: number | null; deleted: boolean; rir?: number | null }
 export type ExerciseMeta = { id: string; name: string; group: Group; cls: ExerciseClass; measure: 'reps' | 'seconds' }
 
 /** Groups shown in the weekly volume chart (mobility and warm-up are not working sets). */
@@ -111,7 +111,18 @@ export function setsByGroup(sessions: SessionRow[], sets: SetRow[], catalogue: (
 
 // ---------------------------------------------------------------- exercise history
 
-export type HistoryPoint = { day: string; exerciseId: string; name: string; best: number; measure: 'reps' | 'seconds'; stepChange: boolean }
+export type HistoryPoint = {
+  day: string
+  exerciseId: string
+  name: string
+  best: number
+  measure: 'reps' | 'seconds'
+  stepChange: boolean
+  /** Step number on the ladder, from 1. */
+  step: number
+  /** The session's rating of the step (R16). */
+  rating: 'easy' | 'right' | 'hard'
+}
 
 /**
  * Best set per finished session for one progression ladder, oldest first.
@@ -121,7 +132,7 @@ export function ladderHistory(ladderId: string, sessions: SessionRow[], sets: Se
   const ladder = LADDERS[ladderId]
   if (!ladder) return []
   const done = finishedSessions(sessions)
-  const best = new Map<string, { session: SessionRow; exerciseId: string; best: number }>()
+  const best = new Map<string, { session: SessionRow; exerciseId: string; best: number; rirs: number[] }>()
   for (const s of sets) {
     const session = done.get(s.session_id)
     // Variations are shown as their step (R12).
@@ -132,7 +143,8 @@ export function ladderHistory(ladderId: string, sessions: SessionRow[], sets: Se
     const cur = best.get(s.session_id)
     // If two steps were done in one session, keep the harder one.
     const harder = cur && step > stepIndex(ladder, cur.exerciseId)
-    if (!cur || harder || (cur.exerciseId === stepId && amount > cur.best)) best.set(s.session_id, { session, exerciseId: stepId, best: amount })
+    if (!cur || harder) best.set(s.session_id, { session, exerciseId: stepId, best: amount, rirs: [s.rir ?? 2] })
+    else if (cur.exerciseId === stepId) best.set(s.session_id, { ...cur, best: Math.max(cur.best, amount), rirs: [...cur.rirs, s.rir ?? 2] })
   }
   const rows = [...best.values()].sort((a, b) => a.session.started_at.localeCompare(b.session.started_at))
   return rows.map((r, i) => {
@@ -144,6 +156,8 @@ export function ladderHistory(ladderId: string, sessions: SessionRow[], sets: Se
       best: r.best,
       measure: ex?.measure ?? 'reps',
       stepChange: i > 0 && rows[i - 1].exerciseId !== r.exerciseId,
+      step: stepIndex(ladder, r.exerciseId) + 1,
+      rating: r.rirs.some((x) => x <= 0) ? 'hard' : r.rirs.every((x) => x >= 4) ? 'easy' : 'right',
     }
   })
 }

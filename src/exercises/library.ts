@@ -13,6 +13,12 @@ import { SQUAT_VARIANTS } from './squat-variants'
 import { LUNGE_VARIANTS } from './lunge-variants'
 import { HIP_VARIANTS } from './hip-variants'
 import { SMALL_VARIANTS } from './small-variants'
+import { Y_PULSE } from './y-pulse'
+import { Y_LATERAL } from './y-lateral'
+import { Y_SQUAT_HINGE } from './y-squat-hinge'
+import { Y_ROTATE } from './y-rotate'
+import { Y_WALL } from './y-wall'
+import { OVERHEAD } from './overhead'
 import type { Exercise } from './types'
 
 export const EXERCISES: Exercise[] = [
@@ -32,6 +38,13 @@ export const EXERCISES: Exercise[] = [
   ...LUNGE_VARIANTS,
   ...HIP_VARIANTS,
   ...SMALL_VARIANTS,
+  // Dynamic jump-free moves for timed sessions (docs/EVIDENCE.md, "Y. Dynamic jump-free moves").
+  ...Y_PULSE,
+  ...Y_LATERAL,
+  ...Y_SQUAT_HINGE,
+  ...Y_ROTATE,
+  ...Y_WALL,
+  ...OVERHEAD,
 ]
 
 const BY_ID = new Map(EXERCISES.map((e) => [e.id, e]))

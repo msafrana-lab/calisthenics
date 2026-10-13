@@ -2,7 +2,8 @@
 // pain rules of docs/EVIDENCE.md (R1–R8). Pure functions over the training
 // history, so they can be tested without a database.
 import type { ExerciseClass, Group, Region } from '../exercises/types'
-import { LADDERS, NOT_WITH, ROTATION, TEMPLATES, type Ladder, type SessionType } from './ladders'
+import { LADDERS, NOT_WITH, ROTATION, slotLadders, TEMPLATES, type Ladder, type SessionType } from './ladders'
+import { buildTimeline, totalSeconds, type Interval } from './timeline'
 
 // ---------------------------------------------------------------- inputs
 
@@ -20,6 +21,8 @@ export type ExerciseInfo = {
   difficulty?: 'easier' | 'similar' | 'harder'
   kneeLoad?: 'low' | 'medium' | 'high'
   wristLoad?: 'low' | 'medium' | 'high'
+  /** For timed dynamic moves: only those with 'strength' count as sets (R16). */
+  components?: ('strength' | 'mobility' | 'pulse')[]
 }
 
 export type DoneSession = { id: string; day_type: string; started_at: string; ended_at: string | null; deleted: boolean }
@@ -52,6 +55,9 @@ export type EngineInput = {
 
 export type Phase = 'warmup' | 'main' | 'cooldown'
 
+/** Blocks of a timed session (R14): increasing complexity, then a wind-down. */
+export type Block = 'ramp' | 'build' | 'peak' | 'winddown'
+
 export type PlanItem = {
   phase: Phase
   exerciseId: string
@@ -67,6 +73,11 @@ export type PlanItem = {
   notes: string[]
   /** A readiness test for an advanced step (R13 G6) instead of working sets. */
   test?: { stepId: string; text: string; painMax: number; caution: boolean }
+  /** Timed sessions (R14, R15): block, work and rest per interval in seconds, and rounds. */
+  block?: Block
+  work?: number
+  rest?: number
+  rounds?: number
 }
 
 /** Programme sessions A–D, plus 'S' for an optional stretch top-up (not part of the rotation). */
@@ -83,6 +94,8 @@ export type Plan = {
   reasons: string[]
   warnings: string[]
   items: PlanItem[]
+  /** Timed sessions: the order of work intervals (circuits interleave items). */
+  intervals?: Interval[]
 }
 
 export type LadderUpdate = { ladderId: string; from: number; to: number; reason: string }
@@ -247,7 +260,7 @@ function currentStep(input: EngineInput, ladder: Ladder, week: number): number {
   return step
 }
 
-const REST: Record<ExerciseClass, number> = { strength: 75, endurance: 45, hold: 45, cuff: 45, stretch: 10, drill: 0 }
+const REST: Record<ExerciseClass, number> = { strength: 75, endurance: 45, hold: 45, cuff: 45, stretch: 10, drill: 0, flow: 20 }
 
 function targetRir(info: ExerciseInfo, week: number, deload: boolean): number | null {
   if (info.cls === 'stretch' || info.cls === 'drill') return null
@@ -337,9 +350,10 @@ function chooseVersion(input: EngineInput, ladder: Ladder, step: number, alterna
 function mastered(input: EngineInput, stepId: string): boolean {
   const info = input.catalogue(stepId)
   if (!info) return false
+  // R16 in the timed format: rated too easy in 2 of the last 3 sessions.
   const top = sessionsWithStep(input, stepId, 'progress')
     .slice(0, 3)
-    .filter((s) => stepSets(input, s.id, stepId, 'progress').every((x) => amount(x) >= info.target[1] && (x.rir ?? 0) >= 2))
+    .filter((s) => ratingOf(stepSets(input, s.id, stepId, 'progress')) === 'easy')
   return top.length >= 2
 }
 
@@ -421,6 +435,66 @@ function legsBlocked(input: EngineInput): { blocked: boolean; hardToday: boolean
   return { blocked: hardToday || (yesterday?.cycling === 'hard' && kneeFlaredAfterB), hardToday }
 }
 
+/** R15: work and rest seconds and rounds per block, by programme week. */
+export function timing(input: EngineInput, week: number): Record<Block, { work: number; rest: number; rounds: number }> {
+  const deload = isDeloadWeek(week)
+  const reentry = week <= 2
+  const easy = reentry || deload
+  const peakWork = !easy && week >= 8 && peakStageOk(input) ? 45 : easy ? 30 : 40
+  return {
+    ramp: { work: 40, rest: 5, rounds: 1 },
+    build: { work: easy ? 30 : 40, rest: easy ? 30 : 20, rounds: deload ? 1 : 2 },
+    peak: { work: peakWork, rest: 60 - peakWork, rounds: easy ? 1 : 2 },
+    winddown: { work: 30, rest: 5, rounds: 1 },
+  }
+}
+
+/** R15 stage gate for 45/15 in Peak: in the last 7 days, no Peak exercise rated too hard twice, no pain of 4/10 or more, no worse morning. */
+function peakStageOk(input: EngineInput): boolean {
+  const recent = sessionsSince(input, 7)
+  const sets = input.sets.filter((x) => !x.deleted && recent.has(x.session_id))
+  if (sets.some((x) => (x.pain ?? 0) >= 4)) return false
+  const since = addDays(input.today, -7)
+  if (input.days.some((d) => d.day > since && d.morning && Object.values(d.morning).includes('worse'))) return false
+  const hardSessions = new Set(sets.filter((x) => (x.rir ?? 2) <= 0 && input.catalogue(x.exercise_id)?.cls === 'flow').map((x) => x.session_id))
+  return hardSessions.size < 2
+}
+
+/** A ladder step's own conditions (Y ladders): other ladders far enough, joints calm. */
+function stepAllowed(input: EngineInput, ladder: Ladder, index: number, week: number): boolean {
+  const st = ladder.steps[index]
+  if (!st) return false
+  for (const r of st.requires ?? []) {
+    const other = LADDERS[r.ladder]
+    if (!isOpen(input, other) || currentStep(input, other, week) < other.steps.findIndex((x) => x.id === r.atLeast)) return false
+  }
+  return (st.calm ?? []).every((region) => !regionFlagged(input, region))
+}
+
+/** Current step, stepped down past any step whose conditions no longer hold; -1 if none can be used. */
+function usableStep(input: EngineInput, ladder: Ladder, week: number, maxStep?: string): number {
+  let step = currentStep(input, ladder, week)
+  if (maxStep) step = Math.min(step, ladder.steps.findIndex((x) => x.id === maxStep))
+  while (step >= 0 && !stepAllowed(input, ladder, step, week)) step--
+  return step
+}
+
+/** The last rating given to an exercise: 'easy', 'right' or 'hard' (R16), from reps in reserve. */
+function lastRating(input: EngineInput, exerciseId: string): Rating | null {
+  const last = sessionsWith(input, exerciseId)[0]
+  return last ? ratingOf(setsOf(input, last.id, exerciseId)) : null
+}
+
+export type Rating = 'easy' | 'right' | 'hard'
+/** Rating of a set of logs: too easy if every set had 4+ in reserve, too hard if any had none. */
+export function ratingOf(sets: DoneSet[]): Rating | null {
+  if (!sets.length) return null
+  if (sets.some((x) => (x.rir ?? 2) <= 0)) return 'hard'
+  return sets.every((x) => (x.rir ?? 0) >= 4) ? 'easy' : 'right'
+}
+
+const BLOCK_PHASE: Record<Block, Phase> = { ramp: 'warmup', build: 'main', peak: 'main', winddown: 'cooldown' }
+
 export function plan(input: EngineInput, override?: SessionType): Plan {
   const week = programmeWeek(input)
   const deload = isDeloadWeek(week)
@@ -447,67 +521,96 @@ export function plan(input: EngineInput, override?: SessionType): Plan {
         : 'Hard ride yesterday and knee pain after the last legs session, so legs move to another day.',
     )
   }
-  if (deload) reasons.push(`Week ${week} is a lighter (deload) week: half the sets, easy effort.`)
-  if (week <= 2) reasons.push('Re-entry weeks: 2 sets per exercise, stop with 3–4 reps in reserve.')
+  if (deload) reasons.push(`Week ${week} is a lighter (deload) week: one round each, easy effort.`)
+  if (week <= 2) reasons.push('Re-entry weeks: 30 s work and 30 s rest, stop with 3–4 reps in reserve.')
+  if (legs.hardToday && type !== 'B') reasons.push('Hard ride today: the pulse block stays moderate, with no leg stations.')
 
   const template = TEMPLATES[type]
+  const time = timing(input, week)
   const items: PlanItem[] = []
   // How many sessions of this type are done: rotates multi-ladder slots.
   const typeCount = history.filter((t) => t === type).length
 
-  const item = (phase: Phase, exerciseId: string, sets: number, ladderId?: string, notes: string[] = []) =>
-    buildItem(input, { phase, exerciseId, sets, ladderId, notes })
-
-  for (const id of template.warmup) {
-    const it = item('warmup', id, 1)
-    if (it) items.push(it)
+  const add = (block: Block, exerciseId: string, ladderId: string | undefined, notes: string[] = [], rounds = time[block].rounds) => {
+    const it = buildItem(input, { phase: BLOCK_PHASE[block], exerciseId, sets: rounds, ladderId, notes })
+    if (!it) return null
+    const full: PlanItem = { ...it, block, work: time[block].work, rest: time[block].rest, rounds }
+    if (block === 'ramp' || block === 'winddown') Object.assign(full, { rir: null, restSeconds: 0 })
+    items.push(full)
+    return full
   }
 
-  for (const slot of template.main) {
-    let sets = slot.sets
-    if ('exercise' in slot) {
-      const it = item('main', slot.exercise, deload ? Math.ceil(sets / 2) : sets)
-      if (it) items.push(it)
-      continue
+  // Ramp: easy moves that warm up; the primer is the first Build ladder made easier (R14).
+  for (const slot of template.ramp) {
+    if ('exercise' in slot) add('ramp', slot.exercise, undefined)
+    else if ('rampOf' in slot) {
+      const ladder = LADDERS[slot.rampOf]
+      const step = Math.max(0, usableStep(input, ladder, week) - 1)
+      add('ramp', ladder.steps[step].id, undefined)
+    } else if ('primer' in slot) {
+      const ladder = LADDERS[slot.primer]
+      const step = Math.max(0, usableStep(input, ladder, week) - slot.below)
+      add('ramp', ladder.steps[step].id, undefined, ['Primer: an easier step of the first exercise, 4 or more reps in reserve.'])
     }
-    const ids = (Array.isArray(slot.ladder) ? slot.ladder : [slot.ladder]).filter((id) => isOpen(input, LADDERS[id]))
-    if (!ids.length) continue
-    const ladder = LADDERS[ids[typeCount % ids.length]]
-    const notes: string[] = []
-    const regions = ladderRegions(input, ladder)
-    const recent = sessionsWithLadder(input, ladder)
+  }
 
-    // R7: next-morning flare-ups.
-    const flaredLast = recent[0] && worseAfter(input, recent[0], regions)
-    const flaredTwice = flaredLast && recent[1] && worseAfter(input, recent[1], regions)
-    if (flaredTwice && daysBetween(localDay(recent[0].started_at), input.today) < 7) {
-      warnings.push(
-        `${ladder.name}: joint pain was worse the morning after the last two sessions. Paused for a week; a physiotherapist review is advised.`,
-      )
-      continue
-    }
-    if (week <= 2) sets = Math.min(sets, 2)
-    if (flaredLast) {
-      sets = Math.max(1, Math.round((sets * 2) / 3))
-      notes.push('Fewer sets: pain was worse the morning after last time.')
-    }
-    if (deload) sets = Math.ceil(sets / 2)
-    if (!recent.length) notes.push('First time: stop at 2 reps in reserve or pain 3/10, whichever comes first.')
+  for (const block of ['build', 'peak'] as const) {
+    for (const slot of template[block]) {
+      if ('exercise' in slot) {
+        add(block, legs.hardToday && slot.hardRide ? slot.hardRide : slot.exercise, undefined)
+        continue
+      }
+      if (!('ladder' in slot)) continue
+      const all = Array.isArray(slot.ladder) ? slot.ladder : [slot.ladder]
+      const ids = all.filter((id) => isOpen(input, LADDERS[id]) && usableStep(input, LADDERS[id], week, slot.maxStep) >= 0)
+      const pick = all[typeCount % all.length]
+      const ladderId = ids.includes(pick) ? pick : ids[typeCount % Math.max(1, ids.length)]
+      if (!ladderId) {
+        if (slot.fallback) add(block, slot.fallback, undefined)
+        continue
+      }
+      const ladder = LADDERS[ladderId]
+      const step = usableStep(input, ladder, week, slot.maxStep)
+      const stepIsLegs = ['legs', 'hips'].includes(input.catalogue(ladder.steps[step].id)?.group ?? '')
+      if (legs.hardToday && block === 'peak' && (slot.hardRide || stepIsLegs)) {
+        if (slot.hardRide) add(block, slot.hardRide, undefined)
+        continue
+      }
 
-    const step = currentStep(input, ladder, week)
-    const version = chooseVersion(input, ladder, step, Array.isArray(slot.ladder), week)
-    if (version !== ladder.steps[step].id) notes.push(`Variation of ${input.catalogue(ladder.steps[step].id)?.name ?? 'your step'}: same range and progression.`)
-    const it = item('main', version, sets, ladder.id, notes)
-    if (!it) continue
-    items.push(it)
+      const notes: string[] = []
+      let rounds = slot.rounds ?? time[block].rounds
+      const regions = ladderRegions(input, ladder)
+      const recent = sessionsWithLadder(input, ladder)
+      // R7: next-morning flare-ups.
+      const flaredLast = recent[0] && worseAfter(input, recent[0], regions)
+      const flaredTwice = flaredLast && recent[1] && worseAfter(input, recent[1], regions)
+      if (flaredTwice && daysBetween(localDay(recent[0].started_at), input.today) < 7) {
+        warnings.push(`${ladder.name}: joint pain was worse the morning after the last two sessions. Paused for a week; a physiotherapist review is advised.`)
+        continue
+      }
+      if (flaredLast) {
+        rounds = Math.max(1, rounds - 1)
+        notes.push('One round less: pain was worse the morning after last time.')
+      }
+      if (!recent.length) notes.push('First time: keep 2 or more reps in reserve; stop at pain 3/10.')
 
-    // R13 G6: a readiness test for the next advanced step, after the working sets.
-    const test = !deload ? testFor(input, ladder.steps[step].id, week) : null
-    if (test) {
-      const st = test.ladder.steps[test.index]
-      const gate = st.gate!
-      const t = item('main', st.id, 1, test.ladder.id, ['Readiness test: optional. Do it fresh, after a short rest.'])
-      if (t) items.push({ ...t, rir: null, restSeconds: 0, test: { stepId: st.id, text: gate.test, painMax: gate.painMax ?? 2, caution: !!gate.caution } })
+      const version = block === 'build' ? chooseVersion(input, ladder, step, all.length > 1, week) : ladder.steps[step].id
+      if (version !== ladder.steps[step].id) notes.push(`Variation of ${input.catalogue(ladder.steps[step].id)?.name ?? 'your step'}: same progression.`)
+      // R16 levers within a step.
+      const last = lastRating(input, version)
+      if (last === 'easy') notes.push('Felt too easy last time: slow the lowering to 3 s, or move a little further.')
+      if (last === 'hard') notes.push('Felt too hard last time: slow down, use a shorter range, or pause when needed.')
+      if (block === 'peak') notes.push('Pulse: short phrases only, never all-out.')
+      add(block, version, ladder.id, notes, rounds)
+
+      // R13 G6: a readiness test for the next advanced step, done after the intervals.
+      const test = !deload ? testFor(input, ladder.steps[step].id, week) : null
+      if (test) {
+        const st = test.ladder.steps[test.index]
+        const gate = st.gate!
+        const t = buildItem(input, { phase: 'main', exerciseId: st.id, sets: 1, ladderId: test.ladder.id, notes: ['Readiness test: optional, after the intervals.'] })
+        if (t) items.push({ ...t, rir: null, restSeconds: 0, test: { stepId: st.id, text: gate.test, painMax: gate.painMax ?? 2, caution: !!gate.caution } })
+      }
     }
   }
 
@@ -515,44 +618,85 @@ export function plan(input: EngineInput, override?: SessionType): Plan {
   for (let i = 0; i < items.length; i++) {
     const avoid = NOT_WITH[items[i].exerciseId]
     if (avoid && items.some((o) => avoid.includes(o.exerciseId))) {
-      const std = buildItem(input, { phase: 'main', exerciseId: stepOf(items[i].exerciseId), sets: items[i].sets, ladderId: items[i].ladderId, notes: items[i].notes.filter((n) => !n.startsWith('Variation of')) })
-      if (std) items[i] = std
+      const std = buildItem(input, { phase: 'main', exerciseId: stepOf(items[i].exerciseId), sets: items[i].sets, ladderId: items[i].ladderId })
+      if (std) items[i] = { ...items[i], ...std, notes: items[i].notes.filter((n) => !n.startsWith('Variation of')) }
     }
   }
 
-  const firstMain = items.find((i) => i.phase === 'main' && i.rir !== null && !i.test)
-  if (firstMain && type !== 'D') firstMain.notes.unshift('Warm-up set first: one easy set at 4+ reps in reserve (not logged).')
+  // Wind-down: slow mobility then stretches; deload weeks add stretching (R14).
+  const winddown = [...template.winddown]
+  if (deload && type !== 'D') for (const id of ['M1', 'M4', 'M3']) if (!winddown.some((w) => 'exercise' in w && w.exercise === id)) winddown.push({ exercise: id })
+  for (const slot of winddown) if ('exercise' in slot) add('winddown', slot.exercise, undefined)
 
-  for (const id of template.cooldown) {
-    const it = item('cooldown', id, 1, undefined, ['Optional: skip it if you are short of time.'])
-    if (it) items.push(it)
-  }
-
-  const plan = { type, week, deload, reasons, warnings, items, minutes: 0 }
-  plan.minutes = Math.round(estimateSeconds(plan, input.catalogue) / 60)
-  return plan
+  const p: Plan = { type, week, deload, reasons, warnings, items, minutes: 0 }
+  p.intervals = intervalsFor(p.items, input.catalogue)
+  fitToLength(p, input.catalogue)
+  p.minutes = Math.round(totalSeconds(buildTimeline(p.intervals!)) / 60)
+  return p
 }
 
-// ---------------------------------------------------------------- duration
+// ---------------------------------------------------------------- intervals (R14, R15)
 
-/** Seconds per rep used for time estimates (controlled tempo). */
-const SECONDS_PER_REP = 3
-const TRANSITION = 15
+/** Switch time between sides: 10 s for strength work done one side at a time, 5 s for split mobility (R15). */
+const SWITCH = { doubled: 10, split: 5 }
 
-/** Rough session length: work, rest between sets, side switches and transitions. */
-export function estimateSeconds(plan: Pick<Plan, 'items' | 'type'>, catalogue: (id: string) => ExerciseInfo | undefined): number {
-  let total = 0
-  for (const it of plan.items) {
+/**
+ * Work intervals in session order: the Ramp continuous, Build and Peak as
+ * circuits (every slot, then the next round), the Wind-down in order. Per-side
+ * strength moves get a full interval per side; per-side mobility in the Ramp
+ * shares the time between sides; stretches get 30 s per side (R15).
+ */
+export function intervalsFor(items: PlanItem[], catalogue: EngineInput['catalogue']): Interval[] {
+  const out: Interval[] = []
+  const one = (i: number, round: number) => {
+    const it = items[i]
     const info = catalogue(it.exerciseId)
-    const sides = info?.perSide ? 2 : 1
-    const amount = it.phase === 'main' ? it.suggested : it.target[0]
-    const work = (it.measure === 'reps' ? amount * SECONDS_PER_REP : amount) * sides + (sides - 1) * 5
-    total += it.sets * work + Math.max(0, it.sets - 1) * it.restSeconds + TRANSITION
+    const perSide = !!info?.perSide
+    const block = it.block!
+    let work = it.work ?? 40
+    let sw: number | undefined
+    if (perSide) {
+      if (block === 'ramp' || (block === 'winddown' && info?.cls !== 'stretch')) {
+        work = Math.round(work / 2)
+        sw = SWITCH.split
+      } else sw = block === 'winddown' ? SWITCH.split : SWITCH.doubled
+    } else if (block === 'winddown' && info?.cls === 'stretch') work = 60
+    out.push({ item: i, round, work, rest: it.rest ?? 0, perSide, switch: sw })
   }
-  // The easy warm-up set of the first exercise (not part of the plan items).
-  const first = plan.items.find((i) => i.phase === 'main' && i.rir !== null)
-  if (first && plan.type !== 'D' && plan.type !== STRETCH_TOP_UP) total += 40
-  return total
+  const idx = (b: Block) => items.map((it, i) => (it.block === b && !it.test ? i : -1)).filter((i) => i >= 0)
+  for (const i of idx('ramp')) one(i, 1)
+  for (const b of ['build', 'peak'] as const) {
+    const list = idx(b)
+    const rounds = Math.max(0, ...list.map((i) => items[i].rounds ?? 1))
+    for (let r = 1; r <= rounds; r++) for (const i of list) if ((items[i].rounds ?? 1) >= r) one(i, r)
+  }
+  for (const i of idx('winddown')) one(i, 1)
+  return out
+}
+
+/** R14 fit rule: above 16 min, drop a pulse-only Peak round, then the second Wind-down move, then the last Peak round. */
+function fitToLength(p: Plan, catalogue: EngineInput['catalogue']) {
+  const limit = 16 * 60
+  const total = () => totalSeconds(buildTimeline(p.intervals!))
+  const peak = p.items.map((it, i) => (it.block === 'peak' && !it.test ? i : -1)).filter((i) => i >= 0)
+  const pulseOnly = peak.find((i) => (p.items[i].rounds ?? 1) > 1 && !catalogue(p.items[i].exerciseId)?.components?.includes('strength') && catalogue(p.items[i].exerciseId)?.cls === 'flow')
+  const steps: (() => void)[] = [
+    () => pulseOnly !== undefined && (p.items[pulseOnly].rounds = 1),
+    () => {
+      const wd = p.items.map((it, i) => (it.block === 'winddown' ? i : -1)).filter((i) => i >= 0)
+      if (wd.length > 1) p.items.splice(wd[1], 1)
+    },
+    () => {
+      const last = peak.at(-1)
+      if (last !== undefined && last < p.items.length && p.items[last].block === 'peak') p.items[last].rounds = 1
+    },
+  ]
+  for (const step of steps) {
+    if (total() <= limit) return
+    step()
+    p.items.forEach((it) => it.rounds && (it.sets = it.rounds))
+    p.intervals = intervalsFor(p.items, catalogue)
+  }
 }
 
 // ---------------------------------------------------------------- optional additions
@@ -578,7 +722,9 @@ export function weeklySetsByGroup(input: EngineInput): Map<Group, number> {
     if (set.deleted || !inWeek.has(set.session_id)) continue
     const info = input.catalogue(set.exercise_id)
     if (!info?.group || info.cls === 'stretch' || info.cls === 'drill') continue
-    counts.set(info.group, (counts.get(info.group) ?? 0) + 1)
+    if (info.cls === 'flow' && !info.components?.includes('strength')) continue
+    // R16: an interval rated too easy (4+ in reserve) counts as half a set.
+    counts.set(info.group, (counts.get(info.group) ?? 0) + ((set.rir ?? 0) >= 4 ? 0.5 : 1))
   }
   return counts
 }
@@ -595,12 +741,12 @@ export function extraOptions(input: EngineInput, type: PlanType, planned: PlanIt
   const week = programmeWeek(input)
   if (isDeloadWeek(week) || type === STRETCH_TOP_UP) return []
   const used = new Set(planned.map((i) => i.ladderId).filter(Boolean))
-  const sameDay = new Set(type === 'D' ? [] : TEMPLATES[type].main.flatMap((s) => ('ladder' in s ? [s.ladder].flat() : [])))
+  const sameDay = new Set(slotLadders(TEMPLATES[type]))
   const weekly = weeklySetsByGroup(input)
   const legs = legsBlocked(input).blocked
 
   const candidates = (['A', 'B', 'C'] as const)
-    .flatMap((t) => TEMPLATES[t].main.flatMap((s) => ('ladder' in s ? [s.ladder].flat() : [])))
+    .flatMap((t) => slotLadders(TEMPLATES[t]).filter((id) => !id.startsWith('y')))
     .filter((id, i, all) => all.indexOf(id) === i && !used.has(id) && isOpen(input, LADDERS[id]))
     .flatMap((id) => {
       const ladder = LADDERS[id]
@@ -644,14 +790,14 @@ export function stretchPlan(input: EngineInput, rideToday: boolean): Plan {
   if (rideToday) ids = [...AFTER_RIDE]
   else {
     const dayIndex = Math.round(Date.parse(`${input.today}T12:00:00Z`) / DAY_MS)
-    ids = [0, 1, 2, 3].map((k) => TOP_UP_POOL[(dayIndex * 3 + k) % TOP_UP_POOL.length])
+    ids = [0, 1, 2, 3, 4].map((k) => TOP_UP_POOL[(dayIndex * 3 + k) % TOP_UP_POOL.length])
     const doneToday = input.sessions.find((s) => !s.deleted && s.ended_at && localDay(s.started_at) === input.today && isType(s.day_type))
-    const skip = doneToday ? TEMPLATES[doneToday.day_type as SessionType].cooldown : []
+    const skip = doneToday ? TEMPLATES[doneToday.day_type as SessionType].winddown.flatMap((w) => ('exercise' in w ? [w.exercise] : [])) : []
     ids = ids.filter((id) => !skip.includes(id)).slice(0, 3)
   }
   const items = ids.flatMap((id) => {
     const it = buildItem(input, { phase: 'cooldown', exerciseId: id, sets: 1 })
-    return it ? [it] : []
+    return it ? [{ ...it, block: 'winddown' as const, work: 30, rest: 5, rounds: 1 }] : []
   })
   const p: Plan = {
     type: STRETCH_TOP_UP,
@@ -662,7 +808,8 @@ export function stretchPlan(input: EngineInput, rideToday: boolean): Plan {
     items,
     minutes: 0,
   }
-  p.minutes = Math.round(estimateSeconds(p, input.catalogue) / 60)
+  p.intervals = intervalsFor(p.items, input.catalogue)
+  p.minutes = Math.round(totalSeconds(buildTimeline(p.intervals)) / 60)
   return p
 }
 
@@ -689,7 +836,6 @@ export function evaluate(input: EngineInput, sessionId: string): LadderUpdate[] 
     const ladder = LADDERS[ladderId]
     const from = stepIndex(ladder, stepId)
     const all = stepSets(input, sessionId, stepId)
-    const [lo, hi] = info.target
     const maxPain = maxPainOf(all)
 
     // A step tried "just today" does not move the ladder: a harder one is a
@@ -714,25 +860,27 @@ export function evaluate(input: EngineInput, sessionId: string): LadderUpdate[] 
     }
     if (maxPain === 3) continue // R7: allowed, but no progression
 
-    // R7 performance drop: below the range in two consecutive sessions without
-    // pain, on the standard version or a similar variation.
-    const below = (sid: string) => {
-      const ss = stepSets(input, sid, stepId, 'performance')
-      return ss.length > 0 && Math.max(...ss.map(amount)) < lo && maxPainOf(ss) <= 2
-    }
-    const previous = sessionsWithStep(input, stepId, 'performance').find((s) => s.id !== sessionId && s.started_at < session.started_at)
-    if (below(sessionId) && previous && below(previous.id) && from > 0) {
-      updates.push({ ladderId, from, to: from - 1, reason: 'Below the target range twice in a row: one step easier.' })
+    // R16: ratings from the timed format (too easy = 4+ in reserve, too hard = 0).
+    const counting = stepSets(input, sessionId, stepId, 'progress')
+    const now = ratingOf(counting)
+    const previous = sessionsWithStep(input, stepId, 'progress').find((s) => s.id !== sessionId && s.started_at < session.started_at)
+    const before = previous ? ratingOf(stepSets(input, previous.id, stepId, 'progress')) : null
+    const beforePain = previous ? maxPainOf(stepSets(input, previous.id, stepId)) : 0
+
+    // Too hard twice in a row (or on the first session on a step in weeks 1–2, R10 calibration): one step easier.
+    const performance = ratingOf(stepSets(input, sessionId, stepId, 'performance'))
+    if (performance === 'hard' && from > 0 && ((previous && ratingOf(stepSets(input, previous.id, stepId, 'performance')) === 'hard') || (!previous && week <= 2))) {
+      updates.push({ ladderId, from, to: from - 1, reason: previous ? 'Too hard twice in a row: one step easier.' : 'Too hard on the first try: one step easier (calibration).' })
       continue
     }
 
-    const counting = stepSets(input, sessionId, stepId, 'progress')
-    const allTop = counting.length > 0 && counting.every((s) => amount(s) >= hi && (s.rir ?? 0) >= 2)
-    if (allTop && !deload && from < ladder.steps.length - 1) {
+    // Too easy twice in a row, pain 2/10 or less, no worse morning after the previous session: next step.
+    const morningOk = !previous || !worseAfter(input, previous, ladderRegions(input, ladder))
+    if (now === 'easy' && before === 'easy' && beforePain <= 2 && morningOk && !deload && week > 2 && from < ladder.steps.length - 1) {
       const next = ladder.steps[from + 1]
-      // Advanced steps open only through a readiness test (R13).
-      if (next.gate || (next.minWeek ?? 0) > week) continue
-      updates.push({ ladderId, from, to: from + 1, reason: `Top of the range with reps to spare: next step, ${input.catalogue(next.id)?.name ?? next.id}.` })
+      // Advanced steps open only through a readiness test (R13); Y steps need their conditions.
+      if (next.gate || (next.minWeek ?? 0) > week || !stepAllowed(input, ladder, from + 1, week)) continue
+      updates.push({ ladderId, from, to: from + 1, reason: `Too easy twice in a row: next step, ${input.catalogue(next.id)?.name ?? next.id}.` })
     }
   }
 

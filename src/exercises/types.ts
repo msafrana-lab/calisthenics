@@ -16,8 +16,12 @@ export type ExerciseClass =
   | 'cuff' // unloaded rotator cuff, 12–20 reps with end-range hold
   | 'stretch' // static stretch, 2 × 30 s
   | 'drill' // warm-up or mobility drill, reps or seconds, never counted as a working set
+  | 'flow' // timed dynamic move (Y ladders, R14–R16), 30–45 s; counts for R3 only with a strength component
 
-export type Group = 'push' | 'core' | 'legs' | 'hips' | 'back' | 'mobility' | 'warmup'
+export type Group = 'push' | 'core' | 'legs' | 'hips' | 'back' | 'mobility' | 'warmup' | 'cardio'
+
+/** What a dynamic move trains (docs/EVIDENCE.md, Y table): S, M and P. */
+export type Component = 'strength' | 'mobility' | 'pulse'
 
 export type Exercise = {
   /** Ladder letter + step number, as in docs/EVIDENCE.md (e.g. "P3"); W for warm-up drills. */
@@ -45,4 +49,6 @@ export type Exercise = {
   variationOf?: string
   /** A variation's difficulty compared with the standard version of its step. */
   difficulty?: 'easier' | 'similar' | 'harder'
+  /** For 'flow' moves: what the move trains. Only moves with 'strength' count as sets (R16). */
+  components?: Component[]
 }

@@ -70,13 +70,13 @@ describe('training volume', () => {
 })
 
 describe('exercise history', () => {
-  it('keeps the best set per session and marks step changes', () => {
+  it('keeps the step and best set per session and marks step changes', () => {
     const sessions = [session('a', '2026-10-01'), session('b', '2026-10-03'), session('c', '2026-10-06')]
     const sets = [set('a', 'P3', 8), set('a', 'P3', 10), set('b', 'P3', 12), set('c', 'P4', 5), set('c', 'P3', 12)]
     expect(ladderHistory('push', sessions, sets, catalogue)).toEqual([
-      { day: '2026-10-01', exerciseId: 'P3', name: 'Knee push-up', best: 10, measure: 'reps', stepChange: false },
-      { day: '2026-10-03', exerciseId: 'P3', name: 'Knee push-up', best: 12, measure: 'reps', stepChange: false },
-      { day: '2026-10-06', exerciseId: 'P4', name: 'Eccentric full push-up', best: 5, measure: 'reps', stepChange: true },
+      { day: '2026-10-01', exerciseId: 'P3', name: 'Knee push-up', best: 10, measure: 'reps', stepChange: false, step: 2, rating: 'right' },
+      { day: '2026-10-03', exerciseId: 'P3', name: 'Knee push-up', best: 12, measure: 'reps', stepChange: false, step: 2, rating: 'right' },
+      { day: '2026-10-06', exerciseId: 'P4', name: 'Eccentric full push-up', best: 5, measure: 'reps', stepChange: true, step: 3, rating: 'right' },
     ])
   })
 })
