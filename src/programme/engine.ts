@@ -258,7 +258,7 @@ function currentStep(input: EngineInput, ladder: Ladder, week: number): number {
   return step
 }
 
-const REST: Record<ExerciseClass, number> = { strength: 75, endurance: 45, hold: 45, cuff: 45, stretch: 10, drill: 0 }
+const REST: Record<ExerciseClass, number> = { strength: 75, endurance: 45, hold: 45, cuff: 45, stretch: 10, drill: 0, flow: 20 }
 
 function targetRir(info: ExerciseInfo, week: number, deload: boolean): number | null {
   if (info.cls === 'stretch' || info.cls === 'drill') return null

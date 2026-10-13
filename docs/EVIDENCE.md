@@ -356,6 +356,87 @@ These are described for structure only. None of the apps below has published ind
 - Keep sessions short and filterable, as in Nike Training Club.
 - Avoid outcome promises such as "lose X kg in 28 days".
 
+## 11. Bodyweight interval sessions
+
+### 11.1 Heart-rate and oxygen-uptake response to bodyweight intervals
+
+| Study | Design | Protocol | Main findings | Relevance and limits |
+|---|---|---|---|---|
+| Klika and Jordan 2013 (ACSM's Health & Fitness Journal) | Practitioner article, not a trial | "High-intensity circuit training" (HICT): 12 bodyweight exercises, 30 s work / about 10 s transition, order alternating total body, lower body, upper body and core; a chair and a wall are the only equipment; can be repeated 2–3 times (verify) | Argues that alternating muscle groups lets a circuit keep the heart rate up while each muscle rests, so one session combines aerobic and resistance stimuli. The authors state that this format is likely inferior for maximal strength and power, and advise caution for people who are overweight, detrained, injured or older (via secondary summaries; verify). | The origin of the "7-minute workout". Its stations include jumping jacks and high-knee running, which are excluded here. Supports the circuit-order principle (R14), not specific numbers. |
+| Mattar et al. 2017 | 6 weeks, 29 adults aged 18–30 doing the 7-minute workout vs 29 controls (verify journal) | Daily 7-minute workout | Fat mass and waist circumference fell (about 4 cm at week 6); grip strength did not change (verify) | Small, young sample; no VO2 data. |
+| 7-minute workout vs cycling HIIT (author and year: verify; reported in a California State University review) | Acute crossover, 14 active adults (verify) | One 7-minute workout session vs one cycling interval session | The 7-minute workout produced lower peak VO2 and heart rate than cycling (verify) | Suggests that bodyweight circuits are a weaker cardiorespiratory stimulus than ergometer intervals. A training study cited in the same review reported higher muscular endurance after 24 sessions, with no change in VO2max or body fat (authors: verify). |
+| McRae et al. 2012 (Applied Physiology, Nutrition, and Metabolism; verify) | 4 weeks, 4 days/week, 22 recreationally active young women | 8 × 20 s all-out / 10 s rest of one whole-body exercise (burpees, jumping jacks, mountain climbers or squat thrusts) | VO2peak rose about 8% (similar to about 7% after treadmill endurance training); muscular endurance improved only in the interval group, for example push-ups (+135%; verify) | All exercises are jumping or high-impact. Very small groups. |
+| Schaun et al. 2018 (Journal of Strength and Conditioning Research) | 16 weeks, 55 healthy young men, 3 randomised groups | Whole-body (calisthenics) HIIT vs treadmill HIIT, both 8 × 20 s all-out, vs moderate continuous training | VO2max improved in all groups, and the bodyweight group matched the treadmill group; treadmill HIIT gave larger gains in time to exhaustion and second ventilatory threshold (verify) | Exercises probably include jumps (verify). Young men. |
+| Archila et al. 2021 (International Journal of Exercise Science) | 6 weeks, 18 sessions, inactive young adults; training n = 9, control n = 10 | 11 min: five 60 s bouts (burpees, high knees, split squat jumps, high knees, squat jumps) at a self-selected "challenging" pace, walking recovery | Mean training intensity about 82% HRmax, RPE about 14/20. VO2peak higher than control (34.2 vs 30.3 ml/kg/min). No change in leg muscular endurance, grip or vertical jump (verify) | All jumping. Shows that simple, short bodyweight sessions can raise aerobic fitness in inactive people. |
+| Bellissimo et al. 2022 (Frontiers in Physiology) | Acute crossover, 12 adults | Bodyweight HIIE vs treadmill running HIIE, matched structure (exercise list: verify) | Treadmill gave higher %VO2peak (88 vs 77%) and %HRpeak (93 vs 88%); bodyweight gave higher lactate (11.2 vs 6.9 mmol/L) and higher RPE (16 vs 14 on 6–20); enjoyment similar (verify) | Bodyweight intervals feel harder for the same or lower cardiorespiratory load, because local muscle fatigue rises faster. This is why R17 uses RPE and the talk test rather than heart rate. |
+| Clayton et al. 2019 (International Journal of Exercise Science) | Acute, 23 women and 22 men | 15 min bodyweight circuit with a portable gas analyser | %HRmax did not differ by sex; %VO2max was higher in women (verify; abstract versions differ) | Supports per-person RPE targets. |
+| Zovico et al. 2024 (Retos, systematic review; verify authors and title) | Review of bodyweight HIIT studies, 2013–2023 | — | Acute heart rate, lactate and RPE responses similar to other HIIT forms; preferred music raised movement counts and pleasure (verify) | Mostly acute, small studies. |
+| Bellissimo et al. 2025 (Frontiers in Physiology; title: verify) | 6 weeks, 18 sessions, 14 inactive adults with obesity, single group | YouTube-guided bodyweight intervals, work:rest progressed from 1:3 to 1:1; high knees, squat jumps, scissor jacks, jumping lunges, burpees | Small-to-moderate gains in leg strength, VO2peak and waist circumference; no change in body composition or blood markers (verify) | Closest population match, but jumping exercises. Example of a work:rest ratio that starts easy and progresses. |
+
+**Jump-free and low-impact versions.** No trial of a strictly jump-free bodyweight interval programme was found. Indirect evidence:
+- **Low-impact aerobic dance:** Bell and Bassey 1994 (10 women) reported a lower oxygen cost for low-impact than for high-impact dance with arm work (about 1.29 vs 1.83 L/min) and heart rates of about 135 vs 174 beats/min. Arm work raised heart rate in both styles (verify). Williford et al. 1989 found that high-impact routines cost more energy than low-impact ones at both intensities (verify). **Implication:** jump-free moves reach a lower aerobic intensity. Arm movement adds heart rate, partly without matching oxygen uptake, so heart rate overstates the aerobic load of arm-heavy moves.
+- **Older adults:** a 6-month home-based HIIT trial in 233 adults aged 60–84 (Fosstveit et al. 2024; one circuit session and two interval sessions per week) improved fitness markers (verify the exercises used and the primary outcome). A 2025 meta-analysis of HIIT in older adults (87 RCTs, verify) reported improvements in VO2max and body fat. Most protocols used cycling, walking or suspension trainers, not floor bodyweight work.
+- **Knee osteoarthritis:** small feasibility studies of HIIT cycling (Keogh et al. 2018, PeerJ) and of supervised HIIT (single-arm, 13–29 people) reported good adherence (verify). Pain-flare data were not found. This is the closest evidence that interval work can be tolerated by sensitive knees, and it used cycling.
+
+**Low-volume interval evidence in general:** Weston et al. 2014 (meta-analysis) found a likely moderate VO2max gain (about 6%) from low-volume, short-sprint HIT in active non-athletic men, with larger gains in people with lower starting fitness (verify). Sultana et al. 2019 found that low-volume HIIT (≤500 MET-min/week) improved cardiorespiratory fitness more than no exercise and moderate continuous training, without changing lean mass (verify).
+
+**What this means for this programme:**
+1. The cycling (150–300 min/week, R1) remains the main aerobic stimulus. The interval blocks add a short vigorous dose, variety and enjoyment. They are not expected to add much VO2max on top of the cycling, and they are not a weight-loss tool (section 5).
+2. A rough energy cost is 5–6 MET for the session on average, which is about 90–110 kcal per 15 min for a 75 kg person (estimate from the standard MET formula, not from a study of these moves; verify against data from the user's heart-rate strap if available).
+3. Without jumps, the heart-rate response is lower than in the trials above. Large-muscle standing moves with arm drive (marching, step-jacks, skater steps, squat flows) give the most pulse for the least joint load *(heuristic)*.
+4. Bodyweight intervals feel harder than their heart rate suggests (Bellissimo 2022). Effort should be prescribed by RPE and the talk test (R17), and local fatigue should be watched in the knee, shoulder and wrist.
+
+### 11.2 Work/rest ratios for a returning beginner
+
+- **No study compared 30/30, 40/20 and 45/15 bodyweight intervals in beginners.** The protocols above range from 1:3 (Bellissimo 2025, start) through 1:1 (Archila 2021 with walking recovery; Bellissimo 2025, end) to 2:1 (McRae 2012; Schaun 2018 with 20/10 all-out) and 3:1 (Klika and Jordan 2013, 30 s work with about 10 s transitions).
+- A treadmill study of 15/15, 30/15 and 60/15 s intervals at the velocity of VO2max suggested 2:1 as a useful ratio and about 4:1 as an upper limit for people new to interval training (authors and details: verify). Practitioner sources (for example ACE) suggest starting around 30:15 at RPE 4–6/10 for beginners (verify). These are not trials.
+- **Programme reading *(heuristic)*:** start at 1:1 (30/30) during re-entry, move to 2:1 (40/20), and cap at 3:1 (45/15). Progress the ratio only when the ratings show tolerance (R15, R16), and step back after deloads. Progression in time (more work per interval) comes before progression in exercise difficulty, except for strength ladders, which keep their own steps.
+- Strength-ladder intervals need enough rest to set up and keep good form on a sensitive joint. They stay at 40/20 at most (R15).
+
+### 11.3 A progressive ramp in place of a separate warm-up
+
+- **Evidence already in this document:** warming up improved about 79% of performance measures with little sign of harm (Fradkin 2010). RAMP (Jeffreys 2007) is a framework: Raise, Activate and Mobilise, Potentiate. Long static stretching just before training slightly reduces performance (Behm 2016).
+- **Dynamic stretching:** Opplert and Babault 2018 (review) found substantial evidence that controlled dynamic stretching acutely increases joint range of motion and supports later force and power, through lower muscle-tendon stiffness, higher muscle temperature and potentiation. Long durations, large amplitudes and ballistic speed gave smaller or negative effects. A 2024 meta-analysis (Esteban-García et al.; verify) found that both static and dynamic stretching acutely increased range of motion compared with control, with no significant difference between them.
+- **How the new ramp maps to R2/RAMP:** the first 3 min of every session are the warm-up, made of the easiest exercises of the day.
+  - Raise: marching, step-jacks and calf raises (W1, Y4, F1).
+  - Activate and Mobilise: dynamic mobility for the day's joints (leg swings, wall slides, standing cat-cow, hip circles, split-stance rotation).
+  - Potentiate: an easier version of the first Build exercise (for example a shallow wall sit or a squat to calf raise before split squats; a wall push-up before knee push-ups) at RIR ≥4. This replaces R2's "1 easy set of the first exercise".
+- **Implication:** the ramp is continuous low-intensity work (about RPE 2–4), so it raises temperature and heart rate without fatigue. If the user cycled within the last 30 min, the Raise moves can be shortened to 20 s each *(heuristic, from R2)*.
+
+### 11.4 Combined strength–mobility moves compared with static stretching
+
+| Question | Evidence | Reading for this programme |
+|---|---|---|
+| Do dynamic or combined moves increase range of motion over weeks? | Konrad et al. 2024 (meta-analysis): stretch training of at least 2 weeks increases ROM; static and PNF stretching gave larger long-term gains than dynamic or ballistic stretching; volume, intensity and frequency did not clearly moderate the effect (verify). Thomas 2018: static > ballistic or PNF (section 4.1). | Combined moves contribute to mobility, but less per minute than static holds. They do **not** count towards R9's weekly static stretching dose. |
+| Does full-range strength work increase ROM? | Afonso 2021: no significant difference between full-range strength training and stretching (section 4.3). Warneke et al. 2025 (Delphi consensus of about 20 stretching researchers): acute and chronic stretching improve ROM, alternatives such as resistance training exist, and stretching does not substantially build muscle, prevent all injuries, improve posture or speed recovery (verify). | Loaded end-range moves (lunge with rotation, Cossack shift, hinge with reach) are a reasonable mobility stimulus when they reach end range under control. |
+| Is there trial evidence for the world's greatest stretch, inchworm, Cossack shifts, hip airplanes, 90/90 transitions or thread the needle? | None found. Only coaching articles and claims. | These moves are *(heuristic)*. They are chosen because they combine movement in several planes, load at end range, and keep the heart rate up. They are useful in the ramp and in the Build block of D. |
+| Do mobility moves raise heart rate enough to count as "pulse"? | No data found for these moves. | Only moves that use large leg muscles continuously or add arm drive are classed as pulse (component P) in the Y table. |
+
+**Conclusion:** use combined moves for the ramp and for mobility in the A/B/C sessions. Keep static holds in the Wind-down and in D for the long-term range-of-motion dose (R9).
+
+### 11.5 Autoregulation from simple ratings
+
+| Topic | Evidence | Reading |
+|---|---|---|
+| Session RPE | Foster et al. 2001 introduced the session RPE method (CR-10 scale, asked about 30 min after the session). Day et al. 2004: session RPE was reliable across resistance sessions of different intensities (ICC 0.88; verify). An older-adult study reported ICC 0.70 (verify). | One whole-session rating is reliable enough to track load from week to week. It is optional here and used only for the timing stages in R15. |
+| RPE- or RIR-based loading vs fixed loading | Helms et al. 2018 (21 trained men, 8 weeks): RPE-based and percentage-based loading both increased 1RM; RPE gave small, non-significant advantages. Zhang et al. 2021 (meta-analysis, 8 studies, 166 athletes): autoregulated loading improved maximal strength more than fixed loading (ES 0.64; verify). | Effort-based adjustment works at least as well as fixed progression. Evidence is in trained lifters with external load. |
+| Accuracy of effort estimates | Halperin 2022: people underpredict reps to failure by about 1 rep, with lower accuracy above about 12 reps (section 2.3). Steele et al. 2017 (141 people): predictions were not perfectly accurate and improved with training experience; RIR should be used cautiously. | A 3-level rating is coarse, which suits the precision people actually have. Rules need 2 consecutive ratings before changing a step. |
+| RPE to self-regulate intervals | Ciolac et al. 2015 (pilot, 8 young adults): intervals self-regulated at RPE 15–17 (work) and 9–11 (recovery) gave heart rates and speeds similar to heart-rate-prescribed intervals (verify). | Supports RPE targets in R17. |
+| The "too easy / about right / too hard" rating | **No validation study of this exact 3-level rating was found.** Self-selected intensity is linked to better affect and adherence in some studies (verify). Freeletics uses session feedback to adjust the next session, but no independent validation exists (section 10). | The 3-level rating is a design choice. R16 anchors each level to an RIR band and a talk-test level so it can be checked against RIR (R5) and the monthly calibration set. |
+
+**Counting rule for the rating:** an exercise is rated once per session, covering all its work intervals. If the last interval felt very different from the first, the user rates the last one, because the step-up rule cares about the hardest point.
+
+### 11.6 Concurrent training with cycling
+
+- **Already in section 8:** cycling causes little interference with strength or hypertrophy (Wilson 2012), and concurrent training does not compromise strength or hypertrophy gains overall (Schumann 2022).
+- **Interval training specifically:** Sabag et al. 2018 (meta-analysis) found that adding HIIT to resistance training did not reduce hypertrophy or upper-body strength gains, but slightly reduced lower-body strength gains (ES −0.25). Cycling-based HIIT showed a trend towards a larger effect than running-based HIIT. More than 24 h between modalities removed the difference (verify; this detail is from a conference-abstract version).
+- **Order within a session:** Murlasits et al. 2018 (meta-analysis) found larger lower-body 1RM gains when strength work came before endurance work (about 4 kg), with no effect of order on VO2max (verify).
+- **Implications for the Peak block:**
+  1. Put the strength ladders (Build) **before** the pulse circuit (Peak) in every session. This protects strength-set quality and follows Murlasits 2018 *(heuristic transfer from lifting studies)*.
+  2. The Peak block is a small dose (about 4–6 min). It adds little to the weekly interference from cycling.
+  3. On a **hard ride day** (R1), the Peak block uses no leg-dominant stations and is capped at RPE 6/10 *(heuristic)*. B is already moved away from hard ride days.
+  4. When B and a hard ride fall on consecutive days, Peak leg stations in B stay at one Y step below the current step *(heuristic, from Sabag 2018's >24 h finding)*.
+
 ---
 
 ## Programme rules derived from the evidence
@@ -594,6 +675,223 @@ The engine offers an advanced step only when all of G1–G6 hold. Each condition
 **Consistency with R6 and R7:**
 - G1 and G2 are stricter forms of R6.2. They use 2 of 3 sessions instead of one, and a 4-week pain window.
 - Once a step is unlocked, R6 and R7 apply unchanged. Any R7 regression from an advanced step moves the ladder back one step and restarts G1–G4 for that step.
+
+
+R14–R17 apply to the timed-interval sessions used from October 2026 (user's choice: mixed sessions of increasing complexity, timed intervals with sound and voice cues, about 15 min, a quick rating per exercise at the end). They replace R2 and extend R4 and R6; R1, R3, R5 and R7–R13 still apply with the changes stated.
+
+### R14. Session structure
+
+| Block | Minutes (of 15) | Content | Effort (R17) | Counts for R3? |
+|---|---|---|---|---|
+| **Ramp** | 3 | 4 moves × 40 s, continuous, 5 s cue gaps. Order: (1) a simple, bilateral, standing Raise move; (2) and (3) dynamic mobility for the day's joints; (4) the **primer**: the first Build exercise one or two steps easier, at RIR ≥4. | RPE 2–4 | No |
+| **Build** | 4–5 | The day's strength ladders. 2 slots × 2 rounds, alternated (slot 1, slot 2, slot 1, slot 2). | RIR 2–4 at the end of each interval (R5) | Yes |
+| **Peak** | 4–6 | A circuit of 3 stations × 2 rounds. Stations alternate regions: upper body or core → lower body or whole-body pulse → upper body or core. Combined (strength + pulse) moves from the Y ladders, plus pulse-friendly ladder steps. | RPE 6–7 (R17) | Only stations with a strength component (S in the Y table) |
+| **Wind-down** | 2 (D: 6) | 1–2 slow mobility moves, then 1–2 static stretches, 30 s per side (R9). | RPE ≤3 | No |
+
+**Ordering by complexity:**
+- Ramp: bilateral, small range and standing first; larger range and single-leg moves later in the block.
+- Build: the ladder's current step in the standard version or the R12 variation of the day.
+- Peak: multi-joint, multi-plane and coordination moves. Within a Y ladder, the user starts at its first step and moves up by R16.
+- Wind-down: slow, then static.
+- Build comes before Peak so that strength sets are done before metabolic fatigue (section 11.6).
+
+**Circuit order (Klika and Jordan 2013):** consecutive stations never load the same region. In Build, the two slots load different regions (for example push, then core). In Peak, a leg station never follows a leg station, and a wrist-loaded station (fists, hands) never follows another wrist-loaded station.
+
+**Fit rule:** the engine keeps every session at 13–16 min. If per-side exercises make it longer, it trims in this order:
+1. the second round of the Peak station with no strength component;
+2. the second Wind-down move;
+3. the second round of the last Peak station.
+
+It never trims Build rounds, so R3 volume is kept.
+
+**Sound and voice cues *(implementation)*:**
+- 3-2-1 beeps before each work and rest interval.
+- The next exercise is named at the start of the rest.
+- "Switch sides" at the midpoint of split per-side intervals.
+- A tempo cue for strength ladders (about 2 s down, 1 s up, so a 40 s interval gives about 8–13 reps, which matches R4's 6–12 range).
+
+**Pain during an interval (R7, unchanged):**
+- A "Pain" button is always visible. At 4–5/10, the app swaps to the lower-load option for the rest of the session (wrist: fists or forearms; shoulder: lower range; knee: shallower or isometric).
+- Above 5/10, the exercise is replaced for the rest of the session.
+- "Stop early" ends the interval without penalty. If it is used for effort, not pain, the exercise is rated "too hard".
+
+**Hard ride day (R1):** Peak uses only upper-body, core and low-knee-load pulse stations (Y1, Y2, Y18, Y19, Y20, Y24) and is capped at RPE 6.
+
+**Deload weeks (R8):** Build 1 round, Peak 1 round at RPE ≤5, Wind-down extended to fill the time (about 12–14 min in total). This adds stretching dose for R9.
+
+### R15. Interval timing by programme week
+
+| Programme week | Ramp | Build (strength ladders) | Peak | Rounds (Build / Peak) | Notes |
+|---|---|---|---|---|---|
+| 1–2 (re-entry) | 30–40 s continuous | **30/30** | **30/30** | 2 / 1 | RPE in Peak 5–6. With 1 Peak round, the Wind-down gets the spare 2–3 min. R10 calibration runs in Build. |
+| 3–5 | 40 s | **40/20** | **40/20** | 2 / 2 | — |
+| 6 (deload) | 40 s | 30/30 | 30/30 | 1 / 1 | No step changes (R16). |
+| 7 (first week after a deload) | 40 s | 40/20 | 40/20 | 2 / 2 | As R8: same steps, RIR 2–3. |
+| 8–11 | 40 s | 40/20 | **45/15** | 2 / 2 | Only if the stage gate below is met. |
+| 12 (deload) | 40 s | 30/30 | 30/30 | 1 / 1 | — |
+| 13 onwards | 40 s | 40/20 (isometric holds and low-load exercises may use 45/15) | 45/15, **the cap** (3:1) | 2 / 2 | Further progression comes from Y-ladder steps and ladder steps, not from timing. |
+
+**Stage gate:** the Peak timing moves up only if, over the last 7 days:
+- no Peak station was rated "too hard" in 2 or more sessions;
+- no R7 event of 4/10 or more occurred;
+- no "worse" morning check occurred;
+- and, if recorded, session RPE was ≤7.
+
+Otherwise the Peak timing stays where it is. After 2 sessions in which 2 or more Peak stations were rated "too hard", the Peak timing goes back one stage.
+
+**Per-side exercises:**
+
+| Type | Examples | Timing | Counts as |
+|---|---|---|---|
+| Alternating moves (sides alternate within each rep) | Marching, step-jacks, skater steps, reverse lunges, Y14 | One interval; no split | 1 set |
+| Unilateral strength or holds | K6, K8, K9, K10, H4, H5, H8, H9, C7, C8, C10, A-ladder side-lying moves, F2, F3, Y11, Y12, Y15 | **Doubled:** one full work interval per side, with a 10 s switch instead of a rest, then the normal rest | 1 set (as now, R12: "log both sides as one set") |
+| Per-side mobility in Ramp or Wind-down | Leg swings, hip circles, thread the needle, split-stance rotation | **Split:** the work time is halved per side with a "switch" cue | Not counted |
+| Static stretches | M1–M4, M6, M8 | 30 s per side (R9) | Not counted |
+
+**Rounds:** Build always has 2 rounds per slot (1 in deloads). Peak has 2 rounds (1 in weeks 1–2 and deloads). Rounds are not increased to progress, because the session length is fixed.
+
+**R4 in the interval format:**
+- **Rep exercises:** the interval replaces the rep target. The tempo cue keeps reps in about the 6–12 range for strength ladders and 10–20 for low-load exercises.
+- **Holds:** the work time is the hold time (30–45 s, inside R4's 20–45 s). If a hold cannot be kept for the whole interval, the user rests in position and resumes. If more than one break is needed, the exercise is rated "too hard".
+- **Optional rep count:** the app may ask for the number of reps on strength ladders. This allows R6-style tracking and the monthly R5 calibration, but is not required by R16.
+
+### R16. Progression by rating
+
+At the end of each session, for each Build and Peak exercise, the user gives:
+- a rating: **too easy**, **about right** or **too hard**;
+- the highest pain (0–10) in each region the exercise loads (knee, shoulder, wrist).
+
+Ramp and Wind-down moves are not rated. They report pain only, through the session-level question.
+
+**Definitions shown to the user:**
+
+| Rating | Strength and hold exercises | Pulse exercises (Y moves with component P) |
+|---|---|---|
+| **Too easy** | At the end of the last interval, you could clearly have kept going: about 4 or more reps in reserve (RIR ≥4), form perfect. | You could still talk in full sentences in the last 10 s. |
+| **About right** | About 1–3 reps in reserve at the end; form held. | Short phrases only, but you kept the pace. |
+| **Too hard** | You had to stop, pause more than once, or form broke (RIR 0), or you needed more than one break in a hold. | You could not speak, or had to slow down a lot or stop. |
+
+**Rules (pain always overrides rating):**
+
+| Situation | Action |
+|---|---|
+| **Too easy in 2 consecutive sessions** on the same step, max pain ≤2/10 in every loaded region in both sessions, and the next mornings not "worse" | **Step up** to the next step of that ladder (standard version first, R12). This replaces R6.2 for interval sessions. It needs 2 sessions instead of 1, because the rating is coarser than a rep count. |
+| Too easy once, or about right with pain ≤2 | **Hold** the step. After "too easy" once, the next exposure uses the tempo cue (3 s lowering) for strength ladders, or a "harder" R12 variation if R12's rotation already schedules a variation that day. |
+| About right in **4 consecutive sessions** on the same step | Hold. Offer the "harder" variation or the tempo lever at the next exposure *(within-step lever, replaces R6.1's +1 rep)*. |
+| **Too hard once**, pain ≤2 | Hold the step. At the next exposure, use the "easier" variation or the range lever (shallower), or 30/30 for that exercise only. |
+| **Too hard in 2 consecutive sessions**, pain ≤2 | **Step down** one step. This is the interval-format version of R7's performance-drop rule and counts towards the reactive deload in R8(a). |
+| Pain **3/10** in any loaded region | No step up next session, whatever the rating (R7). |
+| Pain **4–5/10** | Swap during the session (R14). Step down one step next session (R7). |
+| Pain **>5/10** | Replace for the session and flag for review (R7). |
+| Next-morning check "worse" | R7 unchanged: next time that pattern is trained, drop one round (the interval-format equivalent of "reduce sets by one third") and step down one step. Two in a row: pause the pattern for 1 week. |
+| Weeks 1–2 | No step-ups except R10 calibration. "Too hard" in the first session on a step moves the step down at once (calibration). |
+| Deload weeks | Ratings are recorded; no step changes. |
+
+**Gated steps (R13 G1 in the interval format):** G1 is met when the prerequisite step was rated **too easy in 2 of the last 3 sessions**, all intervals were completed without stopping, and the Peak timing was at 40/20 or higher. As in R12, only sets on the standard version and on "similar" or "harder" variations count. G2–G6 and the readiness tests are unchanged.
+
+**Y ladders:** the same rules apply. At the top of a Y ladder, "too easy" twice applies the timing stage (R15) or a range cue (wider step, deeper hinge within the knee limits) instead of a new step.
+
+**Counting sets for R3:**
+- Each completed **work interval of 30 s or more** on an exercise with a strength component (all existing ladders; Y moves marked S) counts as **1 set** for that exercise's primary group (push, back, core, hips or legs).
+- A per-side exercise done as two intervals counts as **1 set**.
+- An interval rated **too easy** counts as **½ set**, because it was probably not a hard set (RIR ≥4).
+- Ramp primers, pulse-only stations (no S), mobility moves and stretches count **0**.
+- R3's limits stay: 4–6 sets per group per week in weeks 1–2, then 6–10, and never more than 12. Prone and scapular sets must be at least equal to push sets.
+
+### R17. Intensity targets
+
+| Block | Perceived exertion (CR-10, 0–10) | Approximate Borg 6–20 | Talk test | Notes |
+|---|---|---|---|---|
+| Ramp | 2–4, rising | 9–12 | Full sentences, comfortably | Ends about 1 point below the Build effort. |
+| Build | Local effort: RIR 2–4 at the end of each interval (RIR 3–4 in weeks 1–2; RIR 2–3 on exercises that load a symptomatic joint, R5) | — | Sentences between intervals | Strength quality first; breathlessness is not the target. |
+| Peak | **6–7** ("hard"); 5–6 in weeks 1–2; ≤6 on hard ride days; ≤5 in deloads | About 14–16 | **Short phrases only** in the last 10 s of an interval; never unable to speak | Vigorous intensity is RPE 14–17 and about 77–95% HRmax in Garber 2011 (verify table). Unlike the trials in 11.1, intervals are **never all-out**, to protect the joints. |
+| Wind-down | Back to ≤3 by the end | ≤11 | Full sentences again within about 2 min | If breathing has not settled, extend the first Wind-down move. |
+
+**The talk test** is a valid and reliable way to set and monitor intensity (Reed and Pipe 2014, review). Comfortable speech is usually below the ventilatory threshold, speech becomes uncertain around it, and speech becomes impossible near the respiratory compensation threshold (Persinger 2004 and later work from the same group; verify).
+
+**Heart rate (optional):** if the user wears the heart-rate strap used for rides, Peak usually falls around 75–90% of HRmax. Bodyweight intervals give lower %HR and %VO2 than running at the same RPE (Bellissimo 2022), so RPE and the talk test take precedence. Arm-heavy moves raise heart rate more than oxygen uptake (Bell and Bassey 1994).
+
+**CR-10 and Borg conversions** are approximate (verify against a published conversion table).
+
+### R14.1 Session templates (15 min)
+
+Timings are for weeks 3–5 (Build and Peak at 40/20, 2 rounds). Ramp moves are 40 s each with 5 s gaps. Wind-down stretches are 30 s per side. A `|` separates ladders of a rotating slot (alternating between the two sessions of that type in a week, as now). Weekly set totals assume A, B and C twice and D once (R1).
+
+#### A. Push and front core
+
+| Block | Slots | Timing | Time |
+|---|---|---|---|
+| Ramp | Y24 wall slide → Y4 step-jack → Y18 wall plank march → primer: push ladder 2 steps below current (P1 at the lowest) | 4 × 40 s | 3:00 |
+| Build | `push` ↔ `plank` \| `deadbug` \| `crawl` (alternated) | 40/20, 2 rounds each | 4:00 |
+| Peak | `ywall` (Y18–Y21) → `ymarch` (Y1–Y3) → `serratus` (P2, P6) | 40/20 (45/15 from week 8), 2 rounds | 6:00 |
+| Wind-down | M8 pec stretch (30 s per side) → M6 open book or Y26 | 2 × 60 s | 2:00 |
+| **Total** | | | **15:00** |
+
+**Sets per session:** push 2 + serratus 2 = 4 push; core 2 + `ywall` 2 = 4 core. **Per week:** push 8, core 8 (+2 from C's side plank). Weeks 1–2 (1 Peak round): push 6.
+
+#### B. Legs and hips
+
+| Block | Slots | Timing | Time |
+|---|---|---|---|
+| Ramp | Y23 leg swings (split) → F1 calf raise → Y10 good morning to reach → primer: K1 shallow wall sit, or Y7 at the knee step's depth | 4 × 40 s | 3:00 |
+| Build | `knee` ↔ `bridge` | 40/20, 2 rounds each | 4:00 (5:40 if the knee step is per side, for example K6 or K8) |
+| Peak | `ylateral` (Y4–Y6) → `abduction` \| `calf` → `ysquat` \| `yhinge` (the two rotating slots change together: abduction with `ysquat`, calf with `yhinge`) | 40/20, 2 rounds | 6:00 (abduction is side-lying per side: +1:40) |
+| Wind-down | M2 hamstring (30 s per side) → M4 calf or standing M1 | 2 × 60 s | 2:00 |
+| **Total** | | | **15:00** (per-side case: the fit rule drops round 2 of `ylateral` and then the second stretch, giving about 15:30–16:00) |
+
+**Sets per session:** session 1 legs 4 (knee 2 + `ysquat` 2), hips 4 (bridge 2 + abduction 2); session 2 legs 4 (knee 2 + calf 2), hips 4 (bridge 2 + `yhinge` 2). **Per week:** legs 8, hips 8.
+
+**Knee rules:**
+- Never on a hard ride day (R1).
+- Peak leg stations are capped at the current knee step (Y rules above).
+- If the previous B caused a worse morning, the knee slot drops one round and one step (R7), and `ysquat` is replaced by `yhinge`.
+
+#### C. Back, shoulder blades and side core
+
+| Block | Slots | Timing | Time |
+|---|---|---|---|
+| Ramp | Y26 standing cat-cow → Y25 standing thread the needle (split) → Y4 step-jack → primer: Y10 good morning with T-arm squeeze (or S1 at RIR ≥4) | 4 × 40 s | 3:00 |
+| Build | `prone` ↔ `sweep` \| `sideplank` | 40/20, 2 rounds each | 4:00 (5:40 when the side plank is per side) |
+| Peak | `ymarch` (Y1–Y3) → `extension` (E1–E5) → `ylateral` (Y4–Y5 only) | 40/20, 2 rounds | 6:00 |
+| Wind-down | M3 figure-4 (30 s per side) → M6 open book or Y25 | 2 × 60 s | 2:00 |
+| **Total** | | | **15:00** (side-plank case about 15:40 after trimming round 2 of `ylateral`) |
+
+**Sets per session:** back 6 (prone 2 + extension 2 + sweep 2) or back 4 + core 2 (side plank). **Per week:** back 10 (+2 cuff in D = 12, the R3 maximum). Prone and scapular sets: prone 4 + sweep 2 + cuff 2 = 8, which equals the 8 push sets (R3 balance met at 1.0).
+
+**Hard ride day:** `ylateral` is replaced by Y18 or Y2.
+
+#### D. Mobility
+
+| Block | Slots | Timing | Time |
+|---|---|---|---|
+| Ramp | W1 march → Y23 leg swings (split) → Y22 hip circles (split) → Y13 split-stance rotation (split) | 4 × 40 s | 3:00 |
+| Build (flows) | `yrotate` (Y13–Y15) ↔ `ycossack` (Y16–Y17) | 40/20, 2 rounds each, RPE 3–5 | 4:00 (Y15 doubled per side: about 5:00) |
+| Light core and cuff | `cuff` (S0, per side) \| C1 dead bug (alternating D days) | 1 round per side, 40 s | 2:00 |
+| Wind-down | M1 (standing version if kneeling hurts), M2, M4, M8, M3, M6 (M10 if the knee allows) | 30 s per side each | 6:00 |
+| **Total** | | | **15:00** (about 16:00 with Y15) |
+
+**Notes on D:**
+- No Peak block. D is placed on the hardest cycling day (R1), so its pulse work is limited to the ramp. This is deliberate.
+- D gives each priority region about 1 min of static stretching. A/B/C add about 1 min for 2 regions each. The weekly R9 target (≥5 min per region) is still not met, as noted in PLAN.md. The stretch top-up remains the way to close the gap.
+
+#### Weekly check against R3 (weeks 3–5)
+
+| Group | A ×2 | B ×2 | C ×2 | D | Total | R3 target |
+|---|---|---|---|---|---|---|
+| Push | 8 | — | — | — | 8 | 6–10 ✓ |
+| Back | — | — | 10 | 2 (cuff) | 12 | ≤12 ✓ (at the limit) |
+| Core | 8 | — | 2 | 0–1 (C1 on alternate D days) | 10–11 | 6–10 (slightly high; drop `ywall` to 1 round in A if the engine counts 11) |
+| Hips | — | 8 | — | — | 8 | 6–10 ✓ |
+| Legs | — | 8 | — | — | 8 | 6–10 ✓ |
+
+### R14.2 Existing exercises by block
+
+| Block | Existing IDs | Role and notes |
+|---|---|---|
+| **Ramp** | W1, W2, F1, H7, K1 (20–30 s, shallow), P1, P2, M7 (or Y26), S0f (arm to shoulder height), C1 (as a breathing and activation drill), M11 | Raise and mobilise. As the **primer**, any ladder step one or two steps below the user's current step, at RIR ≥4 (for example K1 or Y7 before K6; P1 before P3; S1 before S2). Not counted for R3. |
+| **Build** | All strength ladders: push (P1–P9), serratus (P2, P6), plank (C4–C6, variations), deadbug (C1–C3, C9), sideplank (C7–C10), crawl (X1–X6), knee (K0–K11), bridge (H1–H6), hinge (H7–H9), abduction (A1–A6), calf (F1–F4), prone (S1–S4), sweep (S5, S6), extension (E1–E5), cuff (S0) | Current step and R12 variation. 2 rounds. Counted for R3. |
+| **Peak** | Pulse-friendly steps: K3, K4 (bilateral squats, at the current knee step only), F1, F2 (calf raises), H3 (bridge march), serratus ladder (P2, P6), plank variations C5l and C5a, crawl X2, X3 (when unlocked), E3 (alternating Superman) as a floor "active recovery" station, A1–A3 when the B rotating slot falls on abduction | Used at the current step. When fatigue from Build is high, the step below may be used *(heuristic)*. Counted for R3 if the exercise belongs to a strength ladder. |
+| **Wind-down** | M1 (or the standing split-stance version), M2, M3, M4, M6, M8, M10, M7, S0 (low-fatigue cuff work in D), C1 (slow, with breathing) | Static holds 30 s per side (R9). M5 and M9 stay excluded by default (knee caution). M12 (supine shoulder flexion overhead) is not used: the user excluded overhead work (October 2026). |
 
 ---
 
@@ -900,6 +1198,68 @@ There is no meaningful variation for A2 (Distefano 2009 already rates it the hig
 | Pike push-up, wall walk, handstand, crow, pistol, L-sit, planche, headstand, human flag | Excluded by the user. |
 | Wall sit with a hip-adduction squeeze | No consistent evidence that it changes quadriceps emphasis (verify). It is not added as a variation. |
 
+
+### Y. Dynamic jump-free moves (Y ladders)
+
+**Legend:** as in "Exercise candidates". Components: **S** = strength (counts for R3), **M** = mobility, **P** = pulse. Knee, Wrist and Shoulder load: L, M, H as before. All Y moves keep one foot on the floor and keep the arms at or below shoulder height. Work time is the R15 stage time unless stated. Most moves have no direct study; they are marked *(heuristic)*.
+
+| ID | Exercise | Block | Focus | Components | Muscles | Knee | Wrist | Shoulder | Per side | Work time | Source | Exclusions and cautions |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Y1 | Standing cross-body knee to elbow (slow; lift one knee and bring the opposite elbow down to it, alternate) | Ramp, Peak | A, C, D | P, S (light core) | Obliques, hip flexors, rectus abdominis | L | L | L | Alternating | 30–45 s | *(heuristic)* | Keep the trunk tall. Do not crunch deeply. |
+| Y2 | Shadow boxing march (march in place; straight punches forward at chest height, alternate) | Peak | A, C | P | Shoulders, serratus anterior, obliques, calves | L | L | L–M | Alternating | 30–45 s | *(heuristic)*; arm work raises heart rate (Bell and Bassey 1994) | Punches forward only, at or below shoulder height. Do not lock the elbows. Stop at shoulder pain >2/10. |
+| Y3 | Shadow boxing with step-out (step forward or sideways into a short staggered stance and punch; step back) | Peak | A, C | P | As Y2, plus quadriceps and gluteals | L–M | L | L–M | Alternating | 40–45 s | *(heuristic)* | Short steps; knee over the toes. |
+| Y4 | Step-jack (step one foot out to the side while the arms rise to shoulder height; alternate sides) | Ramp, Peak | A, B, C, D | P | Hip abductors, calves, deltoids | L | L | L | Alternating | 30–45 s | Low-impact aerobic movement with arm work (Bell and Bassey 1994) *(heuristic)* | Arms no higher than shoulder height. Soft knees. |
+| Y5 | Skater step (step one foot diagonally behind the other, bend the front knee to about 30°, reach the opposite hand across; no hop) | Peak | B (A, C as pulse) | P, S | Gluteus medius, gluteus maximus, quadriceps, adductors | L–M | L | L | Alternating | 40–45 s | *(heuristic)* | Never hop. Front knee tracks over the toes. Depth no deeper than the current knee step allows. |
+| Y6 | Lateral shuffle with low reach (2–3 step-together steps sideways in a half-squat; hinge and reach towards knee height; back the other way) | Peak | B | P, S | Gluteus medius, quadriceps, hamstrings, calves | M | L | L | Alternating | 40–45 s | *(heuristic)* | Feet never cross and never leave the floor together. Needs 2–3 m of floor. Exclude if knee pain >2/10 on K3 in the last 2 weeks. |
+| Y7 | Squat to calf raise (partial squat at the knee step's depth; stand and rise onto the toes; fingertips on the wall if needed) | Ramp (primer), Build, Peak | B | S, P | Quadriceps, gluteals, calves | L–M | L | L | No | 30–45 s | Depth from Escamilla 2001; calf component from F1 | Requires the knee ladder at K3 or above. Depth never deeper than the current knee step. |
+| Y8 | Squat with forward reach (partial squat; on standing, reach both arms forward to shoulder height and rise onto the toes) | Peak | B | S, P, M | As Y7, plus thoracic extensors and middle trapezius | L–M | L | L | No | 40–45 s | *(heuristic)* | Arms stop at shoulder height. |
+| Y9 | Squat to alternating knee drive (partial squat; stand and drive one knee to hip height, balance for 1 s, alternate) | Peak | B | S, P | Quadriceps, gluteals, hip flexors; single-leg balance | M | L | L | Alternating | 40–45 s | *(heuristic)*; similar to K7b | Requires the knee ladder at K4 or above. Fingertips on the wall are allowed. |
+| Y10 | Good morning to reach (hip hinge as H7; on the way up, reach the arms forward to shoulder height, or out to a T, and squeeze the shoulder blades) | Ramp (primer for C), Build, Peak | B, C | S, M | Hamstrings, gluteals, spinal extensors, middle trapezius | L | L | L | No | 30–45 s | From H7 *(heuristic)* | Neutral spine; hinge only as far as the hamstrings allow. |
+| Y11 | Kickstand hinge with reach (staggered stance with the back toes as a kickstand; hinge on the front leg; the opposite hand reaches towards the front shin) | Build, Peak | B, C | S, M | Gluteus maximus, hamstrings, gluteus medius | L | L | L | **Doubled** | Stage time per side | Single-limb deadlift EMG (Distefano 2009) by analogy | The other hand may touch the wall. |
+| Y12 | Hip airplane with wall support (single-leg hinge to about 45°, fingertips on the wall; rotate the pelvis open and closed over the standing hip) | Build | B, D | S, M | Gluteus medius, deep hip rotators, gluteus maximus; balance | L–M | L | L | **Doubled** | Stage time per side | *(heuristic)* | Requires the hinge ladder at H8 or above. Slow; small range first. |
+| Y13 | Split-stance thoracic rotation (short staggered stance, soft knees, hands crossed on the chest; rotate towards the front leg) | Ramp, Build (D) | A, C, D | M | Thoracic rotators, obliques | L | L | L | **Split** | 40 s (20 s per side) | *(heuristic)* | Rotate from the upper back, not the knees. |
+| Y14 | Reverse lunge with rotation (shallow reverse lunge; at the bottom rotate the trunk towards the front leg, hands on the chest; return; alternate) | Build | B, D | S, M | Quadriceps, gluteals, obliques, thoracic rotators | M (M–H at K7 depth) | L | L | Alternating | 40 s | Reverse lunge as K7 *(heuristic)* | Requires the knee ladder at K6 or above. Depth no deeper than the knee step. Fingertips on the wall for balance are allowed. |
+| Y15 | Standing world's greatest stretch (long split stance with the back knee off the floor and the hands on the front thigh; lower the same-side elbow towards the inside of the front knee, then rotate and open that arm to shoulder height) | Build, Wind-down | B, D | M, S (isometric split stance) | Hip flexors (back leg), adductors, thoracic rotators, quadriceps | M | L | L | **Doubled** (Build) or 30 s per side (Wind-down) | Stage time per side | *(heuristic)*; variant without the knee down | No hand on the floor (wrist-free). Requires the knee ladder at K6 or above. Optional half-kneeling version (pad under the knee) only if kneeling pain ≤2/10 (as M1). |
+| Y16 | Wide-stance side shift (feet about twice hip width; shift the weight to one side with a shallow knee bend (≤45°), the other leg straight; hands on the hips or fingertips on the wall) | Ramp, Build (D), Wind-down | B, D | M, S (light) | Adductors, quadriceps, gluteals | L–M | L | L | Alternating | 40 s | *(heuristic)* | Heels flat; knee over the toes. |
+| Y17 | Cossack shift with forward reach (as Y16, deeper, to pain-free depth with the heel down; hands reach forward at chest height as a counterbalance) | Build | B, D | S, M | Quadriceps, gluteals, adductors; hip mobility | M–H | L | L | Alternating | 40 s | Side lunges load the patellofemoral joint more than forward lunges at mid-to-deep flexion (Escamilla 2008) | Requires the knee ladder at K4 or above. Skip if knee pain was ≥3/10 in the last 14 days (as R12.5). Stays shallower than K10/K11, which keep their own gates. |
+| Y18 | Wall plank march (forearms on the wall at shoulder height, body leaning in a straight line; march the knees alternately) | Ramp, Build | A | S, P | Abdominals, serratus anterior, hip flexors | L | L (forearms) | L | Alternating | 30–45 s | Incline reduces load (Ludewig 2004 by analogy) *(heuristic)* | None. |
+| Y19 | Wall mountain climber step-ins (hands or fists on the wall at chest height, feet further back; bring one knee towards the wall at a steady pace; alternate; no hop) | Peak | A | P, S | Abdominals, hip flexors, serratus anterior, shoulders | L | L–M (L on fists or forearms) | L–M | Alternating | 40–45 s | *(heuristic)* | Steady pace; one foot always on the floor. Use forearms if wrist pain >2/10. |
+| Y20 | Wall plank shoulder taps (hands at chest height on the wall, feet wide; tap the opposite shoulder, alternate) | Peak | A, C | S, P | Anti-rotation core, serratus anterior, shoulder stabilisers | L | L–M | M | Alternating | 40–45 s | 3-point support raises scapular activity (Can 2024, by analogy) *(heuristic)* | Leads into X2 (floor shoulder taps). Exclude while shoulder pain >2/10. Requires the plank ladder at C4 or above. |
+| Y21 | Inchworm walk-out to a short plank (soft knees; hinge, walk the hands or fists out to a short plank, hold 1 s, walk back, stand up) | Peak | A | S, M, P | Abdominals, shoulders, triceps, hamstrings (stretch) | L | M (L–M on fists) | M | No | 40–45 s | *(heuristic)* | Requires the plank ladder at C5 or above, the push ladder at P3 or above, and wrist pain ≤2/10 for 14 days (as R12.5). Fists by default. The head is briefly below the hips (not an overhead or inverted skill). |
+| Y22 | Standing hip circles (one hand on the wall; lift the knee and draw a slow circle, out and back) | Ramp, Wind-down | B, D | M | Hip rotators, hip flexors, gluteus medius (stance leg) | L | L | L | **Split** | 40 s (20 s per side) | *(heuristic)* | Pain-free range only. |
+| Y23 | Leg swings with wall support (front to back, then side to side; controlled, building range) | Ramp | B, D | M, P (light) | Hip flexors, hamstrings, adductors, abductors | L | L | L | **Split** | 40 s (20 s per side) | Controlled dynamic stretching (Opplert and Babault 2018) | Controlled, not ballistic; stop short of the end of range. |
+| Y24 | Wall slide to shoulder height (forearms on the wall; slide up only to shoulder height, add a small "plus" (shoulder blades forward), slide down) | Ramp | A, C | M, S (light) | Serratus anterior, lower trapezius | L | L | L | No | 40 s | Wall slide EMG (Hardwick 2006; tested above shoulder height; verify) | Capped at shoulder height (user's overhead exclusion). |
+| Y25 | Standing thread the needle (hands on the wall at chest height, hinge to a flat back; sweep one arm under the other, then rotate it open to shoulder height) | Ramp, Wind-down | C, D | M | Thoracic rotators, rear shoulder | L | L | L | **Split** | 40 s (20 s per side) | *(heuristic)* | Standing version avoids kneeling and wrist loading. Quadruped forearm version: knee M, as M7. |
+| Y26 | Standing cat-cow (hands on the thighs, knees slightly bent; round and arch the spine slowly) | Ramp, Wind-down | C, D | M | Spinal flexors and extensors | L | L | L | No | 40 s | As M7 *(heuristic)* | Standing version of M7, with no kneeling and no wrist load. |
+
+**Count:** 26 moves (Y1–Y26). 23 are standing, with no kneeling and no wrist load (Y1–Y18 and Y22–Y26). Y19 and Y20 put light load through the hands on a wall, with a forearm or fist option. Y21 is the only floor move (fists by default).
+
+**Considered and mapped to existing IDs instead of new Y IDs:**
+- Marching with arm swings is W1 (with W2's arm swing).
+- Bear-crawl taps are X2.
+- Cat-cow on the floor is M7.
+- 90/90 transitions are M10 (in EVIDENCE.md, not yet in the library; knee M).
+- Wrist circles are M11 (not yet in the library). Add M10 and M11 to the library for the Wind-down and the A ramp.
+
+**Considered and excluded:** jumping jacks, high knees (running), burpees, squat jumps, jumping lunges and skaters with a hop (jumping); downward dog, pike and walk-outs to a pike (overhead or inverted load); standing arm circles above shoulder height (overhead); curtsy lunge (as before).
+
+#### Y ladders (order, start, prerequisites)
+
+| Ladder | Steps (easiest → hardest) | Start | Prerequisites | Main use |
+|---|---|---|---|---|
+| `ymarch` (march and box) | W1 → Y1 → Y2 → Y3 | Y1 | None | Peak in A and C; W1 and Y1 in the ramp |
+| `ylateral` (lateral) | Y4 → Y5 → Y6 | Y4 | Y6: knee pain ≤2/10 on the knee ladder for 2 weeks | Peak in B (and C as pulse); Y4 in every ramp |
+| `ysquat` (squat flow) | Y7 → Y8 → Y9 | Y7 | Knee ladder ≥ K3 (Y9: ≥ K4) | Peak in B (alternates with `yhinge`) |
+| `yhinge` (hinge flow) | Y10 → Y11 → Y12 | Y10 | Y12: hinge ladder ≥ H8 | Peak in B and C; Y10 as the C primer |
+| `yrotate` (lunge and rotation) | Y13 → Y14 → Y15 | Y13 | Y14, Y15: knee ladder ≥ K6 | Build in D; Y13 in the ramp |
+| `ycossack` (lateral hip) | Y16 → Y17 | Y16 | Y17: knee ladder ≥ K4, no knee pain ≥3/10 in 14 days | Build in D |
+| `ywall` (wall to floor plank) | Y18 → Y19 → Y20 → Y21 | Y18 | Y20: plank ≥ C4; Y21: plank ≥ C5, push ≥ P3, wrist ≤2/10 for 14 days | Peak in A (after Y21, the X ladder continues at X1/X2 under R13) |
+| `yflow` (mobility pool, not a ladder) | Y22, Y23, Y24, Y25, Y26 (plus M7, M10, M11) | — | — | Ramp and Wind-down, chosen by session focus |
+
+**Rule for the ramp:** when a Y-ladder move appears in the ramp, it uses the step **below** the user's current step on that ladder, or the first step. Rated progression happens only in Build and Peak.
+
+**Rule for knee load in Peak:** no Peak leg station may have a higher knee load than the user's current knee-ladder step. If the knee ladder is at K0 or K1, B's Peak uses Y4, F1, H3 and `yhinge` only.
+
 ---
 
 ## Key uncertainties
@@ -919,6 +1279,17 @@ There is no meaningful variation for A2 (Distefano 2009 already rates it the hig
 13. **No direct evidence was found** for bear crawls, shoulder taps, plank up-downs, push-up to side plank, Spiderman push-ups or hollow rocks. The X ladder and P10/C9 rest on coaching practice and indirect data.
 14. **Overhead boundary:** S0f and E5 involve unloaded arm elevation. Because the user excluded overhead work (October 2026), they are capped at shoulder height.
 15. **Readiness thresholds** (2 of 3 sessions, 28-day pain window, 14-day morning window, minimum weeks) are design choices. They are not derived from studies. Tune them from logged data.
+
+16. **No trial of jump-free bodyweight intervals was found.** All the interval training studies (McRae 2012, Schaun 2018, Archila 2021, Bellissimo 2025) used jumps or all-out efforts. The cardiorespiratory effect of the Peak block is extrapolated, and is probably smaller.
+17. **Bodyweight intervals feel harder than their heart rate suggests** (Bellissimo 2022). RPE-based targets may under-dose the cardiorespiratory system and over-dose local muscle fatigue, which matters for sensitive knees and wrists.
+18. **The three-level rating ("too easy / about right / too hard") is not validated.** The RIR and talk-test anchors in R16 are design choices. Ratings given at the end of a 15-minute session for 6–8 exercises may blur together (recall). If ratings and optional rep counts disagree, prefer the rep counts and tune the definitions.
+19. **Work:rest ratios and the timing stages** (30/30 → 40/20 → 45/15, cap 3:1) are not from comparative studies.
+20. **Combined mobility moves** (world's greatest stretch, inchworm, Cossack shift, hip airplane, 90/90, thread the needle) have no trial evidence. Long-term range-of-motion gains are smaller with dynamic than with static stretching (Konrad 2024; Thomas 2018), so the R9 static dose still matters.
+21. **Counting interval sets as hard sets** (R16: 1 set per interval, ½ if "too easy") is an assumption. A 40 s interval at RIR 2–4 is probably a moderate set, not a hard one. Weekly volume may be overstated compared with R3's evidence base.
+22. **Lateral and rotational knee loading:** skater steps, lateral shuffles, Cossack shifts and lunges with rotation add frontal-plane and rotational knee load that the sagittal knee ladder did not. Side lunges load the patellofemoral joint more than forward lunges (Escamilla 2008). The knee-step caps in the Y rules are heuristic.
+23. **Repetitive arm work** (shadow boxing, step-jacks with arm raises, wall slides) adds many shoulder cycles at up to 90° of elevation. No data on tolerance in painful shoulders were found. The R7 pain rules and the shoulder-height cap are the safeguards.
+24. **Many details in section 11 come from abstracts and secondary summaries:** Klika and Jordan 2013, the 7-minute workout studies, McRae 2012, Schaun 2018, Archila 2021, Bellissimo 2022 and 2025, Clayton 2019, Zovico 2024, Fosstveit 2024, Bell and Bassey 1994, Sabag 2018 (the >24 h detail), Konrad 2024, Warneke 2025, Day 2004, Zhang 2021 and Ciolac 2015.
+25. **Energy cost:** the 90–110 kcal per session figure is a MET-based estimate, not a measurement.
 
 ---
 
@@ -970,3 +1341,47 @@ Sources already listed earlier in this document are not repeated in full: Cools 
 - Kassiano W, et al. *Does varying resistance exercises promote superior muscle hypertrophy and strength gains? A systematic review.* Journal of Strength and Conditioning Research, 2022;36(6):1753–1762.
 - Fonseca RM, et al. *Changes in exercises are more effective than in loading schemes to improve muscle strength.* Journal of Strength and Conditioning Research, 2014;28(11):3085–3092 (verify pages).
 - Baz-Valle E, et al. *The effects of exercise variation in muscle thickness, maximal strength and motivation in resistance trained men.* PLoS One, 2019;14(12):e0226989.
+
+---
+
+## Sources for interval sessions
+
+Sources already listed earlier in the document are not repeated in full: Garber 2011, Behm 2016, Fradkin 2010, Jeffreys 2007, Thomas 2018, Afonso 2021, Halperin 2022, Wilson 2012, Schumann 2022, Escamilla 2001, Escamilla 2008 (Clinical Biomechanics), Distefano 2009, Ludewig 2004, Can 2024.
+
+**Bodyweight and circuit intervals**
+- Klika B, Jordan C. *High-intensity circuit training using body weight: maximum results with minimal investment.* ACSM's Health & Fitness Journal, 2013;17(3):8–13. DOI: [10.1249/FIT.0b013e31828cb1e8](https://doi.org/10.1249/FIT.0b013e31828cb1e8) (read via secondary summaries; verify).
+- Mattar L, et al. *Effect of 7-minute workout on weight and body composition.* 2017 (journal and authors: verify). Record: <https://laur.lau.edu.lb:8443/xmlui/handle/10725/6229>
+- McRae G, Payne A, Zelt JGE, Scribbans TD, Jung ME, Little JP, Gurd BJ. *Extremely low volume, whole-body aerobic–resistance training improves aerobic fitness and muscular endurance in females.* Applied Physiology, Nutrition, and Metabolism, 2012 (volume and pages: verify).
+- Schaun GZ, et al. *Whole-body high-intensity interval training induce similar cardiorespiratory adaptations compared with traditional high-intensity interval training and moderate-intensity continuous training in healthy men.* Journal of Strength and Conditioning Research, 2018;32(10):2730–2742. DOI: [10.1519/JSC.0000000000002594](https://doi.org/10.1519/JSC.0000000000002594)
+- Archila LR, Bostad W, Joyner MJ, Gibala MJ. *Simple bodyweight training improves cardiorespiratory fitness with minimal time commitment: a contemporary application of the 5BX approach.* International Journal of Exercise Science, 2021;14(3) (pages: verify). <https://digitalcommons.wku.edu/ijes/vol14/iss3/2>
+- Bellissimo GF, Ducharme J, Mang Z, et al. *The acute physiological and perceptual responses between bodyweight and treadmill running high-intensity interval exercises.* Frontiers in Physiology, 2022;13:824154. DOI: [10.3389/fphys.2022.824154](https://doi.org/10.3389/fphys.2022.824154)
+- Bellissimo GF, et al. Six-week YouTube-guided bodyweight interval training in inactive adults with obesity. Frontiers in Physiology, 2025 (title and authors: verify). DOI: [10.3389/fphys.2025.1527171](https://doi.org/10.3389/fphys.2025.1527171)
+- Clayton et al. *Physiological and perceptual responses of females and males to body-weight high-intensity circuit training* (title: verify). International Journal of Exercise Science, 2019;12(4):245–255. <https://digitalcommons.wku.edu/ijes/vol12/iss4/4>
+- Zovico et al. *Acute and subacute psychophysiological responses in body weight HIIT sessions: a systematic review.* Retos, 2024;60 (authors and pages: verify). <https://doaj.org/article/06e37bd7f6754bfaa88d5e118f1d8456>
+- Fosstveit SH, et al. Six-month home-based HIIT in adults aged 60–84 (title: verify). Scandinavian Journal of Medicine & Science in Sports, 2024;34(7):e14694 (verify).
+- Weston M, Taylor KL, Batterham AM, Hopkins WG. *Effects of low-volume high-intensity interval training (HIT) on fitness in adults: a meta-analysis of controlled and non-controlled trials.* Sports Medicine, 2014;44(7):1005–1017. DOI: [10.1007/s40279-014-0180-z](https://doi.org/10.1007/s40279-014-0180-z)
+- Sultana RN, Sabag A, Keating SE, Johnson NA. *The effect of low-volume high-intensity interval training on body composition and cardiorespiratory fitness: a systematic review and meta-analysis.* Sports Medicine, 2019 (volume and pages: verify).
+- Bell JM, Bassey EJ. Oxygen uptake and heart rate during different styles of aerobic dance and a step test in women. European Journal of Applied Physiology, 1994 (title, volume and pages: verify).
+- Williford HN, et al. Energy cost of high- and low-impact aerobic dance routines. 1989 (journal and title: verify).
+- Keogh JWL, et al. *Is high-intensity interval cycling feasible and more beneficial than continuous cycling for knee osteoarthritic patients? Results of a randomised control feasibility trial.* PeerJ, 2018;6:e4738 (title: verify). <https://peerj.com/articles/4738>
+
+**Stretching and warm-up**
+- Opplert J, Babault N. *Acute effects of dynamic stretching on muscle flexibility and performance: an analysis of the current literature.* Sports Medicine, 2018;48(2):299–325. DOI: [10.1007/s40279-017-0797-9](https://doi.org/10.1007/s40279-017-0797-9)
+- Konrad A, et al. *Chronic effects of stretching on range of motion with consideration of potential moderating variables: a systematic review with meta-analysis.* Journal of Sport and Health Science, 2024;13(2):186–194 (title and authors: verify). PubMed: <https://pubmed.ncbi.nlm.nih.gov/37301370/>
+- Warneke K, et al. *Practical recommendations on stretching exercise: a Delphi consensus statement of international research experts.* Journal of Sport and Health Science, 2025 (volume and pages: verify). PubMed: <https://pubmed.ncbi.nlm.nih.gov/40513717/>
+- Esteban-García et al. Static vs dynamic stretching and jump performance and range of motion: systematic review with meta-analysis. 2024 (journal and title: verify).
+- Hardwick DH, Beebe JA, McDonnell MK, Lang CE. *A comparison of serratus anterior muscle activation during a wall slide exercise and other traditional exercises.* Journal of Orthopaedic & Sports Physical Therapy, 2006;36(12):903–910 (verify).
+
+**Autoregulation and intensity**
+- Foster C, Florhaug JA, Franklin J, et al. *A new approach to monitoring exercise training.* Journal of Strength and Conditioning Research, 2001;15(1):109–115 (verify).
+- Day ML, McGuigan MR, Brice G, Foster C. *Monitoring exercise intensity during resistance training using the session RPE scale.* Journal of Strength and Conditioning Research, 2004;18(2):353–358 (verify).
+- Helms ER, Byrnes RK, Cooke DM, et al. *RPE vs. percentage 1RM loading in periodized programs matched for sets and repetitions.* Frontiers in Physiology, 2018;9:247. DOI: [10.3389/fphys.2018.00247](https://doi.org/10.3389/fphys.2018.00247)
+- Zhang X, et al. *Auto-regulation method vs. fixed-loading method in maximum strength training for athletes: a systematic review and meta-analysis.* Frontiers in Physiology, 2021;12:651112. DOI: [10.3389/fphys.2021.651112](https://doi.org/10.3389/fphys.2021.651112)
+- Steele J, Endres A, Fisher J, Gentil P, Giessing J. *Ability to predict repetitions to momentary failure is not perfectly accurate, though improves with resistance training experience.* PeerJ, 2017;5:e4105. DOI: [10.7717/peerj.4105](https://doi.org/10.7717/peerj.4105)
+- Ciolac EG, et al. *Rating of perceived exertion as a tool for prescribing and self regulating interval training: a pilot study.* Biology of Sport, 2015 (volume and pages: verify).
+- Persinger R, Foster C, Gibson M, Fater DCW, Porcari JP. *Consistency of the talk test for exercise prescription.* Medicine & Science in Sports & Exercise, 2004;36(9):1632–1636 (verify).
+- Reed JL, Pipe AL. *The talk test: a useful tool for prescribing and monitoring exercise intensity.* Current Opinion in Cardiology, 2014;29(5):475–480 (verify).
+
+**Concurrent training**
+- Sabag A, Najafi A, Michael S, Esgin T, Halaki M, Hackett D. *The compatibility of concurrent high intensity interval training and resistance training for muscular strength and hypertrophy: a systematic review and meta-analysis.* Journal of Sports Sciences, 2018;36(21):2472–2483. DOI: [10.1080/02640414.2018.1464636](https://doi.org/10.1080/02640414.2018.1464636)
+- Murlasits Z, Kneffel Z, Thalib L. *The physiological effects of concurrent strength and endurance training sequence: a systematic review and meta-analysis.* Journal of Sports Sciences, 2018;36(11):1212–1219. PubMed: <https://pubmed.ncbi.nlm.nih.gov/28783467/>

@@ -13,6 +13,7 @@ const GROUPS: [Group | 'all', string][] = [
   ['legs', 'Legs'],
   ['hips', 'Hips'],
   ['back', 'Back'],
+  ['cardio', 'Cardio'],
   ['mobility', 'Mobility'],
   ['warmup', 'Warm-up'],
 ]
