@@ -218,7 +218,7 @@ const reverseLungeRotation: Exercise = {
 
 // Long split stance, back knee off the floor; the hips stay still (isometric split stance).
 const WGS_FRONT: Vec = [94, ANKLE_FLOOR]
-const WGS_BACK_TOE: Vec = [24, GROUND_Y - 5]
+const WGS_BACK_TOE: Vec = [31, GROUND_Y - 5]
 const WGS_HIP = splitHip(70, 85, WGS_FRONT)
 const WGS_BACK = backLeg(WGS_HIP, WGS_BACK_TOE)
 
@@ -330,7 +330,8 @@ function hipCirclePose(leg: Limb, foot = 90): Pose {
     hip: HC_HIP,
     torso: 180,
     head: 180,
-    armNear: { pin: onTorso(HC_HIP, 180, [5.5, -6]), bend: 1 },
+    // Near hand on the chest, clear of the lifting knee.
+    armNear: { pin: onTorso(add(HC_HIP, dir(180), BODY.torso), 180, [1.2, 17]), bend: 1 },
     armFar: { pin: HC_WALL_HAND, bend: -1 },
     legNear: leg,
     legFar: { pin: HC_STANCE, bend: -1 },
@@ -340,8 +341,8 @@ function hipCirclePose(leg: Limb, foot = 90): Pose {
 }
 
 const HC_DOWN = hipCirclePose({ a: [16, 354] })
-const HC_UP = hipCirclePose({ a: [150, 6] })
-const HC_OUT = hipCirclePose({ a: [104, 14] })
+const HC_UP = hipCirclePose({ a: [140, 350] })
+const HC_OUT = hipCirclePose({ a: [102, 30] })
 
 const standingHipCircles: Exercise = {
   id: 'Y22',

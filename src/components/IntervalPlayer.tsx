@@ -402,6 +402,7 @@ export function IntervalPlayer({ session, plan, input, onFinished }: { session: 
             unlockCues()
             setStarted(true)
             clock.start()
+            document.getElementById('player-scroll')?.scrollTo({ top: 0 })
           }}
         >
           <Play size={18} fill="currentColor" /> Start
@@ -473,8 +474,8 @@ export function IntervalPlayer({ session, plan, input, onFinished }: { session: 
 
   return shell(
     <div className="space-y-4 pt-4">
-      <div className={`overflow-hidden rounded-[26px] ring-1 ring-[var(--border)] ${work ? 'bg-[var(--stage)]' : 'bg-[var(--surface-2)] opacity-90'}`}>
-        {exercise && <FigureView animation={exercise.animation} />}
+      <div className={`h-[34vh] min-h-48 overflow-hidden rounded-[26px] ring-1 ring-[var(--border)] ${work ? 'bg-[var(--stage)]' : 'bg-[var(--surface-2)] opacity-90'}`}>
+        {exercise && <FigureView animation={exercise.animation} fill />}
       </div>
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">

@@ -232,7 +232,7 @@ function Summary({ updates, stretch, onClose }: { updates: LadderUpdate[]; stret
             ))}
           </ul>
         ) : (
-          <p className="mt-2 text-sm text-[var(--muted)]">Same exercises: aim for one more rep or a few more seconds.</p>
+          <p className="mt-2 text-sm text-[var(--muted)]">Same steps next time. Two sessions rated "too easy" in a row move an exercise up a step.</p>
         )}
       </Card>
       )}
@@ -305,7 +305,7 @@ export function TodayScreen({ account }: { account: Account }) {
             <h2 className="mt-1.5 text-[26px] leading-tight font-semibold">{SESSION_NAMES[p.type]}</h2>
             <div className="mt-3 flex flex-wrap gap-3 text-[13px] text-[var(--muted)]">
               <span className="inline-flex items-center gap-1">
-                <Clock size={15} /> About {Math.max(5, Math.round(p.minutes / 5) * 5)} min
+                <Clock size={15} /> About {Math.max(1, p.minutes)} min
               </span>
               <span className="inline-flex items-center gap-1">
                 <Dumbbell size={15} /> {mainCount} exercises

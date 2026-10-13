@@ -74,11 +74,14 @@ export function FigureView({
   playing = true,
   showLabel = true,
   time,
+  fill = false,
 }: {
   animation: Animation
   playing?: boolean
   showLabel?: boolean
   time?: number
+  /** Fit inside the parent's height instead of taking the full width (tall figures). */
+  fill?: boolean
 }) {
   const uid = useId().replace(/:/g, '')
   const [t, setT] = useState(0)
@@ -108,7 +111,7 @@ export function FigureView({
   const shadowId = `floor-shadow-${uid}`
 
   return (
-    <svg viewBox={`${vx} ${vy} ${vw} ${vh}`} className="block h-auto w-full" role="img" aria-label={label ?? 'Exercise animation'}>
+    <svg viewBox={`${vx} ${vy} ${vw} ${vh}`} className={fill ? 'block h-full w-full' : 'block h-auto w-full'} role="img" aria-label={label ?? 'Exercise animation'}>
       <defs>
         <radialGradient id={shadowId}>
           <stop offset="0%" stopColor="var(--shadow)" />
