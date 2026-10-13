@@ -18,6 +18,7 @@ import { Y_LATERAL } from './y-lateral'
 import { Y_SQUAT_HINGE } from './y-squat-hinge'
 import { Y_ROTATE } from './y-rotate'
 import { Y_WALL } from './y-wall'
+import { OVERHEAD } from './overhead'
 import type { Exercise } from './types'
 
 export const EXERCISES: Exercise[] = [
@@ -43,6 +44,7 @@ export const EXERCISES: Exercise[] = [
   ...Y_SQUAT_HINGE,
   ...Y_ROTATE,
   ...Y_WALL,
+  ...OVERHEAD,
 ]
 
 const BY_ID = new Map(EXERCISES.map((e) => [e.id, e]))

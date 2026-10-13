@@ -198,6 +198,40 @@ export const LADDERS: Record<string, Ladder> = {
   },
   cuff: { id: 'cuff', name: 'Rotator cuff', steps: [s('S0', { variants: ['S0f'] })], start: 0 },
 
+  // Overhead pushing (R18): gated from the first step; rests while the shoulder is irritated.
+  overhead: {
+    id: 'overhead',
+    name: 'Overhead push',
+    steps: [
+      s('O1', {
+        calm: ['shoulder'],
+        gate: g('P5', 8, SH_WR, 'Hold a downward dog for 20 s on hands or fists, knees bent and heels up. Then do 10 slow wall slides with the arms going overhead.', {
+          requires: [{ ladder: 'prone', atLeast: 'S3' }],
+        }),
+      }),
+      s('O2', {
+        calm: ['shoulder'],
+        gate: g('O1', 10, ['shoulder', 'wrist', 'knee'], 'Hold a downward dog for 30 s. Then do 5 pike push-ups from the knees, forehead stopping about one fist above the mat, with 3 or more reps in reserve.'),
+      }),
+      s('O3', {
+        calm: ['shoulder'],
+        gate: g('O2', 14, SH_WR, 'Do 5 pike push-ups from the feet, hips high, forehead stopping about one fist above the mat, with 3 or more reps in reserve.', {
+          painMax: 1,
+          caution: true,
+          requires: [{ ladder: 'push', atLeast: 'P7' }],
+        }),
+      }),
+      s('O4', {
+        calm: ['shoulder'],
+        gate: g('O3', 20, SH_WR, 'Do 8 pike push-ups from the feet with 2 or more reps in reserve, then 3 more with the feet one foot-length closer (or a 2 s pause at the bottom), with 3 or more in reserve.', {
+          painMax: 1,
+          caution: true,
+        }),
+      }),
+    ],
+    start: 0,
+  },
+
   // Dynamic jump-free moves for timed sessions (EVIDENCE.md, "Y ladders").
   ymarch: { id: 'ymarch', name: 'March and box', steps: [s('W1'), s('Y1'), s('Y2'), s('Y3')], start: 1 },
   ylateral: { id: 'ylateral', name: 'Lateral steps', steps: [s('Y4'), s('Y5'), s('Y6', { calm: ['knee'] })], start: 0 },
@@ -257,13 +291,13 @@ export type Template = { ramp: Slot[]; build: Slot[]; peak: Slot[]; winddown: Sl
 // Timed 15-minute sessions (R14.1, user's choice, October 2026): exercises in
 // increasing complexity, so the Ramp replaces the warm-up; strength ladders in
 // Build before the pulse circuit in Peak; slow mobility and stretches last.
-// Knee caution: no child's pose (M9) or side-lying quad stretch (M5); M12 is
-// not used (overhead).
+// Knee caution: no child's pose (M9) or side-lying quad stretch (M5).
 export const TEMPLATES: Record<SessionType, Template> = {
   A: {
     ramp: [{ exercise: 'Y24' }, { exercise: 'Y4' }, { rampOf: 'ywall' }, { primer: 'push', below: 2 }],
     build: [{ ladder: 'push' }, { ladder: ['plank', 'deadbug', 'crawl'] }],
-    peak: [{ ladder: 'ywall' }, { ladder: 'ymarch' }, { ladder: 'serratus' }],
+    // The overhead ladder takes turns with push-up plus once unlocked (R18).
+    peak: [{ ladder: 'ywall' }, { ladder: 'ymarch' }, { ladder: ['serratus', 'overhead'] }],
     winddown: [{ exercise: 'M8' }, { exercise: 'M6' }],
   },
   B: {
@@ -277,7 +311,7 @@ export const TEMPLATES: Record<SessionType, Template> = {
     ramp: [{ exercise: 'Y26' }, { exercise: 'Y25' }, { exercise: 'Y4' }, { exercise: 'Y10' }],
     build: [{ ladder: 'prone' }, { ladder: ['sweep', 'sideplank'] }],
     peak: [{ ladder: 'ymarch' }, { ladder: 'extension' }, { ladder: 'ylateral', maxStep: 'Y5', hardRide: 'Y18' }],
-    winddown: [{ exercise: 'M3' }, { exercise: 'M6' }],
+    winddown: [{ exercise: 'M3' }, { exercise: 'M12' }],
   },
   D: {
     ramp: [{ exercise: 'W1' }, { exercise: 'Y23' }, { exercise: 'Y22' }, { exercise: 'Y13' }],

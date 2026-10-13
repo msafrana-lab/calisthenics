@@ -309,6 +309,58 @@ Kotarsky et al. (2018) is the main controlled evidence that progressing push-up 
 
 ---
 
+### 7.5 Overhead work
+
+#### 7.5.1 Benefits of overhead work
+
+| Benefit | Evidence | Reading for this programme |
+|---|---|---|
+| **Serratus anterior** | Ekstrom 2003 (30 healthy people, surface EMG): the serratus anterior was most active in exercises needing large scapular upward rotation, namely scapular-plane abduction **above 120°** and a diagonal flexion pattern. Hardwick 2006 (20 healthy people): serratus activity did not differ between the wall slide, the wall push-up plus and scapular-plane elevation at 90°. It rose with elevation (90° → 120° → 140°) in the wall slide and in scapular-plane elevation. One citing paper describes the wall slide as better than the push-up plus above 90° (verify; the abstract reports no difference between the wall slide and scaption). | Taking Y24 (wall slide) above shoulder height is the cheapest way to load the serratus at the angles where it works hardest. Push-up plus work (P2, P6) stays the main serratus ladder below 90°. |
+| **Lower trapezius** | Ekstrom 2003: the prone Y (arms overhead in line with the lower trapezius) gave the highest lower trapezius activity. Cools 2007: side-lying forward flexion was one of four exercises with high lower and middle trapezius and low upper trapezius activity; the tested range was to about 135° (verify). Błażkiewicz and Hadamus 2022 state in their introduction that the serratus anterior and lower trapezius are the most engaged muscles beyond about 120° of elevation (background statement, not their own data; verify). | S3 (prone Y), S0f taken to about 135°, and E5 with the arm at ear level all load the lower trapezius at the angles where it contributes most. |
+| **Deltoid strength** | Overhead pressing loads all three deltoid heads. Saeterbakken and Fimland 2013 (15 men, 80% 1RM): deltoid activity differed only modestly between barbell and dumbbell, and between seated and standing presses. Anterior deltoid activity was about 15% lower with the barbell than with dumbbells when standing, and posterior deltoid activity was about 25% lower seated than standing (verify). Coratella 2022 (8 bodybuilders): front and back presses shifted emphasis between the deltoid heads and the pectoralis major (verify). **No EMG study of the pike push-up was found.** Indirect evidence: as the body tilts head-down, a larger share of body weight goes through the hands. Ebben 2011 reports peak force of about 64% of body mass in a standard push-up, 70% with the feet on a 30 cm box and 74% on a 61 cm box (via secondary summaries; verify). A thesis (19 men; verify) and a 2025 preprint on suspension push-ups (not peer reviewed) reported the highest anterior deltoid, triceps and serratus activity at the most head-down angle tested (−30°). | Pike push-ups are the only way to load the deltoids in vertical pressing without equipment. Steepening the pike (feet closer) raises the load, as feet elevation does in push-ups *(heuristic transfer)*. |
+| **Shoulder flexion range** | Afonso 2021 (section 4.3): full-range strength training improved range of motion about as much as stretching. Small trials in people with impingement or frozen shoulder reported gains in flexion range after progressive resistance exercise (search-result summaries only; verify). No trial of overhead bodyweight work for shoulder flexion range in healthy adults was found. | Overhead moves held in a controlled, pain-free range (M12, O1, full Y24) are expected to keep or gain shoulder flexion range *(heuristic)*. They do not replace the static stretching dose in R9. |
+
+#### 7.5.2 Risks for painful shoulders
+
+| Risk | Evidence | Reading for this programme |
+|---|---|---|
+| **Subacromial space narrows in mid-range** | Graichen 1999 (12 volunteers, MRI): the smallest acromiohumeral distance fell from about 7.0 mm at 30° to about 3.9 mm at 120° of abduction. At 120° the closest point lay lateral to the supraspinatus tendon (verify). A second Graichen 1999 study (10 volunteers): muscle activity narrowed the distance by about 32% at 60° and widened it by about 44% at 120° (verify). Lawrence, Braman and Ludewig 2019 (40 people, fluoroscopy): subacromial distances were generally smallest **below 70°** of elevation. Lower scapular upward rotation shifted the range of highest compression risk to lower angles. Lawrence 2020 (review): the glenohumeral elevation angle consistently affects subacromial proximity; the effect of reduced upward rotation depends on the angle. | The "painful arc" (roughly 60–120°) is where the cuff passes under the arch. Going higher is not inherently riskier for subacromial compression. Rising **slowly** through mid-range, and stopping where pain starts, is the main safeguard. |
+| **End-range loading** | Lawrence 2024 (CT-based models of 10 asymptomatic and 9 symptomatic people): at 120° of elevation, the relevant proximity is between the cuff insertions and the glenoid rim (internal impingement). Modest changes in scapular position increased clearance (verify thresholds). | At end range the concern shifts from the acromion to the glenoid. Scapular upward rotation and posterior tilt ("push the floor away", "shoulder blades wrap forward and up") are cued in every O step *(heuristic)*. |
+| **Altered scapular motion in painful shoulders** | Ludewig and Cook 2000 (52 construction workers who do overhead work): lower serratus anterior activity in the impingement group across loads and phases; scapular tipping and serratus function were singled out for rehabilitation. Timmons 2012 (meta-analysis, 9 studies): less upward rotation (at lower arm elevations) and less external rotation, with more clavicular elevation and retraction, in impingement. The pattern was not consistent across studies (verify subgroup details). | Serratus and lower trapezius work (S3, Y24, P2, P6) comes before loaded overhead pushing. This supports O1's prerequisites. |
+| **Exercise associations in lifters** | Kolber 2014 (77 men; 46 weight-trainers): signs of impingement were associated with lateral raises and upright rows **above 90°**, and inversely associated with external rotator strengthening. The abstract does not report the overhead press itself. Kolber 2010 (section 7.4): up to about 36% of resistance-training injuries involve the shoulder (verify). | Keep S0 (external rotation) in the programme while overhead work is added. Excluded moves stay excluded: no internally rotated raise above 90° (upright-row shape). |
+| **Downward dog** | Le Corroller 2012 (imaging case series, Vancouver; 20 of 38 patients had yoga-attributed injuries, verify): supraspinatus tendon lesions were the most frequent finding. News summaries attribute the authors' comment linking sun salutations and downward dog to rotator cuff strain (not found in the abstract; verify). A case series has no denominator, so it cannot give a risk per session. A Taiwanese study (12 women; verify) found that novices put a larger share of body weight through the arms and leaned the trunk further forward than experienced practitioners. | Downward dog is a loaded end-range shoulder position. O1 is held with the weight shifted to the legs (knees bent, heels up) and only after unloaded overhead work is pain-free. |
+| **Is pain during exercise needed?** | Cavaggion 2024 (RCT, 43 people with chronic rotator cuff-related shoulder pain): exercising into pain gave no better pain or disability outcomes than pain-free exercise up to 6 months (SPADI interaction p = 0.25). Small sample, no untreated control. Ullern 2025 (scoping review) found that pain-related prescription parameters are reported inconsistently in shoulder trials (findings not retrieved; verify). | Pain is not needed for progress. R7's conservative limits (≤2/10 to progress, 3/10 allowed but no progression) stay. |
+
+#### 7.5.3 How rehabilitation programmes grade overhead loading
+
+No trial compares orders of overhead progression. The sequence below follows rehabilitation frameworks and EMG studies.
+
+| Stage | What changes | Evidence | Programme steps |
+|---|---|---|---|
+| 1. Scapular control below 90°, short lever | Small range, low load, arm close to the body | Kibler 2008 (18 symptomatic, 21 asymptomatic people): low row, inferior glide, lawnmower and robbery gave serratus and lower trapezius activity of about 15–30% MVIC, with no difference between groups. Short-range exercises (low row, inferior glide) were advised early; larger movements later (verify authors and pages). Cools 2014: clinical reasoning algorithm for scapular rehabilitation (content beyond the aim not retrieved; verify). | S0, S1, S2, P2, Y24 at shoulder height |
+| 2. Unloaded elevation through the pain-free range | Arm above 90° with only its own weight | Ekstrom 2003; Hardwick 2006; Cools 2007 (section 1.1). Naunton 2020 (section 7.1): exercise should be progressive. | S3, S5, S0f (to about 135°), Y24 full, Y4, Y8, Y15, E5, M12 |
+| 3. Closed-chain, partial body weight, arm elevated | Hands fixed; body weight shared with the feet | McMullen and Uhl 2000: closed-chain and kinetic-chain exercises used from early rehabilitation, not only at the end. Uhl 2003 (7 weight-bearing positions, healthy students): prayer and quadruped positions gave low activity of all muscles (suggested for early rehabilitation); tripod and pointer positions gave intermediate demand. Activity rose as fewer limbs supported the body (via secondary summaries; verify). | O1 (downward dog) |
+| 4. Pressing with increasing body-weight share | Elbows bend; more weight through the hands as the body becomes vertical | Ebben 2011 and the decline push-up studies (section 1.1, by analogy). | O2 → O3 → O4 |
+| Outcome evidence for programmes | — | Holmgren 2012 (RCT, 102 people on a surgical waiting list): a specific programme of eccentric rotator cuff and concentric/eccentric scapular stabiliser exercise led fewer people to choose surgery (20% vs 63%; assessors blinded, participants not). Littlewood 2016 (SELF trial, 86 randomised, 60 analysed): one self-managed loaded exercise was comparable to usual physiotherapy. | Supports progressive, loaded shoulder exercise. It does not validate this particular ladder. |
+
+#### 7.5.4 Wrist extension in pike positions
+
+| Topic | Evidence | Reading |
+|---|---|---|
+| Angle | No measured wrist angles for downward dog or pike push-ups were found (one Italian thesis models the pose; results not retrieved). Geometry *(heuristic)*: with the palm flat, wrist extension is about 90° minus the forearm's tilt from vertical. In downward dog the forearms lean back towards the feet, so wrist extension is **lower** than in a push-up (forearm vertical, about 90°). In a pike push-up the head travels forward of the hands at the bottom, so the forearm returns to vertical or past it. | O1 has lower wrist extension than P5; O2–O4 reach full extension under a large share of body weight, so their wrist load is H on palms. |
+| Load | Wrist pain in gymnasts is attributed to repeated compression with the wrist dorsiflexed (cadaveric brace study and clinical reviews; verify). Figures of 2.5× body weight or more through the wrist come from clinic material, not measurements, and are not used. A conference paper suggests that turning the fingers outward reduces wrist hyperextension in a handstand press, without kinetic data (verify). | Fingers point forward or slightly out; weight is spread through the whole hand and fingertips *(heuristic)*. |
+| Fists | Polovinets 2018 (section 7.3): a neutral wrist is likely safer because ligaments may be loaded in hyperextension (biomechanical inference). Yoga teaching sources recommend fists, forearms or wedges for wrist pain in downward dog (opinion). No study of fists in pike positions was found. | Fists on a folded mat are the **default** for O1–O4 whenever wrist pain was >2/10 on palms (R10). Fists in a pike are less stable against sliding forward, so the mat is folded and the range is reduced at first *(heuristic)*. |
+| Forearms (dolphin) | No study found. It removes wrist load but moves the shoulder to end-range flexion with a fixed elbow. | A swap for O1 only when the wrist, not the shoulder, limits the hold *(heuristic)*. |
+| Parallettes, push-up handles, wedges | Give a neutral or reduced wrist angle. No study in pike positions found. | **Not available** (mat and wall only). The fist is the only neutral-wrist option. |
+
+#### 7.5.5 Implications
+
+1. Unloaded overhead movement in a pain-free range is low risk and targets the serratus and lower trapezius at their most effective angles (Ekstrom 2003; Hardwick 2006). It is allowed now, with the R10 condition that overhead positions are pain-free.
+2. Loaded overhead pushing comes after the scapular and unloaded overhead work is pain-free, starting with a closed-chain hold in which the legs share the body weight (Uhl 2003; McMullen and Uhl 2000; Ludewig and Cook 2000).
+3. Subacromial compression is highest in mid-range (Graichen 1999; Lawrence 2019). Slow movement through that arc, and stopping at the onset of pain, matter more than avoiding overhead positions altogether.
+4. Pike pressing loads the wrist in full extension. Fists are the default for a sensitive wrist; no handles or parallettes are available.
+5. Pain is not needed for progress (Cavaggion 2024), so R7 stays.
+
 ## 8. Concurrent training with cycling
 
 - **Wilson JM, Marin PJ, Rhea MR, Wilson SMC, Loenneke JP, Anderson JC.** *Concurrent training: a meta-analysis examining interference of aerobic and resistance exercises.* Journal of Strength and Conditioning Research, 2012;26(8):2293–2307. DOI: [10.1519/JSC.0b013e31823a3e2d](https://doi.org/10.1519/JSC.0b013e31823a3e2d)
@@ -492,7 +544,7 @@ These rules are written so that a programme engine can apply them. Where a rule 
 - **Weeks 1–2 (re-entry):** RIR 3–4 on all exercises. Use this period to learn the RIR scale and calibrate the ladder starting steps.
 - **From week 3:**
   - Main ladders: **RIR 1–3**, with a default target of RIR 2.
-  - Exercises that load a symptomatic joint (knee for B; shoulder or wrist for push-ups and prone overhead work): **RIR 2–3**. Never go to failure on these.
+  - Exercises that load a symptomatic joint (knee for B; shoulder or wrist for push-ups, prone overhead work and the O ladder): **RIR 2–3**. Never go to failure on these.
   - Low-risk isolation work (glute bridges, clamshells, prone T/W, calf raises): RIR 0–2 on the last set is acceptable.
 - **Calibration** *(heuristic, based on Halperin 2022)*: once every 4 weeks, take the last set of one low-risk exercise to technical failure and compare the reps achieved with the RIR the person predicted.
 
@@ -645,7 +697,7 @@ The engine offers an advanced step only when all of G1–G6 hold. Each condition
 
 **After unlocking:** the first 2–3 sessions use R6.3 bridging: one set on the new step, the remaining sets on the previous step. Variations of the new step are not offered for its first 2 sessions (R12).
 
-**No confirmation step (user's choice, October 2026):** all steps unlock through G1–G6 only. For the highest-risk steps (P9, K11, X6, marked "Caution" below), the app shows a caution before the test that recommends a physiotherapist assessment. The tests for these steps also use stricter pain limits (≤1/10).
+**No confirmation step (user's choice, October 2026):** all steps unlock through G1–G6 only. For the highest-risk steps (P9, K11, X6, O3, O4, marked "Caution" below), the app shows a caution before the test that recommends a physiotherapist assessment. The tests for these steps also use stricter pain limits (≤1/10).
 
 **How the app records a test** *(implementation)*: the test is offered as one extra item at the end of a session. The user does it, then answers whether the stated performance was reached at the stated reps in reserve and gives the highest pain. The answer is saved as a set with the exercise ID `test:<step ID>` (reps 1 = passed, 0 = not passed). G3 then applies through the next-morning check.
 
@@ -671,6 +723,37 @@ The engine offers an advanced step only when all of G1–G6 hold. Each condition
 | X4 | X3 at 45 s, and push at P5 or above | Wrist, shoulder | 9 | 45 s forearm plank, then 10 high-plank shoulder taps at RIR ≥2 | No |
 | X5 | X4 at the top of the range, and push at P7 or above | Wrist, shoulder | 12 | 4 up-downs (2 leading with each arm) on fists, wrist and shoulder pain ≤1/10 | No |
 | X6 | X5 at the top of the range, and C8 at 45 s | Wrist, shoulder | 14 | 2 push-ups to side plank per side at RIR ≥3, pain ≤1/10 | **Yes** |
+
+**Overhead push ladder (O1–O4, R18):**
+
+| ID | Prerequisite step and mastery (G1) | Regions checked (G2–G3) | Minimum programme week (G5) | In-app readiness test (G6) | Pain max (test) | Caution |
+|---|---|---|---|---|---|---|
+| O1 | **P5 mastered** (push ladder at P5 or above; 2 of the last 3 P5 sessions at the top of the range at RIR ≥2, or rated "too easy" in the interval format, R16). **Prone ladder at S3 or above**, with shoulder pain ≤2/10 on every S3 set in the last 28 days. Unloaded overhead moves (Y24 full range, S0f to about 135°) used for at least 2 weeks at shoulder pain ≤2/10 (R18.2). | Shoulder, wrist | 8 | "Hold a downward dog for 20 s on hands or fists, knees bent and heels up. Then do 10 slow wall slides with the arms going overhead." | 2/10 | No |
+| O2 | O1 at 45 s at RIR ≥2 (2 of the last 3 sessions) | Shoulder, wrist, knee | 10 | "Hold a downward dog for 30 s. Then do 5 pike push-ups from the knees, lowering until your forehead is about one fist above the mat, with 3 or more reps in reserve." | 2/10 | No |
+| O3 | O2: 3 × 12 at RIR ≥2 (2 of the last 3 sessions), and push at P7 or above | Shoulder, wrist | 14 | "Do 5 pike push-ups from the feet, hips high, lowering until your forehead is about one fist above the mat, with 3 or more reps in reserve." | 1/10 | **Yes** |
+| O4 | O3: 3 × 12 at RIR ≥2 (2 of the last 3 sessions) | Shoulder, wrist | 20 | "Do 8 pike push-ups from the feet with 2 or more reps in reserve. Then do 3 more with your feet one foot-length closer to your hands (or with a 2 s pause at the bottom), with 3 or more in reserve." | 1/10 | **Yes** |
+
+**Notes:**
+- The minimum weeks avoid R15's deload weeks (6, 12, 18) and the weeks after them, which G5 already excludes.
+- **Pain max:** 2/10 for O1 and O2; 1/10 for O3 and O4, as for the other caution steps (P9, K11, X6).
+- **Caution text (O3, O4):** the T3 row required physiotherapist clearance before pike push-ups. Under R13 there is no confirmation step, so the caution shown before the test recommends a physiotherapist assessment, as for P9, K11 and X6.
+- **Gate fields in code:** O1's `prereq` is P5, on another ladder, as X1's is C5; it adds `requires: [{ ladder: 'prone', atLeast: 'S3' }]`. O3 adds `requires: [{ ladder: 'push', atLeast: 'P7' }]`.
+- **After unlocking:** R13 bridging applies: one interval on the new step and the rest on the previous step for 2–3 sessions.
+
+**Where the O ladder fits in the templates:**
+
+**Recommended: rotate with `serratus` in A's Peak.** The third Peak station becomes `['serratus', 'overhead']`, alternating between the two A sessions of a week. Until O1 is unlocked, the station stays `serratus` (the ladder falls back, as `crawl` does).
+- **Weekly push sets stay at 8** (A Build push 2 + Peak station 2, twice a week), so the R3 limit and the push:posterior balance (8 prone and scapular sets in C and D) are unchanged.
+- **Circuit order (R14):** `ywall` → `ymarch` → `overhead`. The `ymarch` station separates the two stations that can load the wrists (Y19–Y21 and O1–O4).
+- **Timing:** the O ladder keeps strength-ladder timing in Peak: at most 40/20 even from week 8, when other Peak stations move to 45/15 (R15: strength-ladder intervals stay at 40/20). Effort is RIR 2–3 with the tempo cue, not RPE 6–7.
+- **Trade-off:** push-up plus work (P2, P6) drops to once a week. O1's push-the-floor-away cue and Y24 at full range (already the first move of A's Ramp) partly cover the serratus.
+- **Slow progress:** with one exposure a week, G1's "2 of the last 3 sessions" takes at least 3 weeks per step. The minimum weeks above allow for this.
+
+**Not recommended: rotating with `push` in A's Build.** The horizontal push ladder, which is still progressing, would drop to once a week. Use it only if the user prefers overhead work in Build.
+
+**Optional additions (finish screen):** the O ladder is "the other ladder of a rotating slot", so it can be offered as an extra after a `serratus` day. Offer it only if weekly push sets + 2 stay ≤12 (R3) **and** ≤ the weekly prone and scapular sets (R3 balance). Never offer it after a session with shoulder pain ≥3/10 (R18.6).
+
+**Counting for R3:** every O set counts for the **push** group. O1 is a hold: one 30–45 s interval at the target effort counts as 1 set (R3 isometric rule), or ½ set if rated "too easy" (R16). O sets count as push, not core, unlike the X ladder.
 
 **Consistency with R6 and R7:**
 - G1 and G2 are stricter forms of R6.2. They use 2 of 3 sessions instead of one, and a 4-week pain window.
@@ -813,6 +896,16 @@ Ramp and Wind-down moves are not rated. They report pain only, through the sessi
 
 **CR-10 and Borg conversions** are approximate (verify against a published conversion table).
 
+### R18. Overhead work (user's decision, October 2026)
+
+1. **Unloaded elevation** (arms above shoulder height, bearing no weight) is allowed **within a pain-free range**: Y4, Y8, Y15, Y24, S0f (to about 135°), E5 (reaching arm at ear level), M12, S3, S5, C1 and C3. Each has a shoulder-height version.
+2. **Entry:** shoulder-height versions are used until overhead positions have been pain-free (≤2/10) for 2 weeks (as R10 for prone Y). Raise the arms slowly through the middle of the arc and stop where pain starts.
+3. **Overhead pushing** goes through the O ladder only (O1–O4, unlocked by R13). No other exercise bears weight on the arms overhead.
+4. **Excluded:** handstands, wall walks, any feet-on-wall work, elevated pike push-ups, headstands.
+5. **Pain:** the R7 thresholds apply unchanged (≤2/10 continue; 3/10 allowed, no progression; 4–5/10 stop the set and swap or step down; >5/10 stop the exercise).
+6. **Fall-back:** if shoulder pain reaches **3/10 or more** in any overhead move, use the **shoulder-height versions** of all unloaded overhead moves for **2 weeks**, and replace the O ladder with `serratus` in A's Peak for the same 2 weeks. R7 decides the O step (held at 3/10; one step down at 4/10 or more). Return after 2 weeks if pain stayed ≤2/10 with no "worse" morning; otherwise extend by 2 weeks. A second fall-back within 8 weeks suggests a physiotherapist review *(heuristic)*.
+7. **Morning checks and red flags:** R7 unchanged.
+
 ### R14.1 Session templates (15 min)
 
 Timings are for weeks 3–5 (Build and Peak at 40/20, 2 rounds). Ramp moves are 40 s each with 5 s gaps. Wind-down stretches are 30 s per side. A `|` separates ladders of a rotating slot (alternating between the two sessions of that type in a week, as now). Weekly set totals assume A, B and C twice and D once (R1).
@@ -888,10 +981,10 @@ Timings are for weeks 3–5 (Build and Peak at 40/20, 2 rounds). Ramp moves are 
 
 | Block | Existing IDs | Role and notes |
 |---|---|---|
-| **Ramp** | W1, W2, F1, H7, K1 (20–30 s, shallow), P1, P2, M7 (or Y26), S0f (arm to shoulder height), C1 (as a breathing and activation drill), M11 | Raise and mobilise. As the **primer**, any ladder step one or two steps below the user's current step, at RIR ≥4 (for example K1 or Y7 before K6; P1 before P3; S1 before S2). Not counted for R3. |
+| **Ramp** | W1, W2, F1, H7, K1 (20–30 s, shallow), P1, P2, M7 (or Y26), S0f (arm to about 135°, in a pain-free range; R18), C1 (as a breathing and activation drill), M11 | Raise and mobilise. As the **primer**, any ladder step one or two steps below the user's current step, at RIR ≥4 (for example K1 or Y7 before K6; P1 before P3; S1 before S2). Not counted for R3. |
 | **Build** | All strength ladders: push (P1–P9), serratus (P2, P6), plank (C4–C6, variations), deadbug (C1–C3, C9), sideplank (C7–C10), crawl (X1–X6), knee (K0–K11), bridge (H1–H6), hinge (H7–H9), abduction (A1–A6), calf (F1–F4), prone (S1–S4), sweep (S5, S6), extension (E1–E5), cuff (S0) | Current step and R12 variation. 2 rounds. Counted for R3. |
 | **Peak** | Pulse-friendly steps: K3, K4 (bilateral squats, at the current knee step only), F1, F2 (calf raises), H3 (bridge march), serratus ladder (P2, P6), plank variations C5l and C5a, crawl X2, X3 (when unlocked), E3 (alternating Superman) as a floor "active recovery" station, A1–A3 when the B rotating slot falls on abduction | Used at the current step. When fatigue from Build is high, the step below may be used *(heuristic)*. Counted for R3 if the exercise belongs to a strength ladder. |
-| **Wind-down** | M1 (or the standing split-stance version), M2, M3, M4, M6, M8, M10, M7, S0 (low-fatigue cuff work in D), C1 (slow, with breathing) | Static holds 30 s per side (R9). M5 and M9 stay excluded by default (knee caution). M12 (supine shoulder flexion overhead) is not used: the user excluded overhead work (October 2026). |
+| **Wind-down** | M1 (or the standing split-stance version), M2, M3, M4, M6, M8, M10, M7, S0 (low-fatigue cuff work in D), C1 (slow, with breathing) | Static holds 30 s per side (R9). M5 and M9 stay excluded by default (knee caution). M12 (supine shoulder flexion overhead) is available within a pain-free range (R18). |
 
 ---
 
@@ -916,13 +1009,14 @@ Timings are for weeks 3–5 (Build and Peak at 40/20, 2 rounds). Ramp moves are 
 | P8 | Close-hand (diamond) push-up | Triceps, chest | L | H | Higher wrist and elbow load; optional; avoid if the wrist is symptomatic. | Later/optional |
 | P9 | Archer push-up | Chest, triceps (unilateral bias) | L | H | High shoulder load at end range; only after physiotherapist clearance. | Advanced/optional |
 
-### T. Triceps and overhead push (optional, shoulder caution)
+### T. Triceps (optional)
 
 | ID | Exercise | Muscles | Knee | Wrist | Shoulder notes | Start |
 |---|---|---|---|---|---|---|
 | T1 | Sphinx push-up from knees (forearms to hands) | Triceps | M | M | Elbow load is notable; build up gradually. | Optional |
 | T2 | Sphinx push-up from toes | Triceps, core | L | M | As above. | Later |
-| T3 | Pike push-up (feet on floor) | Shoulders, triceps | L | H | Overhead loading; **exclude until shoulder is pain-free in overhead positions and physiotherapist clears it**. | Not initially |
+
+The pike push-up (formerly T3) is now O3 in the O ladder (see "O. Overhead push ladder").
 
 ### S. Prone and side-lying shoulder/scapular ladder (lower/middle trapezius, rhomboids, rear deltoid, rotator cuff)
 
@@ -1022,7 +1116,7 @@ Timings are for weeks 3–5 (Build and Peak at 40/20, 2 rounds). Ramp moves are 
 | M11 | Wrist flexion/extension and pronation/supination circles | Wrist mobility | L | L | Gentle, pain-free range; part of the warm-up for A sessions. |
 | M12 | Supine shoulder flexion with bent knees (arms overhead toward the floor) | Lats, shoulder flexion | L | L | Stop at the onset of pain. |
 
-**Count:** 61 strength or holding exercise entries across 9 ladders, plus 12 mobility drills. The core ~40 for the engine's default library are the entries marked **Yes**, **Likely start**, **Week 2+** and **Later** in ladders P, S, E, C, K, H, A and F. T3, P8, P9 and K9 are optional or gated.
+**Count:** 61 strength or holding exercise entries across 9 ladders, plus 12 mobility drills. The core ~40 for the engine's default library are the entries marked **Yes**, **Likely start**, **Week 2+** and **Later** in ladders P, S, E, C, K, H, A and F. P8, P9 and K9 are optional or gated. The O ladder (O1–O4) is gated by R13.
 
 ### Exercise variations and advanced steps
 
@@ -1038,7 +1132,7 @@ The rotation rule is R12 and the unlock rules are R13 (in "Programme rules deriv
 **Constraints applied:**
 - Mat and wall only.
 - Sensitive knees, shoulders and wrists, with no diagnosis.
-- No overhead skills and no overhead-loaded moves: no pike push-up, handstand or wall walk.
+- Overhead pushing only through the O ladder (R18). No handstand, wall walk, feet-on-wall work or elevated pike push-up.
 - No very advanced balance skills: no crow, pistol squat, planche, L-sit, human flag or headstand.
 - Advanced steps stay at a level that a non-athlete in mid-life could reach with steady practice.
 
@@ -1072,7 +1166,7 @@ For S1, S3, S4, S5 and S6 there is no meaningful variation: S7 (holds and slow l
 
 | ID | Variation | Emphasis vs standard | Difficulty vs step | Knee | Wrist | Shoulder | Source | Exclusions / notes |
 |---|---|---|---|---|---|---|---|---|
-| S0f | Side-lying forward flexion (top arm straight, raised from the hip forward and up) | Lower and middle trapezius with low upper-trapezius activity; complements external rotation | Similar | L | L | L–M | Cools 2007 (one of the four exercises with the best trapezius balance; the reported range was to about 135° of flexion, verify) | Keep the arc at or below 90° (shoulder height). The user excluded overhead work (October 2026), so this cap is permanent. |
+| S0f | Side-lying forward flexion (top arm straight, raised from the hip forward and up) | Lower and middle trapezius with low upper-trapezius activity; complements external rotation | Similar | L | L | L–M | Cools 2007 (one of the four exercises with the best trapezius balance; the reported range was to about 135° of flexion, verify) | Raise to about 135° in a pain-free range (Cools 2007 range; verify). Use the shoulder-height version under R18.2 and R18.6. |
 | S2e | Prone extension (arms by the sides, palms in or thumbs out, lift the arms back towards the ceiling) | Low upper/middle trapezius ratio; posterior deltoid; no elevation | Similar | L | L | L | Cools 2007 | None. It is close to E1 (prone cobra), so do not schedule both on the same day. |
 
 ##### E. Spinal extension
@@ -1157,7 +1251,7 @@ There is no meaningful variation for A2 (Distefano 2009 already rates it the hig
 | E5 | Standing bird dog, dynamic (stand on one leg, hinge forward while the free leg extends back and the opposite arm reaches forward; return to standing) | extension: after E4 | Gluteus maximus, multifidus, lumbar erector spinae, gluteus medius; balance | L–M | L | L–M | Strength, 6–12 per side | E4 at 30 s and H8 reached | Losavio 2023: the dynamic version gave higher activity than the static one (peak about 80% gluteus maximus, 60% multifidus, 55% erector spinae and 45% gluteus medius MVIC; verify) |
 | F4 | Single-leg calf raise without hand support | calf: after F3 | Calves, ankle balance | L | L | L | Endurance, 10–20 | F3 at the top of the range | *(heuristic)*: adds balance without adding equipment |
 
-**Notes on E5 and the overhead rule:** the reaching arm stays at or below shoulder height. The user excluded overhead work (October 2026).
+**Notes on E5:** the reaching arm goes to ear level in a pain-free range. Use the shoulder-height reach under R18.2 and R18.6.
 
 **Ladder order** in `LADDERS` after this change:
 - push: P1, P3, P4, P5, P7, P10, P9k, P9
@@ -1195,40 +1289,40 @@ There is no meaningful variation for A2 (Distefano 2009 already rates it the hig
 | Copenhagen plank | Needs a bench. |
 | Curtsy lunge | Combines knee flexion with rotation and valgus. No benefit over K10 for these knees *(heuristic)*. |
 | Diamond push-up (P8) | High wrist and elbow load (Donkers 1993). P3n/P5n give the narrow-hand emphasis with less extreme wrist and elbow positions. |
-| Pike push-up, wall walk, handstand, crow, pistol, L-sit, planche, headstand, human flag | Excluded by the user. |
+| Wall walk, handstand, elevated pike push-up, feet-on-wall work, crow, pistol, L-sit, planche, headstand, human flag | Excluded by the user. The pike push-up is now in the O ladder. |
 | Wall sit with a hip-adduction squeeze | No consistent evidence that it changes quadriceps emphasis (verify). It is not added as a variation. |
 
 
 ### Y. Dynamic jump-free moves (Y ladders)
 
-**Legend:** as in "Exercise candidates". Components: **S** = strength (counts for R3), **M** = mobility, **P** = pulse. Knee, Wrist and Shoulder load: L, M, H as before. All Y moves keep one foot on the floor and keep the arms at or below shoulder height. Work time is the R15 stage time unless stated. Most moves have no direct study; they are marked *(heuristic)*.
+**Legend:** as in "Exercise candidates". Components: **S** = strength (counts for R3), **M** = mobility, **P** = pulse. Knee, Wrist and Shoulder load: L, M, H as before. All Y moves keep one foot on the floor. Y4, Y8, Y15 and Y24 take the arms overhead in a pain-free range (R18); the other moves keep the arms at or below shoulder height. Work time is the R15 stage time unless stated. Most moves have no direct study; they are marked *(heuristic)*.
 
 | ID | Exercise | Block | Focus | Components | Muscles | Knee | Wrist | Shoulder | Per side | Work time | Source | Exclusions and cautions |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | Y1 | Standing cross-body knee to elbow (slow; lift one knee and bring the opposite elbow down to it, alternate) | Ramp, Peak | A, C, D | P, S (light core) | Obliques, hip flexors, rectus abdominis | L | L | L | Alternating | 30–45 s | *(heuristic)* | Keep the trunk tall. Do not crunch deeply. |
 | Y2 | Shadow boxing march (march in place; straight punches forward at chest height, alternate) | Peak | A, C | P | Shoulders, serratus anterior, obliques, calves | L | L | L–M | Alternating | 30–45 s | *(heuristic)*; arm work raises heart rate (Bell and Bassey 1994) | Punches forward only, at or below shoulder height. Do not lock the elbows. Stop at shoulder pain >2/10. |
 | Y3 | Shadow boxing with step-out (step forward or sideways into a short staggered stance and punch; step back) | Peak | A, C | P | As Y2, plus quadriceps and gluteals | L–M | L | L–M | Alternating | 40–45 s | *(heuristic)* | Short steps; knee over the toes. |
-| Y4 | Step-jack (step one foot out to the side while the arms rise to shoulder height; alternate sides) | Ramp, Peak | A, B, C, D | P | Hip abductors, calves, deltoids | L | L | L | Alternating | 30–45 s | Low-impact aerobic movement with arm work (Bell and Bassey 1994) *(heuristic)* | Arms no higher than shoulder height. Soft knees. |
+| Y4 | Step-jack (step one foot out to the side while the arms rise overhead; alternate sides) | Ramp, Peak | A, B, C, D | P | Hip abductors, calves, deltoids | L | L | L | Alternating | 30–45 s | Low-impact aerobic movement with arm work (Bell and Bassey 1994) *(heuristic)* | Raise the arms only as far as is pain-free; shoulder-height version under R18. Soft knees. |
 | Y5 | Skater step (step one foot diagonally behind the other, bend the front knee to about 30°, reach the opposite hand across; no hop) | Peak | B (A, C as pulse) | P, S | Gluteus medius, gluteus maximus, quadriceps, adductors | L–M | L | L | Alternating | 40–45 s | *(heuristic)* | Never hop. Front knee tracks over the toes. Depth no deeper than the current knee step allows. |
 | Y6 | Lateral shuffle with low reach (2–3 step-together steps sideways in a half-squat; hinge and reach towards knee height; back the other way) | Peak | B | P, S | Gluteus medius, quadriceps, hamstrings, calves | M | L | L | Alternating | 40–45 s | *(heuristic)* | Feet never cross and never leave the floor together. Needs 2–3 m of floor. Exclude if knee pain >2/10 on K3 in the last 2 weeks. |
 | Y7 | Squat to calf raise (partial squat at the knee step's depth; stand and rise onto the toes; fingertips on the wall if needed) | Ramp (primer), Build, Peak | B | S, P | Quadriceps, gluteals, calves | L–M | L | L | No | 30–45 s | Depth from Escamilla 2001; calf component from F1 | Requires the knee ladder at K3 or above. Depth never deeper than the current knee step. |
-| Y8 | Squat with forward reach (partial squat; on standing, reach both arms forward to shoulder height and rise onto the toes) | Peak | B | S, P, M | As Y7, plus thoracic extensors and middle trapezius | L–M | L | L | No | 40–45 s | *(heuristic)* | Arms stop at shoulder height. |
+| Y8 | Squat with reach-up (partial squat; on standing, reach both arms up overhead and rise onto the toes) | Peak | B | S, P, M | As Y7, plus thoracic extensors and middle trapezius | L–M | L | L | No | 40–45 s | *(heuristic)* | Pain-free range; shoulder-height forward reach under R18. |
 | Y9 | Squat to alternating knee drive (partial squat; stand and drive one knee to hip height, balance for 1 s, alternate) | Peak | B | S, P | Quadriceps, gluteals, hip flexors; single-leg balance | M | L | L | Alternating | 40–45 s | *(heuristic)*; similar to K7b | Requires the knee ladder at K4 or above. Fingertips on the wall are allowed. |
 | Y10 | Good morning to reach (hip hinge as H7; on the way up, reach the arms forward to shoulder height, or out to a T, and squeeze the shoulder blades) | Ramp (primer for C), Build, Peak | B, C | S, M | Hamstrings, gluteals, spinal extensors, middle trapezius | L | L | L | No | 30–45 s | From H7 *(heuristic)* | Neutral spine; hinge only as far as the hamstrings allow. |
 | Y11 | Kickstand hinge with reach (staggered stance with the back toes as a kickstand; hinge on the front leg; the opposite hand reaches towards the front shin) | Build, Peak | B, C | S, M | Gluteus maximus, hamstrings, gluteus medius | L | L | L | **Doubled** | Stage time per side | Single-limb deadlift EMG (Distefano 2009) by analogy | The other hand may touch the wall. |
 | Y12 | Hip airplane with wall support (single-leg hinge to about 45°, fingertips on the wall; rotate the pelvis open and closed over the standing hip) | Build | B, D | S, M | Gluteus medius, deep hip rotators, gluteus maximus; balance | L–M | L | L | **Doubled** | Stage time per side | *(heuristic)* | Requires the hinge ladder at H8 or above. Slow; small range first. |
 | Y13 | Split-stance thoracic rotation (short staggered stance, soft knees, hands crossed on the chest; rotate towards the front leg) | Ramp, Build (D) | A, C, D | M | Thoracic rotators, obliques | L | L | L | **Split** | 40 s (20 s per side) | *(heuristic)* | Rotate from the upper back, not the knees. |
 | Y14 | Reverse lunge with rotation (shallow reverse lunge; at the bottom rotate the trunk towards the front leg, hands on the chest; return; alternate) | Build | B, D | S, M | Quadriceps, gluteals, obliques, thoracic rotators | M (M–H at K7 depth) | L | L | Alternating | 40 s | Reverse lunge as K7 *(heuristic)* | Requires the knee ladder at K6 or above. Depth no deeper than the knee step. Fingertips on the wall for balance are allowed. |
-| Y15 | Standing world's greatest stretch (long split stance with the back knee off the floor and the hands on the front thigh; lower the same-side elbow towards the inside of the front knee, then rotate and open that arm to shoulder height) | Build, Wind-down | B, D | M, S (isometric split stance) | Hip flexors (back leg), adductors, thoracic rotators, quadriceps | M | L | L | **Doubled** (Build) or 30 s per side (Wind-down) | Stage time per side | *(heuristic)*; variant without the knee down | No hand on the floor (wrist-free). Requires the knee ladder at K6 or above. Optional half-kneeling version (pad under the knee) only if kneeling pain ≤2/10 (as M1). |
+| Y15 | Standing world's greatest stretch (long split stance with the back knee off the floor and the hands on the front thigh; lower the same-side elbow towards the inside of the front knee, then rotate and open that arm towards the ceiling, in a pain-free range) | Build, Wind-down | B, D | M, S (isometric split stance) | Hip flexors (back leg), adductors, thoracic rotators, quadriceps | M | L | L | **Doubled** (Build) or 30 s per side (Wind-down) | Stage time per side | *(heuristic)*; variant without the knee down | No hand on the floor (wrist-free). Requires the knee ladder at K6 or above. Optional half-kneeling version (pad under the knee) only if kneeling pain ≤2/10 (as M1). |
 | Y16 | Wide-stance side shift (feet about twice hip width; shift the weight to one side with a shallow knee bend (≤45°), the other leg straight; hands on the hips or fingertips on the wall) | Ramp, Build (D), Wind-down | B, D | M, S (light) | Adductors, quadriceps, gluteals | L–M | L | L | Alternating | 40 s | *(heuristic)* | Heels flat; knee over the toes. |
 | Y17 | Cossack shift with forward reach (as Y16, deeper, to pain-free depth with the heel down; hands reach forward at chest height as a counterbalance) | Build | B, D | S, M | Quadriceps, gluteals, adductors; hip mobility | M–H | L | L | Alternating | 40 s | Side lunges load the patellofemoral joint more than forward lunges at mid-to-deep flexion (Escamilla 2008) | Requires the knee ladder at K4 or above. Skip if knee pain was ≥3/10 in the last 14 days (as R12.5). Stays shallower than K10/K11, which keep their own gates. |
 | Y18 | Wall plank march (forearms on the wall at shoulder height, body leaning in a straight line; march the knees alternately) | Ramp, Build | A | S, P | Abdominals, serratus anterior, hip flexors | L | L (forearms) | L | Alternating | 30–45 s | Incline reduces load (Ludewig 2004 by analogy) *(heuristic)* | None. |
 | Y19 | Wall mountain climber step-ins (hands or fists on the wall at chest height, feet further back; bring one knee towards the wall at a steady pace; alternate; no hop) | Peak | A | P, S | Abdominals, hip flexors, serratus anterior, shoulders | L | L–M (L on fists or forearms) | L–M | Alternating | 40–45 s | *(heuristic)* | Steady pace; one foot always on the floor. Use forearms if wrist pain >2/10. |
 | Y20 | Wall plank shoulder taps (hands at chest height on the wall, feet wide; tap the opposite shoulder, alternate) | Peak | A, C | S, P | Anti-rotation core, serratus anterior, shoulder stabilisers | L | L–M | M | Alternating | 40–45 s | 3-point support raises scapular activity (Can 2024, by analogy) *(heuristic)* | Leads into X2 (floor shoulder taps). Exclude while shoulder pain >2/10. Requires the plank ladder at C4 or above. |
-| Y21 | Inchworm walk-out to a short plank (soft knees; hinge, walk the hands or fists out to a short plank, hold 1 s, walk back, stand up) | Peak | A | S, M, P | Abdominals, shoulders, triceps, hamstrings (stretch) | L | M (L–M on fists) | M | No | 40–45 s | *(heuristic)* | Requires the plank ladder at C5 or above, the push ladder at P3 or above, and wrist pain ≤2/10 for 14 days (as R12.5). Fists by default. The head is briefly below the hips (not an overhead or inverted skill). |
+| Y21 | Inchworm walk-out to a short plank (soft knees; hinge, walk the hands or fists out to a short plank, hold 1 s, walk back, stand up) | Peak | A | S, M, P | Abdominals, shoulders, triceps, hamstrings (stretch) | L | M (L–M on fists) | M | No | 40–45 s | *(heuristic)* | Requires the plank ladder at C5 or above, the push ladder at P3 or above, and wrist pain ≤2/10 for 14 days (as R12.5). Fists by default. The head is briefly below the hips. |
 | Y22 | Standing hip circles (one hand on the wall; lift the knee and draw a slow circle, out and back) | Ramp, Wind-down | B, D | M | Hip rotators, hip flexors, gluteus medius (stance leg) | L | L | L | **Split** | 40 s (20 s per side) | *(heuristic)* | Pain-free range only. |
 | Y23 | Leg swings with wall support (front to back, then side to side; controlled, building range) | Ramp | B, D | M, P (light) | Hip flexors, hamstrings, adductors, abductors | L | L | L | **Split** | 40 s (20 s per side) | Controlled dynamic stretching (Opplert and Babault 2018) | Controlled, not ballistic; stop short of the end of range. |
-| Y24 | Wall slide to shoulder height (forearms on the wall; slide up only to shoulder height, add a small "plus" (shoulder blades forward), slide down) | Ramp | A, C | M, S (light) | Serratus anterior, lower trapezius | L | L | L | No | 40 s | Wall slide EMG (Hardwick 2006; tested above shoulder height; verify) | Capped at shoulder height (user's overhead exclusion). |
+| Y24 | Wall slide (forearms on the wall; slide up as high as is pain-free, add a small "plus" (shoulder blades forward) at the top, slide down) | Ramp | A, C | M, S (light) | Serratus anterior, lower trapezius | L | L | L | No | 40 s | Wall slide EMG (Hardwick 2006; tested above shoulder height; verify) | Shoulder-height version under R18. Hardwick 2006: serratus activity rises with elevation (verify). |
 | Y25 | Standing thread the needle (hands on the wall at chest height, hinge to a flat back; sweep one arm under the other, then rotate it open to shoulder height) | Ramp, Wind-down | C, D | M | Thoracic rotators, rear shoulder | L | L | L | **Split** | 40 s (20 s per side) | *(heuristic)* | Standing version avoids kneeling and wrist loading. Quadruped forearm version: knee M, as M7. |
 | Y26 | Standing cat-cow (hands on the thighs, knees slightly bent; round and arch the spine slowly) | Ramp, Wind-down | C, D | M | Spinal flexors and extensors | L | L | L | No | 40 s | As M7 *(heuristic)* | Standing version of M7, with no kneeling and no wrist load. |
 
@@ -1241,7 +1335,7 @@ There is no meaningful variation for A2 (Distefano 2009 already rates it the hig
 - 90/90 transitions are M10 (in EVIDENCE.md, not yet in the library; knee M).
 - Wrist circles are M11 (not yet in the library). Add M10 and M11 to the library for the Wind-down and the A ramp.
 
-**Considered and excluded:** jumping jacks, high knees (running), burpees, squat jumps, jumping lunges and skaters with a hop (jumping); downward dog, pike and walk-outs to a pike (overhead or inverted load); standing arm circles above shoulder height (overhead); curtsy lunge (as before).
+**Considered and excluded:** jumping jacks, high knees (running), burpees, squat jumps, jumping lunges and skaters with a hop (jumping); downward dog and pike push-ups moved to the O ladder; walk-outs to a pike are not added (Y21 covers the walk-out); curtsy lunge (as before).
 
 #### Y ladders (order, start, prerequisites)
 
@@ -1260,6 +1354,33 @@ There is no meaningful variation for A2 (Distefano 2009 already rates it the hig
 
 **Rule for knee load in Peak:** no Peak leg station may have a higher knee load than the user's current knee-ladder step. If the knee ladder is at K0 or K1, B's Peak uses Y4, F1, H3 and `yhinge` only.
 
+
+### O. Overhead push ladder (R18)
+
+**Renumbering:** the T table keeps **T1** (sphinx push-up from the knees) and **T2** (sphinx push-up from the toes) with their existing IDs. The overhead push ladder gets new IDs **O1–O4** ("O" for overhead). The existing **T3** pike push-up becomes **O3**, and T3 is retired as an ID; T3 is not in the code library, so no stored data refers to it. The T heading becomes "T. Triceps (optional)".
+
+**Ladder:** `overhead: O1, O2, O3, O4`. The whole ladder is gated: O1 unlocks through R13 (section 3), so no step is offered by default.
+
+**Legend:** as in "Exercise variations and advanced steps". Knee, Wrist and Shoulder load are L, M or H; the Shoulder column rates load near end range. Wrist ratings are for palms, with fists in brackets.
+
+| ID | Exercise | Muscles | Knee | Wrist | Shoulder | Class / target | Cautions | Source |
+|---|---|---|---|---|---|---|---|---|
+| O1 | **Downward-dog hold, hips high** (hands or fists under or slightly ahead of the shoulders; knees bent and heels up as needed to keep the back long; push the floor away so the shoulder blades move up and around the ribs; weight shifted towards the legs) | Serratus anterior, deltoids and triceps (isometric), lower trapezius; hamstring and calf stretch | L | M (L–M on fists) | M | Hold, 20–45 s | Bend the knees rather than round the back. Do not sink the chest towards the floor (end-range shoulder hang). Come down at once if dizzy; the head is below the hips. Fists if wrist pain >2/10 on palms. | Uhl 2003 and McMullen and Uhl 2000 (closed-chain grading); Ekstrom 2003 (upward rotation and serratus); Le Corroller 2012 (caution). *(heuristic for the step)* |
+| O2 | **Pike push-up from the knees** (knees on a folded mat, hips lifted high above the knees, hands or fists about shoulder width; bend the elbows to lower the head towards a point a hand-length in front of the hands, then press back) | Anterior and middle deltoid, triceps, upper trapezius, serratus anterior | M (kneeling) | M–H (M on fists) | M | Strength, 6–12 reps | Elbows travel forward at about 45°, not flared. Start with the forehead stopping about one fist above the mat, or at a mat folded 3–4 times, and deepen by one fist only after a session with pain ≤2/10 (as R6.5). The head goes in front of the hands, not straight down between them. | Ebben 2011 (more body weight on the hands as the body tilts; by analogy) *(heuristic)* |
+| O3 | **Pike push-up from the feet** (existing T3; feet on the floor, legs straight or knees soft, hips high; same lowering path as O2) | As O2, plus core | L | H (M on fists) | M–H | Strength, 6–12 reps | As O2. Never drop the head onto the floor. Shoulder caution shown before the test (R13). | Ebben 2011; decline push-up EMG (thesis and preprint; verify) *(heuristic)* |
+| O4 | **Steeper pike push-up**: feet walked one foot-length or more closer, so the hips come closer to above the shoulders (as far as the hamstrings allow with a long back). Version **O4p**: O3 foot position with a 2 s pause at the bottom. | As O3, with a larger share on the deltoids and triceps | L | H (M–H on fists) | H | Strength, 6–12 reps | Top of the ladder. No elevated feet, no feet on the wall, no handstand. Further progress is by tempo (3 s lowering) and pause only. Caution shown before the test. | As O3 *(heuristic)* |
+
+**Variations (R12):** O4p is a version of O4 rated "similar" *(heuristic; no study compares a pause with a steeper angle)*. O1–O3 have no variation. Fists, forearms (O1 only) and a shallower depth are regressions for pain, not variations.
+
+**Lower-load swap during a session (R14, R7 at 4–5/10):**
+- O2–O4: one step down.
+- O1: Y18 (forearm wall plank at shoulder height) or P2 (wall push-up plus).
+- Wrist only: fists; for O1, forearms (dolphin).
+
+**Effort:** the O ladder loads a symptomatic joint, so the target is **RIR 2–3** and never failure (R5). It is never used for the monthly R5 calibration set.
+
+**Animations:** each step needs both hands and both feet pinned. O1 is a hold; O2–O4 move the head on a forward path in front of the hands (ANIMATION.md rules apply; `regions`: shoulder and wrist, plus knee for O2).
+
 ---
 
 ## Key uncertainties
@@ -1277,7 +1398,7 @@ There is no meaningful variation for A2 (Distefano 2009 already rates it the hig
 11. **Many details could not be checked against full texts:** Lehecka 2017 figures, Kang 2016 results, Boren 2011 percentages, Youdas 2014, Losavio 2023 percentages, Nunes 2020 figures, and the Escamilla 2008 and 2022 knee-angle ranges.
 12. **Side lunges load the patellofemoral joint more than forward lunges** at mid-to-deep knee flexion (Escamilla 2008, 2022). For these knees, K10 and K11 carry the highest knee risk of the new steps. K11 shows a caution before its test for that reason.
 13. **No direct evidence was found** for bear crawls, shoulder taps, plank up-downs, push-up to side plank, Spiderman push-ups or hollow rocks. The X ladder and P10/C9 rest on coaching practice and indirect data.
-14. **Overhead boundary:** S0f and E5 involve unloaded arm elevation. Because the user excluded overhead work (October 2026), they are capped at shoulder height.
+14. **Overhead boundary:** unloaded elevation is allowed in a pain-free range, and loaded overhead pushing only through the O ladder (R18, October 2026).
 15. **Readiness thresholds** (2 of 3 sessions, 28-day pain window, 14-day morning window, minimum weeks) are design choices. They are not derived from studies. Tune them from logged data.
 
 16. **No trial of jump-free bodyweight intervals was found.** All the interval training studies (McRae 2012, Schaun 2018, Archila 2021, Bellissimo 2025) used jumps or all-out efforts. The cardiorespiratory effect of the Peak block is extrapolated, and is probably smaller.
@@ -1287,9 +1408,19 @@ There is no meaningful variation for A2 (Distefano 2009 already rates it the hig
 20. **Combined mobility moves** (world's greatest stretch, inchworm, Cossack shift, hip airplane, 90/90, thread the needle) have no trial evidence. Long-term range-of-motion gains are smaller with dynamic than with static stretching (Konrad 2024; Thomas 2018), so the R9 static dose still matters.
 21. **Counting interval sets as hard sets** (R16: 1 set per interval, ½ if "too easy") is an assumption. A 40 s interval at RIR 2–4 is probably a moderate set, not a hard one. Weekly volume may be overstated compared with R3's evidence base.
 22. **Lateral and rotational knee loading:** skater steps, lateral shuffles, Cossack shifts and lunges with rotation add frontal-plane and rotational knee load that the sagittal knee ladder did not. Side lunges load the patellofemoral joint more than forward lunges (Escamilla 2008). The knee-step caps in the Y rules are heuristic.
-23. **Repetitive arm work** (shadow boxing, step-jacks with arm raises, wall slides) adds many shoulder cycles at up to 90° of elevation. No data on tolerance in painful shoulders were found. The R7 pain rules and the shoulder-height cap are the safeguards.
+23. **Repetitive arm work** (shadow boxing, step-jacks with arm raises, wall slides) adds many shoulder cycles, now up to full elevation. No data on tolerance in painful shoulders were found. The safeguards are the R7 pain rules and R18's fall-back to shoulder height.
 24. **Many details in section 11 come from abstracts and secondary summaries:** Klika and Jordan 2013, the 7-minute workout studies, McRae 2012, Schaun 2018, Archila 2021, Bellissimo 2022 and 2025, Clayton 2019, Zovico 2024, Fosstveit 2024, Bell and Bassey 1994, Sabag 2018 (the >24 h detail), Konrad 2024, Warneke 2025, Day 2004, Zhang 2021 and Ciolac 2015.
 25. **Energy cost:** the 90–110 kcal per session figure is a MET-based estimate, not a measurement.
+
+26. **No EMG or force study of the pike push-up or the kneeling pike push-up was found.** Muscle emphasis and the step order rest on transfer from overhead presses, decline push-ups (a thesis and a preprint) and push-up kinetics (Ebben 2011, secondary figures).
+27. **Downward dog load is unmeasured.** No shoulder or wrist joint moments, hand-load share or EMG of shoulder muscles in downward dog were found. Ni 2014 measured trunk and hip muscles only. The upper-trapezius finding in a 2014 conference abstract comes from a secondary summary (verify).
+28. **Subacromial findings are from healthy or small samples** (Graichen 1999: 10–12 people; Lawrence 2019: 40 people; Lawrence 2024: 19 models). How they apply to an undiagnosed painful shoulder is unknown. Scapular changes in impingement are inconsistent across studies (Timmons 2012).
+29. **The grading sequence** (scapular control → unloaded elevation → closed-chain overhead → pressing) follows rehabilitation frameworks (Kibler 2008; McMullen and Uhl 2000; Uhl 2003), not a trial of overhead progressions.
+30. **Wrist angles in pike positions** are estimated from geometry, not measured. The fist alternative in pike positions is untested.
+31. **Yoga injury data** (Le Corroller 2012) come from an imaging case series without a denominator. The link to downward dog is from a news summary (verify).
+32. **Thresholds** (prerequisites, minimum weeks 8, 10, 14 and 20, the 2-week fall-back, test contents) are design choices. The test pain limit is 1/10 for O3 and O4, as for the other caution steps.
+33. **One exposure a week** (rotation with `serratus`) may be too little for steady progress on the O ladder, and halves push-up plus volume. Logged ratings should show whether this matters.
+34. **Secondary-source details** in this section, among them Saeterbakken 2013 percentages, Coratella 2022 effect sizes, Hardwick 2006 (superiority above 90°), Uhl 2003 positions, Kibler 2008, Kolber 2014, Graichen 1999, Lawrence 2024 thresholds, Cavaggion 2024 and Ullern 2025, were read from abstracts or summaries only.
 
 ---
 
@@ -1385,3 +1516,43 @@ Sources already listed earlier in the document are not repeated in full: Garber 
 **Concurrent training**
 - Sabag A, Najafi A, Michael S, Esgin T, Halaki M, Hackett D. *The compatibility of concurrent high intensity interval training and resistance training for muscular strength and hypertrophy: a systematic review and meta-analysis.* Journal of Sports Sciences, 2018;36(21):2472–2483. DOI: [10.1080/02640414.2018.1464636](https://doi.org/10.1080/02640414.2018.1464636)
 - Murlasits Z, Kneffel Z, Thalib L. *The physiological effects of concurrent strength and endurance training sequence: a systematic review and meta-analysis.* Journal of Sports Sciences, 2018;36(11):1212–1219. PubMed: <https://pubmed.ncbi.nlm.nih.gov/28783467/>
+
+---
+
+## Sources for overhead work
+
+Sources already in EVIDENCE.md are not repeated in full: Ekstrom 2003, Cools 2007, Ludewig 2004, Polovinets 2018, Kolber 2010, Naunton 2020, Afonso 2021, Hardwick 2006 and Ebben 2011.
+
+**Shoulder kinematics and subacromial space**
+- Ludewig PM, Phadke V, Braman JP, Hassett DR, Cieminski CJ, LaPrade RF. *Motion of the shoulder complex during multiplanar humeral elevation.* Journal of Bone and Joint Surgery (American), 2009;91(2):378–389. DOI: [10.2106/JBJS.G.01483](https://doi.org/10.2106/JBJS.G.01483). 12 people with bone-pinned sensors; scapular upward rotation, internal rotation and posterior tilt during elevation.
+- Ludewig PM, Cook TM. *Alterations in shoulder kinematics and associated muscle activity in people with symptoms of shoulder impingement.* Physical Therapy, 2000;80(3):276–291. DOI: [10.1093/ptj/80.3.276](https://doi.org/10.1093/ptj/80.3.276)
+- Timmons MK, et al. *Scapular kinematics and subacromial-impingement syndrome: a meta-analysis.* Journal of Sport Rehabilitation, 2012 (authors, volume and pages: verify). Author manuscript: <https://pages.uoregon.edu/biomech/obl/articles/2012_timmons.pdf>
+- Lawrence RL, Braman JP, Ludewig PM. *The impact of decreased scapulothoracic upward rotation on subacromial proximities.* Journal of Orthopaedic & Sports Physical Therapy, 2019;49(3):180–191.
+- Lawrence RL, Braman JP, Ludewig PM. *Shoulder kinematics impact subacromial proximities: a review of the literature.* Brazilian Journal of Physical Therapy, 2020;24(3):219–230.
+- Lawrence RL, Richardson LB, Bilodeau HL, Bonath DJ, Dahn DJ, Em MA, Sarkar S, Braman JP, Ludewig PM. *Effects of scapular angular deviations on potential for rotator cuff tendon mechanical compression.* Orthopaedic Journal of Sports Medicine, 2024;12(3):23259671231219023. DOI: [10.1177/23259671231219023](https://doi.org/10.1177/23259671231219023)
+- Graichen H, et al. MRI studies of the subacromial space in abduction in healthy volunteers. Surgical and Radiologic Anatomy, 1999, and American Journal of Roentgenology, 1999 (titles, authors and pages: verify).
+
+**Overhead pressing and muscle activity**
+- Saeterbakken AH, Fimland MS. *Effects of body position and loading modality on muscle activity and strength in shoulder presses.* Journal of Strength and Conditioning Research, 2013;27(7) (pages: verify). DOI: [10.1519/JSC.0b013e318276b873](https://doi.org/10.1519/JSC.0b013e318276b873)
+- Coratella G, et al. *Front vs back and barbell vs machine overhead press: an electromyographic analysis and implications for resistance training.* Frontiers in Physiology, 2022. DOI: [10.3389/fphys.2022.825880](https://doi.org/10.3389/fphys.2022.825880) (authors: verify)
+- Błażkiewicz M, Hadamus A. *The effect of the weight and type of equipment on shoulder and back muscle activity in surface electromyography during the overhead press — preliminary report.* Sensors, 2022;22(24):9762. DOI: [10.3390/s22249762](https://doi.org/10.3390/s22249762)
+- *Muscle activation of upper body in different-angle suspension push-ups: an analysis of angle-specific muscle engagement.* bioRxiv preprint, 2025. DOI: [10.1101/2025.02.19.638473](https://doi.org/10.1101/2025.02.19.638473) (authors: verify; not peer reviewed). A National Tsing Hua University thesis (19 men) reports the same −30° finding (verify).
+- Kolber MJ, et al. *Characteristics of shoulder impingement in the recreational weight-training population.* Journal of Strength and Conditioning Research, 2014;28(4):1081–1089.
+
+**Shoulder rehabilitation and grading**
+- Uhl TL, Carver TJ, Mattacola CG, Mair SD, Nitz AJ. *Shoulder musculature activation during upper extremity weight-bearing exercise.* Journal of Orthopaedic & Sports Physical Therapy, 2003;33(3):109–117.
+- McMullen J, Uhl TL. *A kinetic chain approach for shoulder rehabilitation.* Journal of Athletic Training, 2000;35(3):329–337.
+- Kibler WB, et al. *Electromyographic analysis of specific exercises for scapular control in early phases of shoulder rehabilitation.* American Journal of Sports Medicine, 2008;36(9) (authors and pages: verify). DOI: [10.1177/0363546508316281](https://doi.org/10.1177/0363546508316281)
+- Cools AM, Struyf F, De Mey K, Maenhout A, Castelein B, Cagnie B. *Rehabilitation of scapular dyskinesis: from the office worker to the elite overhead athlete.* British Journal of Sports Medicine, 2014;48(8):692–697. DOI: [10.1136/bjsports-2013-092148](https://doi.org/10.1136/bjsports-2013-092148)
+- Holmgren T, et al. *A specific exercise strategy reduced the need for surgery in subacromial pain patients: randomised controlled study.* BMJ, 2012;344:e787 (authors and title: verify).
+- Littlewood C, et al. *A self-managed single exercise programme versus usual physiotherapy treatment for rotator cuff tendinopathy: a randomised controlled trial (the SELF study).* Clinical Rehabilitation, 2016;30(7):686–696.
+- Cavaggion C, et al. *Exercise into pain in chronic rotator cuff-related shoulder pain: a randomized controlled trial with 6-month follow-up.* Open Access Journal of Sports Medicine, 2024;15 (pages: verify). ClinicalTrials.gov NCT04553289.
+- Ullern et al. *Painful considerations in exercise-management for rotator cuff related shoulder pain: a scoping review on pain-related prescription parameters.* BMC Musculoskeletal Disorders, 2025 (authors and findings: verify).
+- Pieters L, Lewis J, Kuppens K, Jochems J, Bruijstens T, Joossens L, Struyf F. *An update of systematic reviews examining the effectiveness of conservative physical therapy interventions for subacromial shoulder pain.* Journal of Orthopaedic & Sports Physical Therapy, 2020;50(3):131–141. Background only; its recommendations were not retrieved.
+
+**Yoga, downward dog and wrists**
+- Le Corroller T, et al. *Musculoskeletal injuries related to yoga: imaging observations.* American Journal of Roentgenology, 2012 (volume and pages: verify).
+- Ni M, Mooney K, Harriell K, Balachandran A, Signorile J. Core muscle activity during yoga poses, including downward-facing dog. Complementary Therapies in Medicine, 2014. DOI: [10.1016/j.ctim.2014.01.007](https://doi.org/10.1016/j.ctim.2014.01.007) (title: verify)
+- Downward dog in experienced and novice practitioners (12 women, force plates and motion capture). Taiwanese thesis or article, Airiti Library record U0021-1610201315164051 (authors and title: verify).
+- Handstand press with the fingers turned out. Conference paper, International Society of Biomechanics in Sports proceedings: <https://ojs.ub.uni-konstanz.de/cpa/article/view/4830> (authors and title: verify).
+- *Effect of a prophylactic brace on wrist and ulnocarpal joint biomechanics in a cadaveric model.* 2003 (authors and journal: verify).

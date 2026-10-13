@@ -482,3 +482,34 @@ describe('advanced steps (R13)', () => {
     expect(slotLadders(open)).toEqual(new Set(['plank', 'deadbug', 'crawl']))
   })
 })
+
+describe('overhead work (R18)', () => {
+  const peakThird = (input: EngineInput) => plan(input, 'A').items.filter((i) => i.block === 'peak').at(-1)!
+
+  it('keeps the overhead ladder closed until O1 is unlocked, and offers its test from P5', () => {
+    const input = base('2026-11-20')
+    addSession(input, '2026-09-25', 'B') // week 9
+    input.steps.push = 3 // P5
+    input.steps.prone = 2 // S3
+    for (const d of ['2026-11-14', '2026-11-17']) addSession(input, d, 'A', rated('P5', 4))
+    const ids = [0, 1].map((k) => {
+      const i = { ...input, sessions: [...input.sessions] }
+      for (let n = 0; n < k; n++) i.sessions.push({ id: `a${n}`, day_type: 'A', started_at: '2026-11-01T07:00:00', ended_at: '2026-11-01T07:15:00', deleted: false })
+      return peakThird(i).ladderId
+    })
+    expect(ids).toEqual(['serratus', 'serratus'])
+    expect(plan(input, 'A').items.find((i) => i.test)).toMatchObject({ exerciseId: 'O1', test: { stepId: 'O1' } })
+  })
+
+  it('takes turns with push-up plus once open, and rests while the shoulder is irritated', () => {
+    const input = base('2026-11-20')
+    addSession(input, '2026-09-25', 'B')
+    input.steps.overhead = 0
+    addSession(input, '2026-11-01', 'A') // one A done: the rotating station picks the second ladder
+    expect(peakThird(input).ladderId).toBe('overhead')
+    addSession(input, '2026-11-18', 'C', [['S1', 12, 2, 3]]) // shoulder pain 3/10 two days ago
+    SPECIAL.S1 = { ...SPECIAL.S1, regions: ['shoulder'] }
+    expect(peakThird(input).ladderId).toBe('serratus')
+    SPECIAL.S1 = { cls: 'endurance', target: [10, 20], regions: [] }
+  })
+})
