@@ -3,6 +3,7 @@
 // history, so they can be tested without a database.
 import type { ExerciseClass, Group, Region } from '../exercises/types'
 import { LADDERS, NOT_WITH, ROTATION, TEMPLATES, type Ladder, type SessionType } from './ladders'
+import type { Interval } from './timeline'
 
 // ---------------------------------------------------------------- inputs
 
@@ -52,6 +53,9 @@ export type EngineInput = {
 
 export type Phase = 'warmup' | 'main' | 'cooldown'
 
+/** Blocks of a timed session (R14): increasing complexity, then a wind-down. */
+export type Block = 'ramp' | 'build' | 'peak' | 'winddown'
+
 export type PlanItem = {
   phase: Phase
   exerciseId: string
@@ -67,6 +71,11 @@ export type PlanItem = {
   notes: string[]
   /** A readiness test for an advanced step (R13 G6) instead of working sets. */
   test?: { stepId: string; text: string; painMax: number; caution: boolean }
+  /** Timed sessions (R14, R15): block, work and rest per interval in seconds, and rounds. */
+  block?: Block
+  work?: number
+  rest?: number
+  rounds?: number
 }
 
 /** Programme sessions A–D, plus 'S' for an optional stretch top-up (not part of the rotation). */
@@ -83,6 +92,8 @@ export type Plan = {
   reasons: string[]
   warnings: string[]
   items: PlanItem[]
+  /** Timed sessions: the order of work intervals (circuits interleave items). */
+  intervals?: Interval[]
 }
 
 export type LadderUpdate = { ladderId: string; from: number; to: number; reason: string }
